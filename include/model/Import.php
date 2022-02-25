@@ -157,9 +157,9 @@ if ($_POST) {
 } elseif(!$asset && $_REQUEST['a'] == 'export') {
     require_once(INCLUDE_DIR.'class.export.php');
     $ts = strftime('%Y%m%d');
-    if (!($query=$_SESSION[':Q:users']))
+    if (!($query=$_SESSION[':Q:assets']))
         $errors['err'] = __('Query token not found');
-    elseif (!Export::saveUsers($query, __("users")."-$ts.csv", 'csv'))
+    elseif (!\model\Asset::saveAssets($query, __("assets")."-$ts.csv", 'csv'))
         $errors['err'] = __('Unable to dump query results.')
             .' '.__('Internal error occurred');
 }

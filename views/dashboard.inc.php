@@ -192,7 +192,7 @@ if ($total) {
     echo '<div>';
     echo '<span class="faded pull-right">'.$showing.'</span>';
     echo sprintf('&nbsp;'.__('Page').': %s &nbsp; <a class="no-pjax"
-            href="handle?a=export&qh=%s">'.__('Export').'</a></div>',
+            href="import/handle?a=export&qh=%s">'.__('Export').'</a></div>',
             $pageNav->getPageLinks(),
             $qhash);
 }

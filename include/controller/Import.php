@@ -83,7 +83,7 @@ class Import extends Controller {
             \Http::response(404, 'Unknown asset');
 
         $errors = array();
-        $form = AssetForm::getUserForm()->getForm($_POST);
+        $form = AssetForm::getAssetForm()->getForm($_POST);
 
         if ($asset->updateInfo($_POST, $errors, true) && !$errors)
             \Http::response(201, $asset->to_json(),  'application/json');

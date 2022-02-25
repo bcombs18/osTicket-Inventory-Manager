@@ -30,7 +30,7 @@ class Asset extends AssetModel
     static function fromVars($vars, $create=true, $update=false) {
         // Try and lookup by Asset ID
         $asset = static::lookupByID($vars['asset_id']);
-        $user = \User::lookupByEmail($vars['assignee']);
+        $user = \User::lookupByEmail(\Format::$vars['assignee']);
         if($user) {
             $user = $user->getId();
         } else {
@@ -50,7 +50,7 @@ class Asset extends AssetModel
                 'warranty_end' => \Format::parseDateTime($vars['warrantyenddate']),
                 'warranty_start' => \Format::parseDateTime($vars['warrantystartdate']),
                 'age' => \Format::htmldecode(\Format::sanitize($vars['pcage'])),
-                'location' => \Format::htmldecode(\Format::sanitize($vars['location'])),
+                'location' => $vars['location'],
                 'assignee' => $user,
                 'created' => new \SqlFunction('NOW'),
                 'updated' => new \SqlFunction('NOW')
@@ -302,7 +302,7 @@ class Asset extends AssetModel
         $imported = 0;
         try {
             db_autocommit(false);
-            $records = $importer->importCsv(AssetForm::getUserForm()->getFields(), $defaults);
+            $records = $importer->importCsv(AssetForm::getAssetForm()->getFields(), $defaults);
             foreach ($records as $data) {
                 if (!($asset = static::fromVars($data, true, true)))
                     throw new \ImportError(sprintf(__('Unable to import asset: %s'),
@@ -453,6 +453,54 @@ class Asset extends AssetModel
     static function getNameById($id) {
         if ($user = static::lookup($id))
             return $user->getName();
+    }
+
+    static function saveAssets($sql, $filename, $how='csv') {
+
+        $exclude = array();
+        $form = \model\AssetForm::getAssetForm();
+        $fields = $form->getExportableFields($exclude);
+
+        $cdata = array_combine(array_keys($fields),
+            array_values(array_map(
+                function ($f) { return $f->getLocal('label'); }, $fields)));
+
+        $assets = $sql->models();
+
+        ob_start();
+        echo \Export::dumpQuery($assets,
+            array(
+                'host_name'  =>          __('Hostname'),
+                'manufacturer' =>   __('Manufacturer'),
+                'model' =>          __('Model'),
+                'operating_system' => __('Operating System'),
+                'last_build_date' => __('Original Build Date'),
+                'serial_number' => __("Serial Number"),
+                'warranty_start' => __("Warranty Start"),
+                'warranty_end' => __("Warranty End"),
+                'total_memory' => __("Total Memory"),
+                'domain' => __("Domain"),
+                'logon_server' => __("Logon Server"),
+                'assignee' => __("Assigned To"),
+                'location' => __("Location")
+            ),
+            $how,
+            array('modify' => function(&$record, $keys, $obj) use ($fields) {
+                foreach ($fields as $k=>$f) {
+                    if ($f && ($i = array_search($k, $keys)) !== false) {
+                        $record[$i] = $f->export($f->to_php($record[$i]));
+                    }
+                }
+                return $record;
+            })
+        );
+        $stuff = ob_get_contents();
+        ob_end_clean();
+
+        if ($stuff)
+            \Http::download($filename, "text/$how", $stuff);
+
+        return false;
     }
 
     static function getLink($id) {

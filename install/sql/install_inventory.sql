@@ -26,13 +26,272 @@ DELETE FROM `%TABLE_PREFIX%form` WHERE `title`='Inventory'$
 INSERT INTO `%TABLE_PREFIX%form` (`type`, `title`, `notes`, `created`, `updated`)
     VALUES ('G', 'Inventory', 'Inventory internal form', NOW(), NOW())$
 
+INSERT INTO `%TABLE_PREFIX%list`
+    (`name`,
+     `name_plural`,
+     `sort_mode`,
+     `type`,
+     `created`,
+     `updated`)
+     SELECT
+        'Location',
+         'Locations',
+         'SortCol',
+         'locations',
+         NOW(),
+         NOW()
+    WHERE NOT EXISTS (SELECT `name` FROM `%TABLE_PREFIX%list` WHERE `name`='Location')$
+
+DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateLocationListItems`$
+CREATE PROCEDURE `%TABLE_PREFIX%CreateLocationListItems`()
+BEGIN
+    SET @list_id = (SELECT `id` FROM `%TABLE_PREFIX%list` WHERE `name`='Location');
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+        (`list_id`,
+        `status`,
+        `value`,
+        `extra`,
+        `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Alamosa',
+         'AL',
+         1);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Boulder',
+         'BO',
+         2);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Broomfield',
+         'BR',
+         3);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Cañon City',
+         'CC',
+         4);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Colorado State Forest',
+         'SF',
+         5);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Durango',
+         'DU',
+         6);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Fort Collins',
+         'FC',
+         7);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Franktown',
+         'FR',
+         8);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Golder',
+         'GO',
+         9);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Granby',
+         'GR',
+         10);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Grand Junction',
+         'GJ',
+         11);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Gunnison',
+         'GU',
+         12);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'La Junta',
+         'LJ',
+         13);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'La Veta',
+         'LV',
+         14);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Montrose',
+         'MO',
+         15);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Salida',
+         'SA',
+         16);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Steamboat Springs',
+         'SS',
+         17);
+
+    INSERT INTO `%TABLE_PREFIX%list_items`
+    (`list_id`,
+     `status`,
+     `value`,
+     `extra`,
+     `sort`)
+    VALUES
+        (@list_id,
+         1,
+         'Woodland Park',
+         'WP',
+         18);
+    END$
+
+CALL `%TABLE_PREFIX%CreateLocationListItems`()$
+
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryFormFields`$
 
 CREATE PROCEDURE `%TABLE_PREFIX%CreateInventoryFormFields`()
 BEGIN
-    SET @form_id = (SELECT id FROM `ost_form` WHERE `title`='Inventory');
+    SET @form_id = (SELECT id FROM `%TABLE_PREFIX%form` WHERE `title`='Inventory');
+    SET @location_list = (SELECT id FROM `%TABLE_PREFIX%list` WHERE `name`='Location');
 
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -50,7 +309,7 @@ BEGIN
          1,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -68,7 +327,7 @@ BEGIN
          2,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -86,7 +345,7 @@ BEGIN
          3,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -104,7 +363,7 @@ BEGIN
          4,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -122,7 +381,7 @@ BEGIN
          5,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -140,7 +399,7 @@ BEGIN
          6,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -158,7 +417,7 @@ BEGIN
          7,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -176,7 +435,7 @@ BEGIN
          8,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -194,7 +453,7 @@ BEGIN
          9,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -212,7 +471,7 @@ BEGIN
          10,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -230,7 +489,7 @@ BEGIN
          11,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -248,7 +507,7 @@ BEGIN
          12,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -266,7 +525,7 @@ BEGIN
          13,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `flags`,
      `type`,
@@ -279,12 +538,12 @@ BEGIN
         (@form_id,
          12289,
          'text',
+         'Assignee',
          'assignee',
-         'assignee',
-         14,
+         15,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `type`,
      `label`,
@@ -297,10 +556,10 @@ BEGIN
          'text',
          'Created',
          'created',
-         14,
+         16,
          NOW(),
          NOW());
-    INSERT INTO `ost_form_field`
+    INSERT INTO `%TABLE_PREFIX%form_field`
     (`form_id`,
      `type`,
      `label`,
@@ -313,7 +572,7 @@ BEGIN
          'text',
          'Updated',
          'updated',
-         14,
+         17,
          NOW(),
          NOW());
     END$
