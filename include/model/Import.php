@@ -1,0 +1,175 @@
+<?php
+/*********************************************************************
+users.php
+
+Peter Rotich <peter@osticket.com>
+Jared Hancock <jared@osticket.com>
+Copyright (c)  2006-2014 osTicket
+http://www.osticket.com
+
+Released under the GNU General Public License WITHOUT ANY WARRANTY.
+See LICENSE.TXT for details.
+
+vim: expandtab sw=4 ts=4 sts=4:
+ **********************************************************************/
+global $ost;
+global $cfg;
+require('staff.inc.php');
+
+if (!$thisstaff->hasPerm(User::PERM_DIRECTORY))
+    Http::redirect('index.php');
+
+require_once INCLUDE_DIR.'class.note.php';
+
+$asset = null;
+if ($_REQUEST['id'] && !($asset=\model\Asset::lookup($_REQUEST['id'])))
+    $errors['err'] = sprintf(__('%s: Unknown or invalid'), _N('asset', 'assets', 1));
+
+if ($_POST) {
+    switch(strtolower($_REQUEST['do'])) {
+        case 'update':
+            if (!$asset) {
+                $errors['err']=sprintf(__('%s: Unknown or invalid'), _N('end user', 'end users', 1));
+            } elseif (!$thisstaff->hasPerm(User::PERM_EDIT)) {
+                $errors['err'] = __('Action denied. Contact admin for access');
+            } elseif(($acct = $asset->getAccount())
+                && !$acct->update($_POST, $errors)) {
+                $errors['err']=__('Unable to update user account information');
+            } elseif($asset->updateInfo($_POST, $errors)) {
+                $msg=sprintf(__('Successfully updated %s.'), __('this end user'));
+                $_REQUEST['a'] = null;
+            } elseif(!$errors['err']) {
+                $errors['err']=sprintf('%s %s',
+                    sprintf(__('Unable to update %s.'), __('this end user')),
+                    __('Correct any errors below and try again.'));
+            }
+            break;
+        case 'create':
+            $form = \model\AssetForm::getUserForm()->getForm($_POST);
+            if (($asset = \model\Asset::fromForm($form))) {
+                $msg = Format::htmlchars(sprintf(__('Successfully added %s.'), $asset->getHostname()));
+                $_REQUEST['a'] = null;
+            } elseif (!$errors['err']) {
+                $errors['err']=sprintf('%s %s',
+                    sprintf(__('Unable to add %s.'), __('this asset')),
+                    __('Correct any errors below and try again.'));
+            }
+            break;
+        case 'mass_process':
+            if (!$_POST['ids'] || !is_array($_POST['ids']) || !count($_POST['ids'])) {
+                $errors['err'] = sprintf(__('You must select at least %s.'),
+                    __('one end user'));
+            } else {
+                $assets = \model\Asset::objects()->filter(
+                    array('asset_id__in' => $_POST['ids'])
+                );
+                $count = 0;
+                switch (strtolower($_POST['a'])) {
+                    case 'lock':
+                        foreach ($assets as $A)
+                            if (($acct = $A->getAccount()) && $acct->lock()) {
+                                $type = array('type' => 'edited', 'key' => 'locked-flag');
+                                Signal::send('object.edited', $acct, $type);
+                                $count++;
+                            }
+
+                        break;
+
+                    case 'unlock':
+                        foreach ($assets as $A)
+                            if (($acct = $A->getAccount()) && $acct->unlock()) {
+                                $type = array('type' => 'edited', 'key' => 'unlocked-flag');
+                                Signal::send('object.edited', $acct, $type);
+                                $count++;
+                            }
+                        break;
+
+                    case 'delete':
+                        foreach ($assets as $A) {
+                            if ($A->delete())
+                                $count++;
+                        }
+                        break;
+
+                    case 'reset':
+                        foreach ($assets as $A)
+                            if (($acct = $A->getAccount()) && $acct->sendResetEmail()) {
+                                $type = array('type' => 'edited', 'key' => 'pwreset-sent');
+                                Signal::send('object.edited', $acct, $type);
+                                $count++;
+                            }
+                        break;
+
+                    case 'register':
+                        foreach ($assets as $A) {
+                            $type = array('type' => 'edited', 'key' => 'user-registered');
+                            Signal::send('object.edited', $A, $type);
+                            if (($acct = $A->getAccount()) && $acct->sendConfirmEmail())
+                                $count++;
+                            elseif ($acct = UserAccount::register($A,
+                                array('sendemail' => true), $errors
+                            )) {
+                                $count++;
+                            }
+                        }
+                        break;
+
+                    case 'setorg':
+                        if (!($org = Organization::lookup($_POST['org_id'])))
+                            $errors['err'] = sprintf('%s - %s', __('Unknown action'), __('Get technical help!'));
+                        foreach ($assets as $A) {
+                            if ($A->setOrganization($org)) {
+                                $type = array('type' => 'edited', 'key' => 'user-org');
+                                Signal::send('object.edited', $A, $type);
+                                $count++;
+                            }
+                        }
+                        break;
+
+                    default:
+                        $errors['err']=sprintf('%s - %s', __('Unknown action'), __('Get technical help!'));
+                }
+                if (!$errors['err'] && !$count) {
+                    $errors['err'] = __('Unable to manage any of the selected end users');
+                }
+                elseif ($_POST['count'] && $count != $_POST['count']) {
+                    $warn = __('Not all selected items were updated');
+                }
+                elseif ($count) {
+                    $msg = __('Successfully managed selected assets');
+                }
+
+
+            }
+            break;
+        case 'import-assets':
+            $status = \model\Asset::importFromPost($_FILES['import'] ?: $_POST['pasted']);
+            if (is_numeric($status))
+                $msg = sprintf(__('Successfully imported %1$d %2$s'), $status,
+                    _N('asset', 'assets', $status));
+            else
+                $errors['err'] = $status;
+            break;
+        default:
+            $errors['err'] = __('Unknown action');
+            break;
+    }
+} elseif(!$asset && $_REQUEST['a'] == 'export') {
+    require_once(INCLUDE_DIR.'class.export.php');
+    $ts = strftime('%Y%m%d');
+    if (!($query=$_SESSION[':Q:users']))
+        $errors['err'] = __('Query token not found');
+    elseif (!Export::saveUsers($query, __("users")."-$ts.csv", 'csv'))
+        $errors['err'] = __('Unable to dump query results.')
+            .' '.__('Internal error occurred');
+}
+
+if($asset) {
+    $page = INVENTORY_VIEWS_DIR.'asset-view.inc.php';
+} else {
+    $page = INVENTORY_VIEWS_DIR.'dashboard.inc.php';
+}
+
+$nav->setTabActive('apps');
+require($page);
+?>

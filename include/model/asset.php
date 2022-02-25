@@ -1,0 +1,466 @@
+<?php
+
+namespace model;
+
+class AssetModel extends \VerySimpleModel {
+
+    static $meta = array(
+        'table' => 'ost_inventory_asset',
+        'pk' => 'asset_id',
+    );
+
+    function getId() {
+        return $this->asset_id;
+    }
+
+    public function setFlag($flag, $val) {
+        if ($val)
+            $this->status |= $flag;
+        else
+            $this->status &= ~$flag;
+    }
+}
+
+class Asset extends AssetModel
+    implements \TemplateVariable, \Searchable {
+
+    var $_entries;
+    var $_forms;
+
+    static function fromVars($vars, $create=true, $update=false) {
+        // Try and lookup by Asset ID
+        $asset = static::lookupByID($vars['asset_id']);
+        $user = \User::lookupByEmail($vars['assignee']);
+        if($user) {
+            $user = $user->getId();
+        } else {
+            $user = null;
+        }
+        if (!$asset && $create) {
+            $asset = new Asset(array(
+                'host_name' => \Format::htmldecode(\Format::sanitize($vars['hostname'])),
+                'operating_system' => \Format::htmldecode(\Format::sanitize($vars['osname'])),
+                'last_build_date' => \Format::parseDateTime($vars['originalinstalldate']),
+                'manufacturer' => \Format::htmldecode(\Format::sanitize($vars['systemmanufacturer'])),
+                'model' => \Format::htmldecode(\Format::sanitize($vars['systemmodel'])),
+                'total_memory' => \Format::htmldecode(\Format::sanitize($vars['totalphysicalmemory'])),
+                'domain' => \Format::htmldecode(\Format::sanitize($vars['domain'])),
+                'logon_server' => \Format::htmldecode(\Format::sanitize($vars['logonserver'])),
+                'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial'])),
+                'warranty_end' => \Format::parseDateTime($vars['warrantyenddate']),
+                'warranty_start' => \Format::parseDateTime($vars['warrantystartdate']),
+                'age' => \Format::htmldecode(\Format::sanitize($vars['pcage'])),
+                'location' => \Format::htmldecode(\Format::sanitize($vars['location'])),
+                'assignee' => $user,
+                'created' => new \SqlFunction('NOW'),
+                'updated' => new \SqlFunction('NOW')
+            ));
+
+            try {
+                $asset->save(true);
+                // Attach initial custom fields
+                $asset->addDynamicData($vars);
+            }
+            catch (OrmException $e) {
+                return null;
+            }
+            $type = array('type' => 'created');
+            \Signal::send('object.created', $asset, $type);
+        }
+        elseif ($update) {
+            $errors = array();
+            $asset->updateInfo($vars, $errors, true);
+        }
+
+        return $asset;
+    }
+
+    static function fromForm($form, $create=true) {
+        global $thisstaff;
+
+        if(!$form) return null;
+
+        //Validate the form
+        $valid = true;
+        $filter = function($f) use ($thisstaff) {
+            return !isset($thisstaff) || $f->isRequiredForStaff() || $f->isVisibleToStaff();
+        };
+
+        if (!$form->isValid($filter))
+            $valid  = false;
+
+        return $valid ? self::fromVars($form->getClean(), $create) : null;
+    }
+
+    function getHostname() {
+        return $this->host_name;
+    }
+
+    function getModel() {
+        return $this->model;
+    }
+
+    function getOS() {
+        return $this->operating_system;
+    }
+
+    function getInstallDate() {
+        return $this->last_build_date;
+    }
+
+    function getManufacturer() {
+        return $this->manufacturer;
+    }
+
+    function getMemory() {
+        return $this->total_memory."Mb";
+    }
+
+    function getSerialNumber() {
+        return $this->serial_number;
+    }
+
+    function getWarrantyStart() {
+        return $this->warranty_start;
+    }
+
+    function getWarrantyEnd() {
+        return $this->warranty_end;
+    }
+
+    function getAssigneeID() {
+        return $this->assignee;
+    }
+
+    function getLocation() {
+        if($this->location) {
+            return $this->location;
+        } else {
+            return "Location Not Assigned";
+        }
+    }
+
+    function getDomain() {
+        return $this->domain;
+    }
+
+    function getLogonServer() {
+        return $this->logon_server;
+    }
+
+    function getAge() {
+        return $this->age;
+    }
+
+    function getCreateDate() {
+        return $this->created;
+    }
+
+    function getUpdateDate() {
+        return $this->updated;
+    }
+
+
+    function addForm($form, $sort=1, $data=null) {
+        $entry = $form->instanciate($sort, $data);
+        $entry->set('object_type', 'G');
+        $entry->set('object_id', $this->getId());
+        $entry->save();
+        return $entry;
+    }
+
+    function to_json() {
+        $info = array(
+            'asset_id'  => $this->getId(),
+            'host_name' => $this->getHostname(),
+            'operating_system' => $this->getOS(),
+            'last_build_date' => $this->getInstallDate(),
+            'manufacturer' => $this->getManufacturer(),
+            'model' => $this->getModel(),
+            'total_memory' => $this->getMemory(),
+            'domain' => $this->getDomain(),
+            'logon_server' => $this->getLogonServer(),
+            'serial_number' => $this->getSerialNumber(),
+            'warranty_end' => $this->getWarrantyEnd(),
+            'warranty_start' => $this->getWarrantyStart(),
+            'age' => $this->getAge(),
+            'location' => $this->getLocation(),
+            'assignee' => \User::lookup($this->getAssigneeID())
+        );
+
+        return \Format::json_encode($info);
+    }
+
+    function __toString() {
+        return $this->asVar();
+    }
+
+    function asVar() {
+        return (string) $this->getName();
+    }
+
+    function getVar($tag) {
+        $tag = mb_strtolower($tag);
+        foreach ($this->getDynamicData() as $e)
+            if ($a = $e->getAnswer($tag))
+                return $a;
+    }
+
+    static function getVarScope() {
+        $base = array(
+            'email' => array(
+                'class' => 'EmailAddress', 'desc' => __('Default email address')
+            ),
+            'name' => array(
+                'class' => 'PersonsName', 'desc' => 'User name, default format'
+            ),
+            'organization' => array('class' => 'Organization', 'desc' => __('Organization')),
+        );
+        $extra = VariableReplacer::compileFormScope(UserForm::getInstance());
+        return $base + $extra;
+    }
+
+    static function getSearchableFields() {
+        $base = array();
+        $uform = UserForm::getUserForm();
+        $base = array();
+        foreach ($uform->getFields() as $F) {
+            $fname = $F->get('name') ?: ('field_'.$F->get('id'));
+            # XXX: email in the model corresponds to `emails__address` ORM path
+            if ($fname == 'email')
+                $fname = 'emails__address';
+            if (!$F->hasData() || $F->isPresentationOnly())
+                continue;
+            if (!$F->isStorable())
+                $base[$fname] = $F;
+            else
+                $base["cdata__{$fname}"] = $F;
+        }
+        return $base;
+    }
+
+    static function supportsCustomData() {
+        return true;
+    }
+
+    function addDynamicData($data) {
+        return $this->addForm(AssetForm::objects()->one(), 1, $data);
+    }
+
+    function getDynamicData($create=true) {
+        if (!isset($this->_entries)) {
+            $this->_entries = \DynamicFormEntry::forObject($this->asset_id, 'G')->all();
+            if (!$this->_entries && $create) {
+                $g = \model\AssetForm::getNewInstance();
+                $g->setClientId($this->asset_id);
+                $g->save();
+                $this->_entries[] = $g;
+            }
+        }
+
+        return $this->_entries ?: array();
+    }
+
+    function getFilterData() {
+        $vars = array();
+        foreach ($this->getDynamicData() as $entry) {
+            $vars += $entry->getFilterData();
+
+            // Add in special `name` and `email` fields
+            if ($entry->getDynamicForm()->get('type') != 'U')
+                continue;
+
+            foreach (array('name', 'email') as $name) {
+                if ($f = $entry->getField($name))
+                    $vars['field.'.$f->get('asset_id')] =
+                        $name == 'name' ? $this->getName() : $this->getEmail();
+            }
+        }
+
+        return $vars;
+    }
+
+    function getForms($data=null, $cb=null) {
+
+        if (!isset($this->_forms)) {
+            $this->_forms = array();
+            $cb = $cb ?: function ($f) use($data) { return ($data); };
+            foreach ($this->getDynamicData() as $entry) {
+                $entry->addMissingFields();
+
+                $this->_forms[] = $entry;
+            }
+        }
+
+        return $this->_forms;
+    }
+
+    static function importCsv($stream, $defaults=array()) {
+        require_once INCLUDE_DIR . 'class.import.php';
+
+        $importer = new \CsvImporter($stream);
+        $imported = 0;
+        try {
+            db_autocommit(false);
+            $records = $importer->importCsv(AssetForm::getUserForm()->getFields(), $defaults);
+            foreach ($records as $data) {
+                if (!($asset = static::fromVars($data, true, true)))
+                    throw new \ImportError(sprintf(__('Unable to import asset: %s'),
+                        print_r(Format::htmlchars($data), true)));
+                $imported++;
+            }
+            db_autocommit(true);
+        }
+        catch (Exception $ex) {
+            db_rollback();
+            return $ex->getMessage();
+        }
+        return $imported;
+    }
+
+    function importFromPost($stream, $extra=array()) {
+        if (!is_array($stream))
+            $stream = sprintf('name, email%s %s',PHP_EOL, $stream);
+
+        return Asset::importCsv($stream, $extra);
+    }
+
+    function updateInfo($vars, &$errors, $staff=false) {
+        $isEditable = function ($f) use($staff) {
+            return ($staff ? $f->isEditableToStaff() :
+                $f->isEditableToUsers());
+        };
+        $valid = true;
+        $forms = $this->getForms($vars, $isEditable);
+        foreach ($forms as $entry) {
+            $entry->setSource($vars);
+            if ($staff && !$entry->isValidForStaff(true))
+                $valid = false;
+            elseif (!$staff && !$entry->isValidForClient(true))
+                $valid = false;
+
+            if (!$valid)
+                $errors = array_merge($errors, $entry->errors());
+        }
+
+
+        if (!$valid)
+            return false;
+
+        // Save the entries
+        foreach ($forms as $entry) {
+            $fields = $entry->getFields();
+            foreach ($fields as $field) {
+                $changes = $field->getChanges();
+                if ((is_array($changes) && $changes[0]) || $changes && !is_array($changes)) {
+                    $type = array('type' => 'edited', 'key' => $field->getLabel());
+                    \Signal::send('object.edited', $this, $type);
+                }
+            }
+
+            if ($entry->getDynamicForm()->get('type') == 'G') {
+                //  Name field
+                if (($hostname = $entry->getField('hostname')) && $isEditable($hostname) ) {
+                    $hostname = $hostname->getClean();
+                    if ($this->host_name != $hostname) {
+                        $type = array('type' => 'edited', 'key' => 'Hostname');
+                        \Signal::send('object.edited', $this, $type);
+                    }
+                    $this->host_name = $hostname;
+                }
+
+                if (($osname = $entry->getField('osname')) && $isEditable($osname) ) {
+                    $osname = $osname->getClean();
+                    if ($this->operating_system != $osname) {
+                        $type = array('type' => 'edited', 'key' => 'Operating System');
+                        \Signal::send('object.edited', $this, $type);
+                    }
+                    $this->operating_system = $osname;
+                }
+
+                if (($last_build_date = $entry->getField('originalinstalldate')) && $isEditable($last_build_date) ) {
+                    $last_build_date = \Format::parseDateTime($last_build_date->getClean());
+                    if ($this->last_build_date != $last_build_date) {
+                        $type = array('type' => 'edited', 'key' => 'Last Build Date');
+                        \Signal::send('object.edited', $this, $type);
+                    }
+                    $this->last_build_date = $last_build_date;
+                }
+
+                if (($total_memory = $entry->getField('totalphysicalmemory')) && $isEditable($total_memory) ) {
+                    $total_memory = $total_memory->getClean();
+                    if ($this->total_memory != $total_memory) {
+                        $type = array('type' => 'edited', 'key' => 'Serial Number');
+                        \Signal::send('object.edited', $this, $type);
+                    }
+                    $this->total_memory = $total_memory;
+                }
+
+                if (($domain = $entry->getField('domain')) && $isEditable($domain) ) {
+                    $domain = $domain->getClean();
+                    if ($this->domain != $domain) {
+                        $type = array('type' => 'edited', 'key' => 'Domain');
+                        \Signal::send('object.edited', $this, $type);
+                    }
+                    $this->domain = $domain;
+                }
+
+                if (($logon_server = $entry->getField('logonserver')) && $isEditable($logon_server) ) {
+                    $logon_server = $logon_server->getClean();
+                    if ($this->logon_server != $logon_server) {
+                        $type = array('type' => 'edited', 'key' => 'Logon Server');
+                        \Signal::send('object.edited', $this, $type);
+                    }
+                    $this->logon_server = $logon_server;
+                }
+
+                if (($location = $entry->getField('location')) && $isEditable($location) ) {
+                    $location = $location->getClean();
+                    if ($this->location != $location) {
+                        $type = array('type' => 'edited', 'key' => 'Location');
+                        \Signal::send('object.edited', $this, $type);
+                    }
+                    $this->location = $location;
+                }
+            }
+
+            // DynamicFormEntry::saveAnswers returns the number of answers updated
+            if ($entry->saveAnswers($isEditable)) {
+                $this->updated = \SqlFunction::NOW();
+            }
+        }
+
+        return $this->save();
+    }
+
+
+    function save($refetch=false) {
+        return parent::save($refetch);
+    }
+
+    function delete() {
+        $type = array('type' => 'deleted');
+        \Signal::send('object.deleted', $this, $type);
+
+        // Delete user
+        return parent::delete();
+    }
+
+    static function lookupByID($asset_id) {
+        return static::lookup(array('asset_id'=>$asset_id));
+    }
+
+    static function getNameById($id) {
+        if ($user = static::lookup($id))
+            return $user->getName();
+    }
+
+    static function getLink($id) {
+        global $thisstaff;
+
+        if (!$id || !$thisstaff)
+            return false;
+
+        return ROOT_PATH . sprintf('scp/users.php?id=%s', $id);
+    }
+}
