@@ -30,7 +30,7 @@ class Asset extends AssetModel
     static function fromVars($vars, $create=true, $update=false) {
         // Try and lookup by Asset ID
         $asset = static::lookupByID($vars['asset_id']);
-        $user = \User::lookupByEmail(\Format::$vars['assignee']);
+        $user = \User::lookupByEmail($vars['assignee']);
         if($user) {
             $user = $user->getId();
         } else {

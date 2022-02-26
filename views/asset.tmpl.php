@@ -30,10 +30,6 @@ if ($info['error']) {
             <div class="floating-options">
                 <?php if ($thisstaff->hasPerm(User::PERM_EDIT)) { ?>
                     <a href="<?php echo $info['useredit'] ?: '#'; ?>" id="edituser" class="action" title="<?php echo __('Edit'); ?>"><i class="icon-edit"></i></a>
-                <?php }
-                if ($thisstaff->hasPerm(User::PERM_DIRECTORY)) { ?>
-                    <a href="users.php?id=<?php echo $asset->getId(); ?>" title="<?php
-                    echo __('Manage User'); ?>" class="action"><i class="icon-share"></i></a>
                 <?php } ?>
             </div>
             <table class="custom-info" width="100%">

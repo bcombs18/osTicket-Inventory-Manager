@@ -322,7 +322,7 @@ BEGIN
         (@form_id,
          12289,
          'text',
-         'osName',
+         'Operating System',
          'osname',
          2,
          NOW(),
