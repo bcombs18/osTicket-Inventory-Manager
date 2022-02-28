@@ -143,7 +143,8 @@ if ($_POST) {
             }
             break;
         case 'import-assets':
-            $status = \model\Asset::importFromPost($_FILES['import'] ?: $_POST['pasted']);
+            $assetImport = new model\Asset();
+            $status = $assetImport->importFromPost($_FILES['import'] ?: $_POST['pasted']);
             if (is_numeric($status))
                 $msg = sprintf(__('Successfully imported %1$d %2$s'), $status,
                     _N('asset', 'assets', $status));
