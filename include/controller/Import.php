@@ -167,4 +167,30 @@ class Import extends Controller {
         ob_end_clean();
         return $resp;
     }
+
+    function viewUser($asset_id) {
+        global $thisstaff;
+
+        if(!$thisstaff
+            || !$asset=Asset::lookup($asset_id))
+            \Http::response(404, 'No such asset');
+
+
+        if(!($user = \User::lookup($asset->getAssigneeID())))
+            \Http::response(404, 'Unknown user');
+
+
+        $info = array(
+            'title' => sprintf(__('%s: %s'), $asset->getHostname(),
+                Format::htmlchars($user->getName()))
+        );
+
+        ob_start();
+        include('class.note.php');
+        include(STAFFINC_DIR . 'templates/user.tmpl.php');
+        $resp = ob_get_contents();
+        ob_end_clean();
+        return $resp;
+
+    }
 }

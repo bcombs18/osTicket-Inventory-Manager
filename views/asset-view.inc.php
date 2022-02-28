@@ -90,6 +90,20 @@ require(STAFFINC_DIR . 'header.inc.php');
         <td width="50%" style="vertical-align:top">
             <table border="0" cellspacing="" cellpadding="4" width="100%">
                 <h2 style="text-align: center">Entry Information</h2>
+                <tr><td><?php echo __('User'); ?>:</td><td>
+                    <td><a href="#inventory/import/<?php echo $asset->getAssigneeID(); ?>/user"
+                           onclick="javascript:
+                                   $.userLookup('inventory/import/<?php echo $asset->getId(); ?>/user',
+                                   function (user) {
+                                   $('#user-'+user.id+'-name').text(user.name);
+                                   $('#user-'+user.id+'-email').text(user.email);
+                                   $('#user-'+user.id+'-phone').text(user.phone);
+                                   $('select#emailreply option[value=1]').text(user.name+' <'+user.email+'>');
+                                   });
+                                   return false;
+                                   "><i class="icon-user"></i> <span id="user-<?php echo $asset->getAssigneeID(); ?>-name"
+                            ><?php echo Format::htmlchars($asset->getHostname());
+                                ?></span></a>
                 <tr>
                     <th><?php echo __("Assigned To:"); ?></th>
                     <?php $user = \User::lookup($asset->getAssigneeID());
