@@ -187,7 +187,35 @@ class Import extends Controller {
 
         ob_start();
         include('class.note.php');
-        include(STAFFINC_DIR . 'templates/user.tmpl.php');
+        include(INVENTORY_VIEWS_DIR.'user.tmpl.php');
+        $resp = ob_get_contents();
+        ob_end_clean();
+        return $resp;
+
+    }
+
+    function changeUserForm($asset_id) {
+        global $thisstaff;
+
+        if(!$thisstaff
+            || !($asset=Asset::lookup($asset_id)))
+            \Http::response(404, 'No such asset');
+
+
+        $user = User::lookup($asset->getAssigneeID());
+
+        $info = array(
+            'title' => sprintf(__('Change user for asset %s'), $asset->getHostname())
+        );
+
+        return self::_userlookup($user, null, $info);
+    }
+
+    static function _userlookup($user, $form, $info) {
+        global $thisstaff;
+
+        ob_start();
+        include(INVENTORY_VIEWS_DIR . 'user-lookup.tmpl.php');
         $resp = ob_get_contents();
         ob_end_clean();
         return $resp;

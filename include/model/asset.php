@@ -414,6 +414,15 @@ class Asset extends AssetModel
                     $this->logon_server = $logon_server;
                 }
 
+                if (($assignee = $entry->getField('assignee')) && $isEditable($assignee) ) {
+                    $assignee = $assignee->getClean();
+                    if ($this->assignee != $assignee) {
+                        $type = array('type' => 'edited', 'key' => 'Assignee');
+                        \Signal::send('object.edited', $this, $type);
+                    }
+                    $this->assignee = $assignee;
+                }
+
                 if (($location = $entry->getField('location')) && $isEditable($location) ) {
                     $location = $location->getClean();
                     if ($this->location != $location) {
@@ -448,11 +457,6 @@ class Asset extends AssetModel
 
     static function lookupByID($asset_id) {
         return static::lookup(array('asset_id'=>$asset_id));
-    }
-
-    static function getNameById($id) {
-        if ($user = static::lookup($id))
-            return $user->getName();
     }
 
     static function saveAssets($sql, $filename, $how='csv') {
@@ -503,12 +507,17 @@ class Asset extends AssetModel
         return false;
     }
 
-    static function getLink($id) {
+    function changeAssignee($user) {
         global $thisstaff;
 
-        if (!$id || !$thisstaff)
+        if (!$user || ($user->getId() == $this->getAssigneeID())) {
             return false;
-
-        return ROOT_PATH . sprintf('scp/users.php?id=%s', $id);
+        }
+        $errors = array();
+        $this->assignee = $user->getId();
+        if (!$this->save())
+            return false;
+        unset($this->user);
+        return true;
     }
 }

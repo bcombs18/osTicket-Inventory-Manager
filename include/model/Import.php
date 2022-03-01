@@ -55,6 +55,16 @@ if ($_POST) {
                     __('Correct any errors below and try again.'));
             }
             break;
+        case 'changeuser':
+            if (!$_POST['user_id'] || !($user=User::lookup($_POST['user_id']))) {
+                $errors['err'] = __('Unknown user selected');
+            } elseif ($asset->changeAssignee($user)) {
+                $msg = sprintf(__('Asset assigned to %s'),
+                    Format::htmlchars($user->getName()));
+            } else {
+                $errors['err'] = sprintf('%s %s', __('Unable to assign asset.'), __('Please try again!'));
+            }
+            break;
         case 'mass_process':
             if (!$_POST['ids'] || !is_array($_POST['ids']) || !count($_POST['ids'])) {
                 $errors['err'] = sprintf(__('You must select at least %s.'),
