@@ -91,6 +91,7 @@ require(STAFFINC_DIR . 'header.inc.php');
             <table border="0" cellspacing="" cellpadding="4" width="100%">
                 <h2 style="text-align: center">Entry Information</h2>
                 <tr><th><?php echo __('User'); ?>:</th>
+                    <?php if($asset->getAssigneeID()) { ?>
                     <td><a href="#inventory/import/<?php echo $asset->getId(); ?>/user"
                            onclick="javascript:
                                    $.userLookup('inventory/import/<?php echo $asset->getId(); ?>/user',
@@ -105,6 +106,29 @@ require(STAFFINC_DIR . 'header.inc.php');
                             ><?php echo Format::htmlchars(User::getNameById($asset->getAssigneeID()));
                                 ?></span></a>
                     </td>
+                    <?php } else { ?>
+                    <td><a class="change-user" href="#inventory/import/<?php echo $asset->getId(); ?>/user"
+                           onclick="javascript:
+                                   var aid = 0;
+                                   var cid = 0;
+                                   var url = $(this).attr('href').substr(1);
+                                   $.userLookup(url, function(user) {
+                                       if(cid!=user.id
+                                           && $('.dialog#confirm-action #changeuser-confirm').length) {
+                                           $('#newuser').html(user.name +' &lt;'+user.email+'&gt;');
+                                           $('.dialog#confirm-action #action').val('changeuser');
+                                           $('#confirm-form').append('<input type=hidden name=user_id value='+user.id+' />');
+                                           $('#overlay').show();
+                                           $('.dialog#confirm-action .confirm-action').hide();
+                                           $('.dialog#confirm-action p#changeuser-confirm')
+                                           .show()
+                                           .parent('div').show().trigger('click');
+                                       }
+                                   });
+                                   "><i class="icon-user"></i> <span id="user-<?php echo $asset->getAssigneeID(); ?>-name"
+                            ><?php echo __("Unassigned"); ?></span></a>
+                    </td>
+                    <?php } ?>
                 </tr>
                 <tr>
                     <th><?php echo __("Assigned Location:"); ?></th>
@@ -162,7 +186,7 @@ include_once(STAFFINC_DIR.'footer.inc.php');
             e.preventDefault();
             var aid = <?php echo $asset->getAssigneeID(); ?>;
             var cid = <?php echo $asset->getAssigneeID(); ?>;
-            var url = 'ajax.php/'+$(this).attr('href').substr(1);
+            var url = $(this).attr('href').substr(1);
             $.userLookup(url, function(user) {
                 if(cid!=user.id
                     && $('.dialog#confirm-action #changeuser-confirm').length) {
@@ -180,7 +204,7 @@ include_once(STAFFINC_DIR.'footer.inc.php');
 
         $(document).on('click', 'a.user-action', function(e) {
             e.preventDefault();
-            var url = 'ajax.php/'+$(this).attr('href').substr(1);
+            var url = $(this).attr('href').substr(1);
             $.dialog(url, [201, 204], function (xhr) {
                 if (xhr.status == 204)
                     window.location.href = 'handle';
@@ -189,98 +213,8 @@ include_once(STAFFINC_DIR.'footer.inc.php');
                 return false;
             }, {
                 onshow: function() { $('#user-search').focus(); }
-            });
+            }, true);
             return false;
         });
-
-        $.dialog = function (url, codes, cb, options) {
-            options = options||{};
-
-            if (codes && !$.isArray(codes))
-                codes = [codes];
-
-            var $popup = $('.dialog#popup');
-
-            $popup.attr('class',
-                function(pos, classes) {
-                    return classes.replace(/\bsize-\S+/g, '');
-                });
-
-            $popup.addClass(options.size ? ('size-'+options.size) : 'size-normal');
-
-            $.toggleOverlay(true);
-            $('div.body', $popup).empty().hide();
-            $('div#popup-loading', $popup).show()
-                .find('h1').css({'margin-top':function() { return $popup.height()/3-$(this).height()/3}});
-            $popup.resize().show();
-            $('div.body', $popup).load(url, options.data, function () {
-                $('div#popup-loading', $popup).hide();
-                $('div.body', $popup).slideDown({
-                    duration: 300,
-                    queue: false,
-                    complete: function() {
-                        if (options.onshow) options.onshow();
-                        $(this).removeAttr('style');
-                    }
-                });
-                $("input[autofocus]:visible:enabled:first", $popup).focus();
-                var submit_button = null;
-                $(document).off('.dialog');
-                $(document).on('click.dialog',
-                    '#popup input[type=submit], #popup button[type=submit]',
-                    function(e) { submit_button = $(this); });
-                $(document).on('submit.dialog', '.dialog#popup form', function(e) {
-                    e.preventDefault();
-                    var $form = $(this),
-                        data = $form.serialize();
-                    if (submit_button) {
-                        data += '&' + escape(submit_button.attr('name')) + '='
-                            + escape(submit_button.attr('value'));
-                    }
-                    $('div#popup-loading', $popup).show()
-                        .find('h1').css({'margin-top':function() { return $popup.height()/3-$(this).height()/3}});
-                    $.ajax({
-                        type:  $form.attr('method'),
-                        url: '<?php echo OST_WEB_ROOT; ?>scp/ajax.php/'+$form.attr('action').substr(1),
-                        data: data,
-                        cache: false,
-                        success: function(resp, status, xhr) {
-                            if (xhr && xhr.status && codes
-                                && $.inArray(xhr.status, codes) != -1) {
-                                $.toggleOverlay(false);
-                                $popup.hide();
-                                $('div.body', $popup).empty();
-                                if (cb && (false === cb(xhr, resp)))
-                                    // Don't fire event if callback returns false
-                                    return;
-                                var done = $.Event('dialog:close');
-                                $popup.trigger(done, [resp, status, xhr]);
-                            } else {
-                                try {
-                                    var json = $.parseJSON(resp);
-                                    if (json.redirect) return window.location.href = json.redirect;
-                                }
-                                catch (e) { }
-                                $('div.body', $popup).html(resp);
-                                if ($('#msg_error, .error-banner', $popup).length) {
-                                    $popup.effect('shake');
-                                }
-                                $('#msg_notice, #msg_error', $popup).delay(5000).slideUp();
-                                $('div.tab_content[id] div.error:not(:empty)', $popup).each(function() {
-                                    var div = $(this).closest('.tab_content');
-                                    $('a[href^="#'+div.attr('id')+'"]').parent().addClass('error');
-                                });
-                            }
-                        }
-                    })
-                        .done(function() {
-                            $('div#popup-loading', $popup).hide();
-                        })
-                        .fail(function() { });
-                    return false;
-                });
-            });
-            if (options.onload) { options.onload(); }
-        };
     });
 </script>

@@ -175,19 +175,24 @@ class Import extends Controller {
             || !$asset=Asset::lookup($asset_id))
             \Http::response(404, 'No such asset');
 
+        $user = \User::lookup($asset->getAssigneeID());
 
-        if(!($user = \User::lookup($asset->getAssigneeID())))
-            \Http::response(404, 'Unknown user');
-
-
-        $info = array(
-            'title' => sprintf(__('%s: %s'), $asset->getHostname(),
-                Format::htmlchars($user->getName()))
-        );
+        if($user) {
+            $file = 'user.tmpl.php';
+            $info = array(
+                'title' => sprintf(__('%s: %s'), $asset->getHostname(),
+                    Format::htmlchars($user->getName()))
+            );
+        } else {
+            $file = 'user-lookup.tmpl.php';
+            $info = array(
+                'title' => sprintf(__('%s: Unassigned'), $asset->getHostname())
+            );
+        }
 
         ob_start();
         include('class.note.php');
-        include(INVENTORY_VIEWS_DIR.'user.tmpl.php');
+        include(INVENTORY_VIEWS_DIR.$file);
         $resp = ob_get_contents();
         ob_end_clean();
         return $resp;
