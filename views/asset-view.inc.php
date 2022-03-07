@@ -176,16 +176,19 @@ require(STAFFINC_DIR . 'header.inc.php');
     <div class="clear"></div>
 </div>
 
-<?php
-include_once(STAFFINC_DIR.'footer.inc.php');
-?>
-
 <script type="text/javascript">
     $(function() {
         $(document).on('click', 'a.change-user', function(e) {
             e.preventDefault();
-            var aid = <?php echo $asset->getAssigneeID(); ?>;
-            var cid = <?php echo $asset->getAssigneeID(); ?>;
+
+            <?php if(!$asset->getAssigneeID()) {
+                $assigneeID = 0;
+            } else {
+                $assigneeID = $asset->getAssigneeID();
+            } ?>
+
+            var aid = <?php echo $assigneeID; ?>;
+            var cid = <?php echo $assigneeID; ?>;
             var url = $(this).attr('href').substr(1);
             $.userLookup(url, function(user) {
                 if(cid!=user.id
@@ -205,6 +208,7 @@ include_once(STAFFINC_DIR.'footer.inc.php');
         $(document).on('click', 'a.user-action', function(e) {
             e.preventDefault();
             var url = $(this).attr('href').substr(1);
+            console.log("Entered this script");
             $.dialog(url, [201, 204], function (xhr) {
                 if (xhr.status == 204)
                     window.location.href = 'handle';
@@ -218,3 +222,7 @@ include_once(STAFFINC_DIR.'footer.inc.php');
         });
     });
 </script>
+
+<?php
+include_once(STAFFINC_DIR.'footer.inc.php');
+?>
