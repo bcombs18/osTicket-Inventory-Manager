@@ -1,5 +1,10 @@
 # osTicket Inventory Manager
 
+## Requirements
+- PHP version 8.0
+- MySQL database 5.5
+- osTicket v1.16.1
+
 ## Installation
 1. Download and Unzip the osTicket Inventory Manager plugin.
 2. Place the unzipped folder in /osTicket/include/plugins folder.
