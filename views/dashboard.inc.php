@@ -93,7 +93,7 @@ $assets->order_by($order . $order_column);
                     <?php echo __('New Asset'); ?>
                 </a>
                 <a class="action-button popup-dialog"
-                   href="#inventory/import/bulk/">
+                   href="#import/bulk/">
                     <i class="icon-upload"></i>
                     <?php echo __('Import'); ?>
                 </a>

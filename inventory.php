@@ -103,11 +103,8 @@ class InventoryPlugin extends Plugin {
                 url_get('^/(?P<id>\d+)/preview$', 'preview'),
                 url_get('^/(?P<id>\d+)/user$', 'viewUser'),
                 url_get('^/(?P<id>\d+)/change-user$', 'changeUserForm'),
-                //url_get('^/lookup/form$', 'lookup'),
-                //url_post('^/lookup/form$', 'addAsset'),
                 url_get('^/local$', 'search', array('local')),
                 url('/bulk', 'importAssets'),
-                //url('/add', 'addAsset'),
                 url('/handle', 'handle')
             )
         );
