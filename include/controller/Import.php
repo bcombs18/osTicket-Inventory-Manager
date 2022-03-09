@@ -8,7 +8,7 @@ use model\AssetForm;
 use Mpdf\Tag\P;
 use User;
 
-class Import extends Controller {
+class Import {
 
     function importAssets() {
         global $thisstaff;
