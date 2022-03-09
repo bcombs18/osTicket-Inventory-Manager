@@ -159,7 +159,7 @@ $assets->order_by($order . $order_column);
             <td>&nbsp;
                 <a class="preview"
                    href="<?php echo INVENTORY_WEB_ROOT.'import/handle'; ?>?id=<?php echo $A['asset_id']; ?>"
-                   data-preview="#import/<?php
+                   data-preview="#asset/<?php
                     echo $A['asset_id']; ?>/preview"><?php
                     echo \Format::htmlchars($A['host_name']); ?></a>
                 &nbsp;

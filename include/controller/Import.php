@@ -90,30 +90,6 @@ class Import {
         include(INVENTORY_VIEWS_DIR . 'deleteAsset.tmpl.php');
     }
 
-    function preview($id) {
-        global $thisstaff;
-
-        if(!$thisstaff)
-            \Http::response(403, 'Login Required');
-        elseif(!($asset = \model\Asset::lookup($id)))
-            \Http::response(404, 'Unknown asset');
-
-        $info = array(
-            'title' => '',
-            'assetedit' => sprintf('#import/%d/edit', $asset->getId()),
-        );
-        ob_start();
-        echo sprintf('<div style="width:650px; padding: 2px 2px 0 5px;"
-                id="u%d">', $asset->getId());
-        include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
-        echo '</div>';
-        $resp = ob_get_contents();
-        ob_end_clean();
-
-        return $resp;
-
-    }
-
     function handle() {
         require_once 'model\assets.php';
     }
