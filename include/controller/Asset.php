@@ -6,7 +6,6 @@ require_once(INCLUDE_DIR . 'class.staff.php');
 
 use Format;
 use model\AssetForm;
-use Mpdf\Tag\P;
 use User;
 
 class Asset {
