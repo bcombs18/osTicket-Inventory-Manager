@@ -85,6 +85,14 @@ class InventoryPlugin extends Plugin {
             )
         );
 
+        $asset_url = url ( '^/inventory.*asset',
+            patterns( 'controller\Asset',
+                url_get('^/lookup/form$', 'lookup'),
+                url_post('^/lookup/form$', 'addAsset'),
+                url('/add', 'addAsset')
+            )
+        );
+
         $import_url = url('^/inventory.*import',
             patterns('controller\Import',
                 url_get('^/(?P<id>\d+)$', 'getAsset'),
@@ -95,17 +103,18 @@ class InventoryPlugin extends Plugin {
                 url_get('^/(?P<id>\d+)/preview$', 'preview'),
                 url_get('^/(?P<id>\d+)/user$', 'viewUser'),
                 url_get('^/(?P<id>\d+)/change-user$', 'changeUserForm'),
-                url_get('^/lookup/form$', 'lookup'),
-                url_post('^/lookup/form$', 'addAsset'),
+                //url_get('^/lookup/form$', 'lookup'),
+                //url_post('^/lookup/form$', 'addAsset'),
                 url_get('^/local$', 'search', array('local')),
                 url('/bulk', 'importAssets'),
-                url('/add', 'addAsset'),
+                //url('/add', 'addAsset'),
                 url('/handle', 'handle')
             )
         );
 
         $object->append ( $media_url );
         $object->append ( $import_url );
+        $object->append ( $asset_url );
         $object->append ( $dashboard_url );
     }
 

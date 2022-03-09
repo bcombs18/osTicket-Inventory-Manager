@@ -833,6 +833,16 @@ $.orgLookup = function (url, cb) {
     });
 };
 
+$.assetLookup = function (url, cb) {
+    $.dialog(url, 201, function (xhr, asset) {
+        if ($.type(asset) == 'string')
+            asset = $.parseJSON(asset);
+        if (cb) return cb(asset);
+    }, {
+        onshow: function() { $('#user-search').focus(); }
+    }, true);
+};
+
 $.uid = 1;
 
 +function($) {

@@ -88,7 +88,7 @@ $assets->order_by($order . $order_column);
             <div class="pull-right">
                 <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
                 <a class="green button action-button popup-dialog"
-                   href="#inventory/import/add/">
+                   href="#asset/add/">
                     <i class="icon-plus-sign"></i>
                     <?php echo __('New Asset'); ?>
                 </a>
@@ -219,7 +219,7 @@ $(function() {
 
     $(document).on('click', 'a.popup-dialog', function(e) {
         e.preventDefault();
-        $.userLookup('ajax.php/' + $(this).attr('href').substr(1));
+        $.assetLookup($(this).attr('href').substr(1));
         return false;
     });
     var goBaby = function(action, confirmed) {
