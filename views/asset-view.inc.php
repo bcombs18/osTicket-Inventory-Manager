@@ -12,14 +12,14 @@ require(STAFFINC_DIR . 'header.inc.php');
 <table width="940" cellpadding="2" cellspacing="0" border="0">
     <tr>
         <td width="50%" class="has_bottom_border">
-            <h2><a href=<?php echo INVENTORY_WEB_ROOT."import/handle?id=".$asset->getId(); ?>
+            <h2><a href=<?php echo INVENTORY_WEB_ROOT."asset/handle?id=".$asset->getId(); ?>
                    title="Reload"><i class="icon-refresh"></i> <?php echo Format::htmlchars($asset->getHostname()); ?></a></h2>
         </td>
         <td width="50%" class="right_align has_bottom_border">
             <?php
             if ($thisstaff->hasPerm(User::PERM_DELETE)) { ?>
                 <a id="user-delete" class="red button action-button pull-right user-action"
-                   href="#import/<?php echo $asset->getId(); ?>/delete"><i class="icon-trash"></i>
+                   href="#asset/<?php echo $asset->getId(); ?>/delete"><i class="icon-trash"></i>
                     <?php echo __('Delete Asset'); ?></a>
             <?php } ?>
         </td>
@@ -35,7 +35,7 @@ require(STAFFINC_DIR . 'header.inc.php');
                     <td>
                         <?php
                         if ($thisstaff->hasPerm(User::PERM_EDIT)) { ?>
-                        <b><a href="#import/<?php echo $asset->getId();
+                        <b><a href="#asset/<?php echo $asset->getId();
                             ?>/edit" class="user-action"><i
                                     class="icon-edit"></i>
                                 <?php }
@@ -92,9 +92,9 @@ require(STAFFINC_DIR . 'header.inc.php');
                 <h2 style="text-align: center">Entry Information</h2>
                 <tr><th><?php echo __('User'); ?>:</th>
                     <?php if($asset->getAssigneeID()) { ?>
-                    <td><a href="#inventory/import/<?php echo $asset->getId(); ?>/user"
+                    <td><a href="#asset/<?php echo $asset->getId(); ?>/user"
                            onclick="javascript:
-                                   $.userLookup('inventory/import/<?php echo $asset->getId(); ?>/user',
+                                   $.userLookup('asset/<?php echo $asset->getId(); ?>/user',
                                    function (user) {
                                    $('#user-'+user.id+'-name').text(user.name);
                                    $('#user-'+user.id+'-email').text(user.email);
@@ -107,7 +107,7 @@ require(STAFFINC_DIR . 'header.inc.php');
                                 ?></span></a>
                     </td>
                     <?php } else { ?>
-                    <td><a class="change-user" href="#inventory/import/<?php echo $asset->getId(); ?>/user"
+                    <td><a class="change-user" href="#asset/<?php echo $asset->getId(); ?>/user"
                            onclick="javascript:
                                    var aid = 0;
                                    var cid = 0;
@@ -158,7 +158,7 @@ require(STAFFINC_DIR . 'header.inc.php');
             '<b><span id="newuser">this guy</span></b>'); ?>
     </p>
     <div><?php echo __('Please confirm to continue.');?></div>
-    <form action="<?php echo INVENTORY_WEB_ROOT;?>inventory/import/handle?id=<?php echo $asset->getId(); ?>" method="post" id="confirm-form" name="confirm-form">
+    <form action="<?php echo INVENTORY_WEB_ROOT;?>inventory/asset/handle?id=<?php echo $asset->getId(); ?>" method="post" id="confirm-form" name="confirm-form">
         <?php csrf_token(); ?>
         <input type="hidden" name="id" value="<?php echo $asset->getId(); ?>">
         <input type="hidden" name="a" value="process">
@@ -208,7 +208,6 @@ require(STAFFINC_DIR . 'header.inc.php');
         $(document).on('click', 'a.user-action', function(e) {
             e.preventDefault();
             var url = $(this).attr('href').substr(1);
-            console.log("Entered this script");
             $.dialog(url, [201, 204], function (xhr) {
                 if (xhr.status == 204)
                     window.location.href = 'handle';

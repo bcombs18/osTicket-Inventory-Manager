@@ -54,7 +54,7 @@ if ($info['error']) {
     <div><p id="msg_info"><i class="icon-info-sign"></i>&nbsp; <?php echo __(
                 'Please note that updates will be reflected system-wide.'
             ); ?></p></div>
-    <form method="post" class="user" action="#import/<?php echo $asset->getId();?>">
+    <form method="post" class="user" action="#asset/<?php echo $asset->getId();?>">
         <input type="hidden" name="uid" value="<?php echo $asset->getId(); ?>" />
         <table width="100%">
             <?php
@@ -82,12 +82,12 @@ if ($info['error']) {
         $('a#edituser').click( function(e) {
             e.preventDefault();
             if ($(this).attr('href').length > 1) {
-                var url = 'ajax.php/'+$(this).attr('href').substr(1);
+                var url = $(this).attr('href').substr(1);
                 $.dialog(url, [201, 204], function (xhr) {
                     window.location.href = window.location.href;
                 }, {
                     onshow: function() { $('#user-search').focus(); }
-                });
+                }, true);
             } else {
                 $('div#user-profile').hide();
                 $('div#user-form').fadeIn();

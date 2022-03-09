@@ -23,7 +23,7 @@ if ($info['error']) {
     <div class="clear"></div>
     <hr>
     <form method="post" class="asset"
-          action="#import/<?php echo $asset->getId(); ?>/delete">
+          action="#asset/<?php echo $asset->getId(); ?>/delete">
         <input type="hidden" name="id" value="<?php echo $asset->getId(); ?>" />
         <p class="full-width">
         <span class="buttons pull-left">

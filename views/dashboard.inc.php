@@ -64,7 +64,7 @@ $assets->order_by($order . $order_column);
 
 <div id="basic_search">
     <div style="min-height:25px;">
-        <form action=<?php echo INVENTORY_WEB_ROOT."import/handle"; ?> method="get">
+        <form action=<?php echo INVENTORY_WEB_ROOT."asset/handle"; ?> method="get">
             <?php csrf_token(); ?>
             <input type="hidden" name="a" value="search">
             <div class="attached input">
@@ -77,7 +77,7 @@ $assets->order_by($order . $order_column);
         </form>
     </div>
  </div>
-<form id="assets-list" action=<?php echo INVENTORY_WEB_ROOT . "import/handle"; ?> method="POST" name="staff" >
+<form id="assets-list" action=<?php echo INVENTORY_WEB_ROOT . "asset/handle"; ?> method="POST" name="staff" >
 
 <div style="margin-bottom:20px; padding-top:5px;">
     <div class="sticky bar opaque">
@@ -88,12 +88,12 @@ $assets->order_by($order . $order_column);
             <div class="pull-right">
                 <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
                 <a class="green button action-button popup-dialog"
-                   href="#inventory/import/add/">
+                   href="#asset/add/">
                     <i class="icon-plus-sign"></i>
                     <?php echo __('New Asset'); ?>
                 </a>
                 <a class="action-button popup-dialog"
-                   href="#inventory/import/bulk/">
+                   href="#import/bulk/">
                     <i class="icon-upload"></i>
                     <?php echo __('Import'); ?>
                 </a>
@@ -134,13 +134,13 @@ $assets->order_by($order . $order_column);
     <thead>
         <tr>
             <th nowrap width="4%">&nbsp;</th>
-            <th><a <?php echo $name_sort; ?> href="<?php echo INVENTORY_WEB_ROOT . "import/handle"; ?>?<?php
+            <th><a <?php echo $name_sort; ?> href="<?php echo INVENTORY_WEB_ROOT . "asset/handle"; ?>?<?php
                 echo $qstr; ?>&sort=host_name"><?php echo __('Hostname'); ?></a></th>
-            <th width="22%"><a  <?php echo $status_sort; ?> href="<?php echo INVENTORY_WEB_ROOT . "import/handle"; ?>?<?php
+            <th width="22%"><a  <?php echo $status_sort; ?> href="<?php echo INVENTORY_WEB_ROOT . "asset/handle"; ?>?<?php
                 echo $qstr; ?>&sort=model"><?php echo __('Model'); ?></a></th>
-            <th width="20%"><a <?php echo $create_sort; ?> href="<?php echo INVENTORY_WEB_ROOT . "import/handle"; ?>?<?php
+            <th width="20%"><a <?php echo $create_sort; ?> href="<?php echo INVENTORY_WEB_ROOT . "asset/handle"; ?>?<?php
                 echo $qstr; ?>&sort=assignee"><?php echo __('Assignee'); ?></a></th>
-            <th width="20%"><a <?php echo $update_sort; ?> href="<?php echo INVENTORY_WEB_ROOT . "import/handle"; ?>?<?php
+            <th width="20%"><a <?php echo $update_sort; ?> href="<?php echo INVENTORY_WEB_ROOT . "asset/handle"; ?>?<?php
                 echo $qstr; ?>&sort=location"><?php echo __('Location'); ?></a></th>
         </tr>
     </thead>
@@ -158,8 +158,8 @@ $assets->order_by($order . $order_column);
             </td>
             <td>&nbsp;
                 <a class="preview"
-                   href="<?php echo INVENTORY_WEB_ROOT.'import/handle'; ?>?id=<?php echo $A['asset_id']; ?>"
-                   data-preview="#import/<?php
+                   href="<?php echo INVENTORY_WEB_ROOT.'asset/handle'; ?>?id=<?php echo $A['asset_id']; ?>"
+                   data-preview="#asset/<?php
                     echo $A['asset_id']; ?>/preview"><?php
                     echo \Format::htmlchars($A['host_name']); ?></a>
                 &nbsp;
@@ -192,7 +192,7 @@ if ($total) {
     echo '<div>';
     echo '<span class="faded pull-right">'.$showing.'</span>';
     echo sprintf('&nbsp;'.__('Page').': %s &nbsp; <a class="no-pjax"
-            href="import/handle?a=export&qh=%s">'.__('Export').'</a></div>',
+            href="asset/handle?a=export&qh=%s">'.__('Export').'</a></div>',
             $pageNav->getPageLinks(),
             $qhash);
 }
@@ -204,7 +204,7 @@ $(function() {
     $('input#basic-asset-search').typeahead({
         source: function (typeahead, query) {
             $.ajax({
-                url: "<?php echo INVENTORY_WEB_ROOT.'/import/handle?q=';?>"+query,
+                url: "<?php echo INVENTORY_WEB_ROOT.'/asset/handle?q=';?>"+query,
                 dataType: 'json',
                 success: function (data) {
                     typeahead.process(data);
@@ -212,14 +212,14 @@ $(function() {
             });
         },
         onselect: function (obj) {
-            window.location.href = '<?php echo INVENTORY_WEB_ROOT.'import/handle?id='?>'+obj.id;
+            window.location.href = '<?php echo INVENTORY_WEB_ROOT.'asset/handle?id='?>'+obj.id;
         },
         property: "/bin/true"
     });
 
     $(document).on('click', 'a.popup-dialog', function(e) {
         e.preventDefault();
-        $.userLookup('ajax.php/' + $(this).attr('href').substr(1));
+        $.assetLookup($(this).attr('href').substr(1));
         return false;
     });
     var goBaby = function(action, confirmed) {
@@ -260,7 +260,7 @@ $(function() {
     });
 
     // Remove CSRF Token From GET Request
-    document.querySelector("form[action='<?php echo INVENTORY_WEB_ROOT."import/handle"; ?>']").onsubmit = function() {
+    document.querySelector("form[action='<?php echo INVENTORY_WEB_ROOT."asset/handle"; ?>']").onsubmit = function() {
         document.getElementsByName("__CSRFToken__")[0].remove();
     };
 });

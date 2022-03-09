@@ -75,7 +75,7 @@
     </div>
     <div id="new-asset-form" style="display:<?php echo $asset ? 'none' :'block'; ?>;">
         <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
-            <form method="post" class="asset" action="<?php echo $info['action'] ?: '#import/lookup/form'; ?>">
+            <form method="post" class="asset" action="<?php echo $info['action'] ?: '#asset/lookup/form'; ?>">
                 <table width="100%" class="fixed">
                     <?php
                     $form = $form ?: model\AssetForm::getInstance();

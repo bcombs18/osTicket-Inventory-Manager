@@ -22,7 +22,7 @@ if ($info['error']) {
     <?php
     if ($asset) { ?>
     <a class="action-button pull-right change-user" style="overflow:inherit"
-        href="#inventory/import/<?php echo $asset->getId(); ?>/change-user" ><i class="icon-user"></i>
+        href="#asset/<?php echo $asset->getId(); ?>/change-user" ><i class="icon-user"></i>
         <?php echo __('Change User'); ?></a>
     <?php
     } ?>
