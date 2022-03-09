@@ -92,9 +92,9 @@ require(STAFFINC_DIR . 'header.inc.php');
                 <h2 style="text-align: center">Entry Information</h2>
                 <tr><th><?php echo __('User'); ?>:</th>
                     <?php if($asset->getAssigneeID()) { ?>
-                    <td><a href="#inventory/import/<?php echo $asset->getId(); ?>/user"
+                    <td><a href="#asset/<?php echo $asset->getId(); ?>/user"
                            onclick="javascript:
-                                   $.userLookup('inventory/import/<?php echo $asset->getId(); ?>/user',
+                                   $.userLookup('asset/<?php echo $asset->getId(); ?>/user',
                                    function (user) {
                                    $('#user-'+user.id+'-name').text(user.name);
                                    $('#user-'+user.id+'-email').text(user.email);
@@ -107,7 +107,7 @@ require(STAFFINC_DIR . 'header.inc.php');
                                 ?></span></a>
                     </td>
                     <?php } else { ?>
-                    <td><a class="change-user" href="#inventory/import/<?php echo $asset->getId(); ?>/user"
+                    <td><a class="change-user" href="#asset/<?php echo $asset->getId(); ?>/user"
                            onclick="javascript:
                                    var aid = 0;
                                    var cid = 0;
