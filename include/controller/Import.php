@@ -27,7 +27,7 @@ class Import {
         if (!$_POST) {
             include INVENTORY_PLUGIN_ROOT . 'views/assetsImport.php';
         } else {
-            require_once 'model\Import.php';
+            require_once 'model\assets.php';
         }
     }
 
@@ -138,7 +138,7 @@ class Import {
     }
 
     function handle() {
-        require_once 'model\Import.php';
+        require_once 'model\assets.php';
     }
 
     function getAsset($id=false) {
