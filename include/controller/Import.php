@@ -31,39 +31,8 @@ class Import {
         }
     }
 
-    function delete($id) {
-        global $thisstaff;
-
-        if (!$thisstaff)
-            \Http::response(403, 'Login Required');
-        elseif (!$thisstaff->hasPerm(User::PERM_DELETE))
-            \Http::response(403, 'Permission Denied');
-        elseif (!($asset = \model\Asset::lookup($id)))
-            \Http::response(404, 'Unknown user');
-
-        $info = array();
-        if ($_POST) {
-            if (!$info['error'] && $asset->delete())
-                \Http::response(204, 'Asset deleted successfully');
-            elseif (!$info['error'])
-                $info['error'] = sprintf('%s - %s', __('Unable to delete asset'), __('Please try again!'));
-        }
-
-        include(INVENTORY_VIEWS_DIR . 'deleteAsset.tmpl.php');
-    }
-
     function handle() {
         require_once 'model\assets.php';
-    }
-
-    function getAsset($id=false) {
-
-        if(($asset=\model\Asset::lookup(($id) ? $id : $_REQUEST['id'])))
-            Http::response(201, $asset->to_json(), 'application/json');
-
-        $info = array('error' => sprintf(__('%s: Unknown or invalid ID.'), _N('asset', 'assets', 1)));
-
-        return self::_lookupform(null, $info);
     }
 
     function viewUser($asset_id) {

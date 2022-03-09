@@ -90,6 +90,8 @@ class InventoryPlugin extends Plugin {
                 url_get('^/(?P<id>\d+)$', 'getAsset'),
                 url_post('^/(?P<id>\d+)$', 'updateAsset'),
                 url_get('^/(?P<id>\d+)/edit$', 'editAsset'),
+                url_get('^/(?P<id>\d+)/delete$', 'delete'),
+                url_post('^/(?P<id>\d+)/delete$', 'delete'),
                 url_get('^/(?P<id>\d+)/preview$', 'preview'),
                 url_get('^/lookup/form$', 'lookup'),
                 url_post('^/lookup/form$', 'addAsset'),
@@ -100,8 +102,6 @@ class InventoryPlugin extends Plugin {
 
         $import_url = url('^/inventory.*import',
             patterns('controller\Import',
-                url_get('^/(?P<id>\d+)/delete$', 'delete'),
-                url_post('^/(?P<id>\d+)/delete$', 'delete'),
                 url_get('^/(?P<id>\d+)/user$', 'viewUser'),
                 url_get('^/(?P<id>\d+)/change-user$', 'changeUserForm'),
                 url_get('^/local$', 'search', array('local')),

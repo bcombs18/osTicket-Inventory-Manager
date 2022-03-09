@@ -71,6 +71,27 @@ class Asset {
         include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
     }
 
+    function delete($id) {
+        global $thisstaff;
+
+        if (!$thisstaff)
+            \Http::response(403, 'Login Required');
+        elseif (!$thisstaff->hasPerm(User::PERM_DELETE))
+            \Http::response(403, 'Permission Denied');
+        elseif (!($asset = \model\Asset::lookup($id)))
+            \Http::response(404, 'Unknown user');
+
+        $info = array();
+        if ($_POST) {
+            if (!$info['error'] && $asset->delete())
+                \Http::response(204, 'Asset deleted successfully');
+            elseif (!$info['error'])
+                $info['error'] = sprintf('%s - %s', __('Unable to delete asset'), __('Please try again!'));
+        }
+
+        include(INVENTORY_VIEWS_DIR . 'deleteAsset.tmpl.php');
+    }
+
     function getAsset($id=false) {
 
         if(($asset=\model\Asset::lookup(($id) ? $id : $_REQUEST['id'])))

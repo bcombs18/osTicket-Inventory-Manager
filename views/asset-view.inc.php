@@ -19,7 +19,7 @@ require(STAFFINC_DIR . 'header.inc.php');
             <?php
             if ($thisstaff->hasPerm(User::PERM_DELETE)) { ?>
                 <a id="user-delete" class="red button action-button pull-right user-action"
-                   href="#import/<?php echo $asset->getId(); ?>/delete"><i class="icon-trash"></i>
+                   href="#asset/<?php echo $asset->getId(); ?>/delete"><i class="icon-trash"></i>
                     <?php echo __('Delete Asset'); ?></a>
             <?php } ?>
         </td>
