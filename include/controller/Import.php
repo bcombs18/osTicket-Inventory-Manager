@@ -31,44 +31,6 @@ class Import {
         }
     }
 
-    function editAsset($id) {
-        global $thisstaff;
-
-        if(!$thisstaff)
-            Http::response(403, 'Login Required');
-        elseif (!$thisstaff->hasPerm(User::PERM_EDIT))
-            Http::response(403, 'Permission Denied');
-        elseif(!($asset = \model\Asset::lookup($id)))
-            Http::response(404, 'Unknown user');
-
-        $info = array(
-            'title' => sprintf(__('Update %s'), Format::htmlchars($asset->getHostname()))
-        );
-        $forms = $asset->getForms();
-
-        include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
-    }
-
-    function updateAsset($id) {
-        global $thisstaff;
-
-        if(!$thisstaff)
-            \Http::response(403, 'Login Required');
-        elseif (!$thisstaff->hasPerm(User::PERM_EDIT))
-            \Http::response(403, 'Permission Denied');
-        elseif(!($asset = \model\Asset::lookup($id)))
-            \Http::response(404, 'Unknown asset');
-
-        $errors = array();
-        $form = AssetForm::getAssetForm()->getForm($_POST);
-
-        if ($asset->updateInfo($_POST, $errors, true) && !$errors)
-            \Http::response(201, $asset->to_json(),  'application/json');
-
-        $forms = $asset->getForms();
-        include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
-    }
-
     function delete($id) {
         global $thisstaff;
 
