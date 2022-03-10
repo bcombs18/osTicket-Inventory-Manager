@@ -8,7 +8,7 @@ require_once(INCLUDE_DIR.'class.osticket.php');
 require_once(INCLUDE_DIR.'class.import.php');
 require_once('config.php');
 
-const INVENTORY_PLUGIN_VERSION = '1.0';
+const INVENTORY_PLUGIN_VERSION = 'v0.9-alpha.1';
 
 const INVENTORY_TABLE = TABLE_PREFIX . 'inventory_asset';
 
