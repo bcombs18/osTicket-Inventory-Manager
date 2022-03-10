@@ -28,8 +28,8 @@ class Asset extends AssetModel
     var $_forms;
 
     static function fromVars($vars, $create=true, $update=false) {
-        // Try and lookup by Asset ID
-        $asset = static::lookupByID($vars['asset_id']);
+        // Try and lookup by Serial Number
+        $asset = static::lookupBySerial($vars['serial']);
         $user = \User::lookupByEmail($vars['assignee']);
         if($user) {
             $user = $user->getId();
@@ -355,6 +355,10 @@ class Asset extends AssetModel
 
     static function lookupByID($asset_id) {
         return static::lookup(array('asset_id'=>$asset_id));
+    }
+
+    static function lookupBySerial($serial) {
+        return static::lookup(array('serial_number'=>$serial));
     }
 
     static function saveAssets($sql, $filename, $how='csv') {
