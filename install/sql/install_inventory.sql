@@ -62,42 +62,6 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         12289,
-         'text',
-         'Operating System',
-         'osname',
-         2,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Original Install Date',
-         'originalinstalldate',
-         3,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
          1,
          'text',
          'System Manufacturer',
@@ -134,119 +98,11 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         12289,
-         'text',
-         'Total Physical Memory',
-         'totalphysicalmemory',
-         6,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Domain',
-         'domain',
-         7,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Logon Server',
-         'logonserver',
-         8,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
          20481,
          'text',
          'Serial',
          'serial',
          9,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Warranty End Date',
-         'warrantyenddate',
-         10,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Warranty Start Date',
-         'warrantystartdate',
-         11,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'PC Age',
-         'pcage',
-         12,
          NOW(),
          NOW());
     INSERT INTO `%TABLE_PREFIX%form_field`
