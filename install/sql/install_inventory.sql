@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%inventory_asset` (
 
 DELETE FROM `%TABLE_PREFIX%form` WHERE `title`='Inventory'$
 INSERT INTO `%TABLE_PREFIX%form` (`type`, `title`, `notes`, `created`, `updated`)
-    VALUES ('G', 'Inventory', 'Inventory internal form', NOW(), NOW())$
+    VALUES ('G', 'Inventory', 'Inventory Asset Information Form: The order of the items in this form matters when using the importer. The order must match the order of the columns in your CSV file.', NOW(), NOW())$
 
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryFormFields`$
 
@@ -53,10 +53,10 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         1,
+         20481,
          'text',
-         'System Manufacturer',
-         'systemmanufacturer',
+         'Manufacturer',
+         'manufacturer',
          4,
          NOW(),
          NOW());
@@ -71,10 +71,10 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         1,
+         20481,
          'text',
-         'System Model',
-         'systemmodel',
+         'Model',
+         'model',
          5,
          NOW(),
          NOW());
@@ -107,7 +107,7 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         12289,
+         28673,
          'text',
          'Location',
          'location',
@@ -125,43 +125,11 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         12289,
+         28673,
          'text',
          'Assignee',
          'assignee',
          15,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         'text',
-         'Created',
-         'created',
-         16,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         'text',
-         'Updated',
-         'updated',
-         17,
          NOW(),
          NOW());
     END$

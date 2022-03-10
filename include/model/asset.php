@@ -39,8 +39,8 @@ class Asset extends AssetModel
         if (!$asset && $create) {
             $asset = new Asset(array(
                 'host_name' => \Format::htmldecode(\Format::sanitize($vars['hostname'])),
-                'manufacturer' => \Format::htmldecode(\Format::sanitize($vars['systemmanufacturer'])),
-                'model' => \Format::htmldecode(\Format::sanitize($vars['systemmodel'])),
+                'manufacturer' => \Format::htmldecode(\Format::sanitize($vars['manufacturer'])),
+                'model' => \Format::htmldecode(\Format::sanitize($vars['model'])),
                 'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial'])),
                 'location' => $vars['location'],
                 'assignee' => $user,
@@ -110,18 +110,6 @@ class Asset extends AssetModel
         } else {
             return "Location Not Assigned";
         }
-    }
-
-    function getDomain() {
-        return $this->domain;
-    }
-
-    function getLogonServer() {
-        return $this->logon_server;
-    }
-
-    function getAge() {
-        return $this->age;
     }
 
     function getCreateDate() {
