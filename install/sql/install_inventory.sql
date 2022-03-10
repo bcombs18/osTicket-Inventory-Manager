@@ -107,7 +107,7 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         28673,
+         12289,
          'text',
          'Location',
          'location',
@@ -125,7 +125,7 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         28673,
+         0,
          'text',
          'Assignee',
          'assignee',

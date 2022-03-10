@@ -57,6 +57,18 @@ require(STAFFINC_DIR . 'header.inc.php');
                     <th><?php echo __("Serial Number:"); ?></th>
                     <td><?php echo $asset->getSerialNumber(); ?></td>
                 </tr>
+                <?php foreach ($asset->getDynamicData() as $entry) {
+                    $presets = ['Hostname', 'Manufacturer', 'Model', 'Serial Number', 'Assignee', 'Location'];
+                    foreach ($entry->getAnswers() as $a) {
+                        if(!in_array($a->getField()->get('label'), $presets)) { ?>
+                        <tr><td style="width:30%;"><strong><?php echo Format::htmlchars($a->getField()->get('label'));
+                                    ?>:</strong></td>
+                            <td><?php echo $a->display(); ?></td>
+                        </tr>
+                    <?php }
+                    }
+                }
+                ?>
             </table>
         </td>
         <td width="50%" style="vertical-align:top">

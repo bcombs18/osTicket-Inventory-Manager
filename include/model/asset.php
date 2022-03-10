@@ -321,15 +321,6 @@ class Asset extends AssetModel
                     $this->host_name = $hostname;
                 }
 
-                if (($assignee = $entry->getField('assignee')) && $isEditable($assignee) ) {
-                    $assignee = $assignee->getClean();
-                    if ($this->assignee != $assignee) {
-                        $type = array('type' => 'edited', 'key' => 'Assignee');
-                        \Signal::send('object.edited', $this, $type);
-                    }
-                    $this->assignee = $assignee;
-                }
-
                 if (($location = $entry->getField('location')) && $isEditable($location) ) {
                     $location = $location->getClean();
                     if ($this->location != $location) {
