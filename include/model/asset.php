@@ -39,17 +39,9 @@ class Asset extends AssetModel
         if (!$asset && $create) {
             $asset = new Asset(array(
                 'host_name' => \Format::htmldecode(\Format::sanitize($vars['hostname'])),
-                'operating_system' => \Format::htmldecode(\Format::sanitize($vars['osname'])),
-                'last_build_date' => \Format::parseDateTime($vars['originalinstalldate']),
                 'manufacturer' => \Format::htmldecode(\Format::sanitize($vars['systemmanufacturer'])),
                 'model' => \Format::htmldecode(\Format::sanitize($vars['systemmodel'])),
-                'total_memory' => \Format::htmldecode(\Format::sanitize($vars['totalphysicalmemory'])),
-                'domain' => \Format::htmldecode(\Format::sanitize($vars['domain'])),
-                'logon_server' => \Format::htmldecode(\Format::sanitize($vars['logonserver'])),
                 'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial'])),
-                'warranty_end' => \Format::parseDateTime($vars['warrantyenddate']),
-                'warranty_start' => \Format::parseDateTime($vars['warrantystartdate']),
-                'age' => \Format::htmldecode(\Format::sanitize($vars['pcage'])),
                 'location' => $vars['location'],
                 'assignee' => $user,
                 'created' => new \SqlFunction('NOW'),
@@ -100,32 +92,12 @@ class Asset extends AssetModel
         return $this->model;
     }
 
-    function getOS() {
-        return $this->operating_system;
-    }
-
-    function getInstallDate() {
-        return $this->last_build_date;
-    }
-
     function getManufacturer() {
         return $this->manufacturer;
     }
 
-    function getMemory() {
-        return $this->total_memory."Mb";
-    }
-
     function getSerialNumber() {
         return $this->serial_number;
-    }
-
-    function getWarrantyStart() {
-        return $this->warranty_start;
-    }
-
-    function getWarrantyEnd() {
-        return $this->warranty_end;
     }
 
     function getAssigneeID() {
@@ -173,17 +145,9 @@ class Asset extends AssetModel
         $info = array(
             'asset_id'  => $this->getId(),
             'host_name' => $this->getHostname(),
-            'operating_system' => $this->getOS(),
-            'last_build_date' => $this->getInstallDate(),
             'manufacturer' => $this->getManufacturer(),
             'model' => $this->getModel(),
-            'total_memory' => $this->getMemory(),
-            'domain' => $this->getDomain(),
-            'logon_server' => $this->getLogonServer(),
             'serial_number' => $this->getSerialNumber(),
-            'warranty_end' => $this->getWarrantyEnd(),
-            'warranty_start' => $this->getWarrantyStart(),
-            'age' => $this->getAge(),
             'location' => $this->getLocation(),
             'assignee' => \User::lookup($this->getAssigneeID())
         );
@@ -369,51 +333,6 @@ class Asset extends AssetModel
                     $this->host_name = $hostname;
                 }
 
-                if (($osname = $entry->getField('osname')) && $isEditable($osname) ) {
-                    $osname = $osname->getClean();
-                    if ($this->operating_system != $osname) {
-                        $type = array('type' => 'edited', 'key' => 'Operating System');
-                        \Signal::send('object.edited', $this, $type);
-                    }
-                    $this->operating_system = $osname;
-                }
-
-                if (($last_build_date = $entry->getField('originalinstalldate')) && $isEditable($last_build_date) ) {
-                    $last_build_date = \Format::parseDateTime($last_build_date->getClean());
-                    if ($this->last_build_date != $last_build_date) {
-                        $type = array('type' => 'edited', 'key' => 'Last Build Date');
-                        \Signal::send('object.edited', $this, $type);
-                    }
-                    $this->last_build_date = $last_build_date;
-                }
-
-                if (($total_memory = $entry->getField('totalphysicalmemory')) && $isEditable($total_memory) ) {
-                    $total_memory = $total_memory->getClean();
-                    if ($this->total_memory != $total_memory) {
-                        $type = array('type' => 'edited', 'key' => 'Serial Number');
-                        \Signal::send('object.edited', $this, $type);
-                    }
-                    $this->total_memory = $total_memory;
-                }
-
-                if (($domain = $entry->getField('domain')) && $isEditable($domain) ) {
-                    $domain = $domain->getClean();
-                    if ($this->domain != $domain) {
-                        $type = array('type' => 'edited', 'key' => 'Domain');
-                        \Signal::send('object.edited', $this, $type);
-                    }
-                    $this->domain = $domain;
-                }
-
-                if (($logon_server = $entry->getField('logonserver')) && $isEditable($logon_server) ) {
-                    $logon_server = $logon_server->getClean();
-                    if ($this->logon_server != $logon_server) {
-                        $type = array('type' => 'edited', 'key' => 'Logon Server');
-                        \Signal::send('object.edited', $this, $type);
-                    }
-                    $this->logon_server = $logon_server;
-                }
-
                 if (($assignee = $entry->getField('assignee')) && $isEditable($assignee) ) {
                     $assignee = $assignee->getClean();
                     if ($this->assignee != $assignee) {
@@ -477,14 +396,7 @@ class Asset extends AssetModel
                 'host_name'  =>          __('Hostname'),
                 'manufacturer' =>   __('Manufacturer'),
                 'model' =>          __('Model'),
-                'operating_system' => __('Operating System'),
-                'last_build_date' => __('Original Build Date'),
                 'serial_number' => __("Serial Number"),
-                'warranty_start' => __("Warranty Start"),
-                'warranty_end' => __("Warranty End"),
-                'total_memory' => __("Total Memory"),
-                'domain' => __("Domain"),
-                'logon_server' => __("Logon Server"),
                 'assignee' => __("Assigned To"),
                 'location' => __("Location")
             ),
