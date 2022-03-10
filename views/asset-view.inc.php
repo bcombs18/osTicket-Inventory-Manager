@@ -54,36 +54,8 @@ require(STAFFINC_DIR . 'header.inc.php');
                     <td><?php echo $asset->getModel(); ?></td>
                 </tr>
                 <tr>
-                    <th><?php echo __("Operating System:"); ?></th>
-                    <td><?php echo $asset->getOS(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Last Build Date:"); ?></th>
-                    <td><?php echo $asset->getInstallDate(); ?></td>
-                </tr>
-                <tr>
                     <th><?php echo __("Serial Number:"); ?></th>
                     <td><?php echo $asset->getSerialNumber(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Warranty Start:"); ?></th>
-                    <td><?php echo $asset->getWarrantyStart(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Warranty End:"); ?></th>
-                    <td><?php echo $asset->getWarrantyEnd(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Total Memory:"); ?></th>
-                    <td><?php echo $asset->getMemory(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Domain:"); ?></th>
-                    <td><?php echo $asset->getDomain(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Logon Server:"); ?></th>
-                    <td><?php echo $asset->getLogonServer(); ?></td>
                 </tr>
             </table>
         </td>
