@@ -54,37 +54,21 @@ require(STAFFINC_DIR . 'header.inc.php');
                     <td><?php echo $asset->getModel(); ?></td>
                 </tr>
                 <tr>
-                    <th><?php echo __("Operating System:"); ?></th>
-                    <td><?php echo $asset->getOS(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Last Build Date:"); ?></th>
-                    <td><?php echo $asset->getInstallDate(); ?></td>
-                </tr>
-                <tr>
                     <th><?php echo __("Serial Number:"); ?></th>
                     <td><?php echo $asset->getSerialNumber(); ?></td>
                 </tr>
-                <tr>
-                    <th><?php echo __("Warranty Start:"); ?></th>
-                    <td><?php echo $asset->getWarrantyStart(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Warranty End:"); ?></th>
-                    <td><?php echo $asset->getWarrantyEnd(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Total Memory:"); ?></th>
-                    <td><?php echo $asset->getMemory(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Domain:"); ?></th>
-                    <td><?php echo $asset->getDomain(); ?></td>
-                </tr>
-                <tr>
-                    <th><?php echo __("Logon Server:"); ?></th>
-                    <td><?php echo $asset->getLogonServer(); ?></td>
-                </tr>
+                <?php foreach ($asset->getDynamicData() as $entry) {
+                    $presets = ['Hostname', 'Manufacturer', 'Model', 'Serial Number', 'Assignee', 'Location'];
+                    foreach ($entry->getAnswers() as $a) {
+                        if(!in_array($a->getField()->get('label'), $presets)) { ?>
+                        <tr><td style="width:30%;"><strong><?php echo Format::htmlchars($a->getField()->get('label'));
+                                    ?>:</strong></td>
+                            <td><?php echo $a->display(); ?></td>
+                        </tr>
+                    <?php }
+                    }
+                }
+                ?>
             </table>
         </td>
         <td width="50%" style="vertical-align:top">

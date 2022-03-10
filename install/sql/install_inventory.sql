@@ -3,18 +3,9 @@ SET SQL_SAFE_UPDATES=0$
 CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%inventory_asset` (
                                                                `asset_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                                                                `host_name` varchar(255) DEFAULT NULL,
-                                                               `operating_system` varchar(255) DEFAULT NULL,
-                                                               `last_build_date` date DEFAULT NULL,
                                                                `manufacturer` varchar(255) NOT NULL,
                                                                `model` varchar(255) NOT NULL,
-                                                               `total_memory` int DEFAULT 0,
-                                                               `domain` varchar(45) DEFAULT NULL,
-                                                               `logon_server` varchar(45) DEFAULT NULL,
                                                                `serial_number` varchar (255) NOT NULL,
-                                                               `warranty_end` date DEFAULT NULL,
-                                                               `warranty_start` date DEFAULT NULL,
-                                                               `age` int DEFAULT 0,
-                                                               `image_id` int DEFAULT NULL,
                                                                `location` varchar(255) DEFAULT NULL,
                                                                `assignee` int DEFAULT NULL,
                                                                `created` date NOT NULL,
@@ -24,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%inventory_asset` (
 
 DELETE FROM `%TABLE_PREFIX%form` WHERE `title`='Inventory'$
 INSERT INTO `%TABLE_PREFIX%form` (`type`, `title`, `notes`, `created`, `updated`)
-    VALUES ('G', 'Inventory', 'Inventory internal form', NOW(), NOW())$
+    VALUES ('G', 'Inventory', 'Inventory Asset Information Form: The order of the items in this form matters when using the importer. The order must match the order of the columns in your CSV file.', NOW(), NOW())$
 
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryFormFields`$
 
@@ -62,46 +53,10 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         12289,
+         20481,
          'text',
-         'Operating System',
-         'osname',
-         2,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Original Install Date',
-         'originalinstalldate',
-         3,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         1,
-         'text',
-         'System Manufacturer',
-         'systemmanufacturer',
+         'Manufacturer',
+         'manufacturer',
          4,
          NOW(),
          NOW());
@@ -116,65 +71,11 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         1,
+         20481,
          'text',
-         'System Model',
-         'systemmodel',
+         'Model',
+         'model',
          5,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Total Physical Memory',
-         'totalphysicalmemory',
-         6,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Domain',
-         'domain',
-         7,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Logon Server',
-         'logonserver',
-         8,
          NOW(),
          NOW());
     INSERT INTO `%TABLE_PREFIX%form_field`
@@ -208,60 +109,6 @@ BEGIN
         (@form_id,
          12289,
          'text',
-         'Warranty End Date',
-         'warrantyenddate',
-         10,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Warranty Start Date',
-         'warrantystartdate',
-         11,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'PC Age',
-         'pcage',
-         12,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
          'Location',
          'location',
          13,
@@ -278,43 +125,11 @@ BEGIN
      `updated`)
     VALUES
         (@form_id,
-         12289,
+         0,
          'text',
          'Assignee',
          'assignee',
          15,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         'text',
-         'Created',
-         'created',
-         16,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         'text',
-         'Updated',
-         'updated',
-         17,
          NOW(),
          NOW());
     END$
