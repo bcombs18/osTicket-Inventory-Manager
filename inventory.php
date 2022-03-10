@@ -129,12 +129,27 @@ class InventoryPlugin extends Plugin {
             echo "First run configuration error. " . "Unable to create database tables!";
             return false;
         }
+
+        if(!$this->executeFileCopy()) {
+            echo "First run configuration error. " . "Unable to copy necessary files!";
+            return false;
+        }
+
         return true;
     }
 
     function createDBTables() {
         $installer = new \util\InventoryInstaller();
         return  $installer->install();
+    }
+
+    function executeFileCopy(){
+        if(!copy(INVENTORY_PLUGIN_ROOT."dispatcher.php", OST_ROOT."scp/dispatcher.php")) {
+            return false;
+        }
+        if(!copy(INVENTORY_ASSETS_DIR."js/scp.js", OST_ROOT."scp/js/scp.js")) {
+            return false;
+        }
     }
 
     function pre_uninstall(&$errors) {
