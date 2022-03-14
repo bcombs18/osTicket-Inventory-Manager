@@ -132,7 +132,19 @@ require(STAFFINC_DIR . 'header.inc.php');
 </table>
 <br>
 <div class="clear"></div>
-
+<ul class="clean tabs" id="user-view-tabs">
+    <li class="active"><a href="#notes"><i
+                    class="icon-pushpin"></i>&nbsp;<?php echo __('Notes'); ?></a></li>
+</ul>
+<div id="user-view-tabs_container">
+    <div class="tab_content" id="notes">
+        <?php
+        $notes = \model\AssetNote::forAsset($asset);
+        $create_note_url = $asset->getId().'/note';
+        include STAFFINC_DIR . 'templates/notes.tmpl.php';
+        ?>
+    </div>
+</div>
 <div style="display:none;" class="dialog" id="confirm-action">
     <h3><?php echo __('Please Confirm');?></h3>
     <a class="close" href=""><i class="icon-remove-circle"></i></a>
