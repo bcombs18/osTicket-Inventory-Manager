@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%inventory_asset` (
                                                                `serial_number` varchar (255) NOT NULL,
                                                                `location` varchar(255) DEFAULT NULL,
                                                                `assignee` int DEFAULT NULL,
+                                                               `retired` boolean,
                                                                `created` date NOT NULL,
                                                                `updated` date NOT NULL,
                                                                PRIMARY KEY (`asset_id`)
