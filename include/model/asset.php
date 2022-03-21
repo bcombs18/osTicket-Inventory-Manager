@@ -44,7 +44,7 @@ class Asset extends AssetModel
                 'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial'])),
                 'location' => $vars['location'],
                 'assignee' => $user,
-                'retired' => false,
+                'retired' => 'false',
                 'created' => new \SqlFunction('NOW'),
                 'updated' => new \SqlFunction('NOW')
             ));
