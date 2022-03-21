@@ -643,9 +643,9 @@ $.dialog = function (url, codes, cb, options, useDispatcher=false) {
 
     let urlDispatcher = null;
     if(useDispatcher === true) {
-        urlDispatcher = '/osTicket/scp/dispatcher.php/inventory/';
+        urlDispatcher = root_url + 'scp/dispatcher.php/inventory/';
     } else {
-        urlDispatcher = '/osTicket/scp/ajax.php/';
+        urlDispatcher = root_url + 'scp/ajax.php/';
     }
 
     var $popup = $('.dialog#popup');
@@ -1221,7 +1221,7 @@ $(document).on('click.note', '.quicknote .action.cancel-edit', function() {
     var note = $(this).closest('.quicknote'),
         T = note.find('textarea'),
         body = $('<div class="body">');
-    body.load('ajax.php/note/' + note.data('id'), function() {
+    body.load(root_url + 'scp/ajax.php/note/' + note.data('id'), function() {
       try { T.redactor('stop'); } catch (e) {}
       T.replaceWith(body);
       note.find('.action.save-note').hide();
@@ -1234,7 +1234,7 @@ $(document).on('click.note', '.quicknote .action.cancel-edit', function() {
 $(document).on('click.note', '.quicknote .action.save-note', function() {
     var note = $(this).closest('.quicknote'),
         T = note.find('textarea');
-    $.post('ajax.php/note/' + note.data('id'),
+    $.post(root_url + 'scp/ajax.php/note/' + note.data('id'),
       { note: T.redactor('source.getCode') },
       function(html) {
         var body = $('<div class="body">').html(html);
@@ -1254,7 +1254,7 @@ $(document).on('click.note', '.quicknote .delete', function() {
     return;
   var that = $(this),
       id = $(this).closest('.quicknote').data('id');
-  $.ajax('ajax.php/note/' + id, {
+  $.ajax(root_url + 'scp/ajax.php/note/' + id, {
     type: 'delete',
     success: function() {
       that.closest('.quicknote').animate(
@@ -1270,7 +1270,7 @@ $(document).on('click', '#new-note', function() {
     T = $('<textarea>'),
     button = $('<input type="button">').val(__('Create'));
     button.click(function() {
-      $.post('ajax.php/' + note.data('url'),
+      $.post(note.data('url'),
         { note: T.redactor('source.getCode'), no_options: note.hasClass('no-options') },
         function(response) {
           T.redactor('stop');
