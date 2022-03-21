@@ -91,6 +91,48 @@ class Asset {
         include(INVENTORY_VIEWS_DIR . 'deleteAsset.tmpl.php');
     }
 
+    function retire($id) {
+        global $thisstaff;
+
+        if (!$thisstaff)
+            \Http::response(403, 'Login Required');
+        elseif (!$thisstaff->hasPerm(User::PERM_DELETE))
+            \Http::response(403, 'Permission Denied');
+        elseif (!($asset = \model\Asset::lookup($id)))
+            \Http::response(404, 'Unknown user');
+
+        $info = array();
+        if ($_POST) {
+            if (!$info['error'] && $asset->retire())
+                \Http::response(204, 'Asset retired successfully');
+            elseif (!$info['error'])
+                $info['error'] = sprintf('%s - %s', __('Unable to retire asset'), __('Please try again!'));
+        }
+
+        include(INVENTORY_VIEWS_DIR . 'retireAsset.tmpl.php');
+    }
+
+    function activate($id) {
+        global $thisstaff;
+
+        if (!$thisstaff)
+            \Http::response(403, 'Login Required');
+        elseif (!$thisstaff->hasPerm(User::PERM_DELETE))
+            \Http::response(403, 'Permission Denied');
+        elseif (!($asset = \model\Asset::lookup($id)))
+            \Http::response(404, 'Unknown user');
+
+        $info = array();
+        if ($_POST) {
+            if (!$info['error'] && $asset->activate())
+                \Http::response(204, 'Asset activated successfully');
+            elseif (!$info['error'])
+                $info['error'] = sprintf('%s - %s', __('Unable to activate asset'), __('Please try again!'));
+        }
+
+        include(INVENTORY_VIEWS_DIR . 'activateAsset.tmpl.php');
+    }
+
     function getAsset($id=false) {
 
         if(($asset=\model\Asset::lookup(($id) ? $id : $_REQUEST['id'])))
