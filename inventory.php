@@ -148,9 +148,6 @@ class InventoryPlugin extends Plugin {
         if(!copy(INVENTORY_PLUGIN_ROOT."dispatcher.php", OST_ROOT."scp/dispatcher.php")) {
             return false;
         }
-        if(!copy(INVENTORY_ASSETS_DIR."js/scp.js", OST_ROOT."scp/js/scp.js")) {
-            return false;
-        }
     }
 
     function pre_uninstall(&$errors) {
