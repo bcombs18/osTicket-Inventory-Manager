@@ -58,7 +58,7 @@ require(STAFFINC_DIR . 'header.inc.php');
                     <td><?php echo $asset->getSerialNumber(); ?></td>
                 </tr>
                 <?php foreach ($asset->getDynamicData() as $entry) {
-                    $presets = ['Hostname', 'Manufacturer', 'Model', 'Serial Number', 'Assignee', 'Location'];
+                    $presets = ['Hostname', 'Manufacturer', 'Model', 'Serial', 'Assignee', 'Location'];
                     foreach ($entry->getAnswers() as $a) {
                         if(!in_array($a->getField()->get('label'), $presets)) { ?>
                         <tr><td style="width:30%;"><strong><?php echo Format::htmlchars($a->getField()->get('label'));
@@ -219,5 +219,5 @@ require(STAFFINC_DIR . 'header.inc.php');
 </script>
 
 <?php
-include_once(STAFFINC_DIR.'footer.inc.php');
+include_once(INVENTORY_VIEWS_DIR.'footer.inc.php');
 ?>
