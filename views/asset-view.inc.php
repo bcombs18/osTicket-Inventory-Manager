@@ -58,7 +58,7 @@ require(STAFFINC_DIR . 'header.inc.php');
                     <td><?php echo $asset->getSerialNumber(); ?></td>
                 </tr>
                 <?php foreach ($asset->getDynamicData() as $entry) {
-                    $presets = ['Hostname', 'Manufacturer', 'Model', 'Serial Number', 'Assignee', 'Location'];
+                    $presets = ['Hostname', 'Manufacturer', 'Model', 'Serial', 'Assignee', 'Location'];
                     foreach ($entry->getAnswers() as $a) {
                         if(!in_array($a->getField()->get('label'), $presets)) { ?>
                         <tr><td style="width:30%;"><strong><?php echo Format::htmlchars($a->getField()->get('label'));
@@ -132,7 +132,19 @@ require(STAFFINC_DIR . 'header.inc.php');
 </table>
 <br>
 <div class="clear"></div>
-
+<ul class="clean tabs" id="user-view-tabs">
+    <li class="active"><a href="#notes"><i
+                    class="icon-pushpin"></i>&nbsp;<?php echo __('Notes'); ?></a></li>
+</ul>
+<div id="user-view-tabs_container">
+    <div class="tab_content" id="notes">
+        <?php
+        $notes = \model\AssetNote::forAsset($asset);
+        $create_note_url = $asset->getId().'/note';
+        include STAFFINC_DIR . 'templates/notes.tmpl.php';
+        ?>
+    </div>
+</div>
 <div style="display:none;" class="dialog" id="confirm-action">
     <h3><?php echo __('Please Confirm');?></h3>
     <a class="close" href=""><i class="icon-remove-circle"></i></a>
@@ -207,5 +219,5 @@ require(STAFFINC_DIR . 'header.inc.php');
 </script>
 
 <?php
-include_once(STAFFINC_DIR.'footer.inc.php');
+include_once(INVENTORY_VIEWS_DIR.'footer.inc.php');
 ?>

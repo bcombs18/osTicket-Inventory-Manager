@@ -205,4 +205,14 @@ class Asset {
 
     }
 
+    function createNote($id) {
+        if (!($asset = \model\Asset::lookup($id)))
+            Http::response(404, 'Unknown asset');
+
+        require_once INCLUDE_DIR . 'class.ajax.php';
+        require_once INCLUDE_DIR . 'ajax.note.php';
+        $ajax = new \NoteAjaxAPI();
+        return $ajax->createNote('G'.$id);
+    }
+
 }
