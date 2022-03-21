@@ -75,25 +75,6 @@ if ($_POST) {
                 );
                 $count = 0;
                 switch (strtolower($_POST['a'])) {
-                    case 'lock':
-                        foreach ($assets as $A)
-                            if (($acct = $A->getAccount()) && $acct->lock()) {
-                                $type = array('type' => 'edited', 'key' => 'locked-flag');
-                                Signal::send('object.edited', $acct, $type);
-                                $count++;
-                            }
-
-                        break;
-
-                    case 'unlock':
-                        foreach ($assets as $A)
-                            if (($acct = $A->getAccount()) && $acct->unlock()) {
-                                $type = array('type' => 'edited', 'key' => 'unlocked-flag');
-                                Signal::send('object.edited', $acct, $type);
-                                $count++;
-                            }
-                        break;
-
                     case 'delete':
                         foreach ($assets as $A) {
                             if ($A->delete())
@@ -112,41 +93,6 @@ if ($_POST) {
                         foreach ($assets as $A) {
                             if ($A->activate())
                                 $count++;
-                        }
-                        break;
-
-                    case 'reset':
-                        foreach ($assets as $A)
-                            if (($acct = $A->getAccount()) && $acct->sendResetEmail()) {
-                                $type = array('type' => 'edited', 'key' => 'pwreset-sent');
-                                Signal::send('object.edited', $acct, $type);
-                                $count++;
-                            }
-                        break;
-
-                    case 'register':
-                        foreach ($assets as $A) {
-                            $type = array('type' => 'edited', 'key' => 'user-registered');
-                            Signal::send('object.edited', $A, $type);
-                            if (($acct = $A->getAccount()) && $acct->sendConfirmEmail())
-                                $count++;
-                            elseif ($acct = UserAccount::register($A,
-                                array('sendemail' => true), $errors
-                            )) {
-                                $count++;
-                            }
-                        }
-                        break;
-
-                    case 'setorg':
-                        if (!($org = Organization::lookup($_POST['org_id'])))
-                            $errors['err'] = sprintf('%s - %s', __('Unknown action'), __('Get technical help!'));
-                        foreach ($assets as $A) {
-                            if ($A->setOrganization($org)) {
-                                $type = array('type' => 'edited', 'key' => 'user-org');
-                                Signal::send('object.edited', $A, $type);
-                                $count++;
-                            }
                         }
                         break;
 
