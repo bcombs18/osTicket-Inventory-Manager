@@ -23,6 +23,11 @@ if ($_REQUEST['query']) {
     $qs += array('query' => $_REQUEST['query']);
 }
 
+$retiredFilter = Q::any(array(
+    'retired__exact' => 'true'
+));
+$assets->filter($retiredFilter);
+
 $sortOptions = array('host_name' => 'host_name',
     'model' => 'model',
     'assignee' => 'assignee',
@@ -58,7 +63,7 @@ $qstr.='&amp;order='.($order=='-' ? 'ASC' : 'DESC');
 //echo $query;
 $_SESSION[':Q:assets'] = $assets;
 
-$assets->values('asset_id', 'host_name', 'model', 'assignee', 'location', 'retired');
+$assets->values('asset_id', 'host_name', 'model', 'assignee', 'location');
 $assets->order_by($order . $order_column);
 ?>
 
@@ -86,18 +91,6 @@ $assets->order_by($order . $order_column);
                 <h2><?php echo __('Retired Assets'); ?></h2>
             </div>
             <div class="pull-right">
-                <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
-                <a class="green button action-button popup-dialog"
-                   href="#asset/add/">
-                    <i class="icon-plus-sign"></i>
-                    <?php echo __('New Asset'); ?>
-                </a>
-                <a class="action-button popup-dialog"
-                   href="#import/bulk/">
-                    <i class="icon-upload"></i>
-                    <?php echo __('Import'); ?>
-                </a>
-                <?php } ?>
                 <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT.'dashboard/active'; ?>">
                     <i class="icon-eye-open icon-fixed-width"></i>
                     <?php echo __('View Active'); ?>
@@ -161,9 +154,6 @@ $assets->order_by($order . $order_column);
         $sel=false;
         if($ids && in_array($A['asset_id'], $ids))
             $sel=true;
-
-        if($A['retired'] != 'true')
-            continue;
         ?>
         <tr id="<?php echo $A['asset_id']; ?>">
             <td nowrap align="center">

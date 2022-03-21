@@ -23,6 +23,11 @@ if ($_REQUEST['query']) {
     $qs += array('query' => $_REQUEST['query']);
 }
 
+$retiredFilter = Q::any(array(
+        'retired__exact' => 'false'
+));
+$assets->filter($retiredFilter);
+
 $sortOptions = array('host_name' => 'host_name',
     'model' => 'model',
     'assignee' => 'assignee',
@@ -58,7 +63,7 @@ $qstr.='&amp;order='.($order=='-' ? 'ASC' : 'DESC');
 //echo $query;
 $_SESSION[':Q:assets'] = $assets;
 
-$assets->values('asset_id', 'host_name', 'model', 'assignee', 'location', 'retired');
+$assets->values('asset_id', 'host_name', 'model', 'assignee', 'location');
 $assets->order_by($order . $order_column);
 ?>
 
@@ -162,8 +167,8 @@ $assets->order_by($order . $order_column);
         if($ids && in_array($A['asset_id'], $ids))
             $sel=true;
 
-        if($A['retired'] != 'false')
-            continue;
+//        if($A['retired'] != 'false')
+//            continue;
         ?>
         <tr id="<?php echo $A['asset_id']; ?>">
             <td nowrap align="center">
