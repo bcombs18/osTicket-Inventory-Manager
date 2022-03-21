@@ -101,6 +101,20 @@ if ($_POST) {
                         }
                         break;
 
+                    case 'retire':
+                        foreach ($assets as $A) {
+                            if ($A->retire())
+                                $count++;
+                        }
+                        break;
+
+                    case 'activate':
+                        foreach ($assets as $A) {
+                            if ($A->activate())
+                                $count++;
+                        }
+                        break;
+
                     case 'reset':
                         foreach ($assets as $A)
                             if (($acct = $A->getAccount()) && $acct->sendResetEmail()) {

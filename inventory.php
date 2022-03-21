@@ -77,9 +77,10 @@ class InventoryPlugin extends Plugin {
             )
         );
 
-        $dashboard_url = url ( '^/inventory.*dashboard/',
+        $dashboard_url = url ( '^/inventory.*dashboard',
             patterns ( 'controller\Dashboard',
-                url_get ( '.*', 'viewAction' )
+                url_get('^/retired', 'viewRetired'),
+                url_get ( '^/active', 'viewAction' )
             )
         );
 
@@ -116,7 +117,7 @@ class InventoryPlugin extends Plugin {
 
     function createStaffMenu() {
         $app = new Application();
-        $app->registerStaffApp('Inventory', INVENTORY_WEB_ROOT.'dashboard/');
+        $app->registerStaffApp('Inventory', INVENTORY_WEB_ROOT.'dashboard/active/');
     }
 
     function firstRun() {

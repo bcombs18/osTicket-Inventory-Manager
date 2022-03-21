@@ -83,7 +83,7 @@ $assets->order_by($order . $order_column);
     <div class="sticky bar opaque">
         <div class="content">
             <div class="pull-left flush-left">
-                <h2><?php echo __('Active Assets'); ?></h2>
+                <h2><?php echo __('Retired Assets'); ?></h2>
             </div>
             <div class="pull-right">
                 <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
@@ -98,9 +98,9 @@ $assets->order_by($order . $order_column);
                     <?php echo __('Import'); ?>
                 </a>
                 <?php } ?>
-                <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT.'dashboard/retired'; ?>">
+                <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT.'dashboard/active'; ?>">
                     <i class="icon-eye-open icon-fixed-width"></i>
-                    <?php echo __('View Retired'); ?>
+                    <?php echo __('View Active'); ?>
                 </a>
                 <span class="action-button" data-dropdown="#action-dropdown-more"
                       style="/*DELME*/ vertical-align:top; margin-bottom:0">
@@ -116,10 +116,10 @@ $assets->order_by($order . $order_column);
                             <?php echo __('Delete'); ?></a></li>
                         <?php } ?>
                         <li>
-                            <a class="assets-action" href="#retire">
-                                <i class="icon-archive icon-fixed-width"></i>
-                                <?php echo __('Retire'); ?>
-                            </a>
+                           <a class="assets-action" href="#activate">
+                               <i class="icon-archive icon-fixed-width"></i>
+                               <?php echo __('Activate'); ?>
+                           </a>
                         </li>
                     </ul>
                 </div>
@@ -162,7 +162,7 @@ $assets->order_by($order . $order_column);
         if($ids && in_array($A['asset_id'], $ids))
             $sel=true;
 
-        if($A['retired'] != 'false')
+        if($A['retired'] != 'true')
             continue;
         ?>
         <tr id="<?php echo $A['asset_id']; ?>">
