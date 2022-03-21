@@ -13,7 +13,15 @@ require(STAFFINC_DIR . 'header.inc.php');
     <tr>
         <td width="50%" class="has_bottom_border">
             <h2><a href=<?php echo INVENTORY_WEB_ROOT."asset/handle?id=".$asset->getId(); ?>
-                   title="Reload"><i class="icon-refresh"></i> <?php echo Format::htmlchars($asset->getHostname()); ?></a></h2>
+                   title="Reload"><i class="icon-refresh"></i> <?php echo Format::htmlchars($asset->getHostname()); ?></a>
+                <?php
+                    if($asset->isRetired()) {
+                        echo '<span style="color:red;">(Retired)</span>';
+                    } else {
+                        echo '<span style="color:limegreen;">(Active)</span>';
+                    }
+                ?>
+            </h2>
         </td>
         <td width="50%" class="right_align has_bottom_border">
             <?php
@@ -21,6 +29,20 @@ require(STAFFINC_DIR . 'header.inc.php');
                 <a id="user-delete" class="red button action-button pull-right user-action"
                    href="#asset/<?php echo $asset->getId(); ?>/delete"><i class="icon-trash"></i>
                     <?php echo __('Delete Asset'); ?></a>
+            <?php } ?>
+            <?php
+            if($asset->isRetired()) { ?>
+                <a id="user-delete" class="red button action-button pull-right user-action"
+                   href="#asset/<?php echo $asset->getId(); ?>/activate">
+                    <i class="icon-archive"></i>
+                    <?php echo __('Activate Asset'); ?>
+                </a>
+            <?php } else { ?>
+                <a id="user-delete" class="action-button pull-right user-action"
+                   href="#asset/<?php echo $asset->getId(); ?>/retire">
+                    <i class="icon-archive"></i>
+                    <?php echo __('Retire Asset'); ?>
+                </a>
             <?php } ?>
         </td>
     </tr>
