@@ -121,6 +121,10 @@ class Asset extends AssetModel
         return $this->updated;
     }
 
+    function isRetired() {
+        return $this->retired;
+    }
+
 
     function addForm($form, $sort=1, $data=null) {
         $entry = $form->instanciate($sort, $data);
