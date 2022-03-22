@@ -72,6 +72,7 @@ $assets->order_by($order . $order_column);
         <form action=<?php echo INVENTORY_WEB_ROOT."asset/handle"; ?> method="get">
             <?php csrf_token(); ?>
             <input type="hidden" name="a" value="search">
+            <input type="hidden" name="r" value="false">
             <div class="attached input">
                 <input type="text" class="basic-search" id="basic-asset-search" name="query"
                          size="30" value="<?php echo Format::htmlchars($_REQUEST['query']); ?>"
@@ -166,9 +167,6 @@ $assets->order_by($order . $order_column);
         $sel=false;
         if($ids && in_array($A['asset_id'], $ids))
             $sel=true;
-
-//        if($A['retired'] != 'false')
-//            continue;
         ?>
         <tr id="<?php echo $A['asset_id']; ?>">
             <td nowrap align="center">

@@ -72,6 +72,7 @@ $assets->order_by($order . $order_column);
         <form action=<?php echo INVENTORY_WEB_ROOT."asset/handle"; ?> method="get">
             <?php csrf_token(); ?>
             <input type="hidden" name="a" value="search">
+            <input type="hidden" name="r" value="true">
             <div class="attached input">
                 <input type="text" class="basic-search" id="basic-asset-search" name="query"
                          size="30" value="<?php echo Format::htmlchars($_REQUEST['query']); ?>"
