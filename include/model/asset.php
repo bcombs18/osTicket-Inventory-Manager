@@ -44,6 +44,7 @@ class Asset extends AssetModel
                 'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial'])),
                 'location' => $vars['location'],
                 'assignee' => $user,
+                'retired' => 'false',
                 'created' => new \SqlFunction('NOW'),
                 'updated' => new \SqlFunction('NOW')
             ));
@@ -120,6 +121,22 @@ class Asset extends AssetModel
         return $this->updated;
     }
 
+    function activate() {
+        $this->retired = 'false';
+        return $this->save(true);
+    }
+
+    function retire() {
+        $this->retired = 'true';
+        return $this->save(true);
+    }
+
+    function isRetired() {
+        if($this->retired == 'false') {
+            return false;
+        }
+        return true;
+    }
 
     function addForm($form, $sort=1, $data=null) {
         $entry = $form->instanciate($sort, $data);

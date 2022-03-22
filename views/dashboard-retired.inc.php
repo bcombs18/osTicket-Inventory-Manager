@@ -24,7 +24,7 @@ if ($_REQUEST['query']) {
 }
 
 $retiredFilter = Q::any(array(
-        'retired__exact' => 'false'
+    'retired__exact' => 'true'
 ));
 $assets->filter($retiredFilter);
 
@@ -72,7 +72,7 @@ $assets->order_by($order . $order_column);
         <form action=<?php echo INVENTORY_WEB_ROOT."asset/handle"; ?> method="get">
             <?php csrf_token(); ?>
             <input type="hidden" name="a" value="search">
-            <input type="hidden" name="r" value="false">
+            <input type="hidden" name="r" value="true">
             <div class="attached input">
                 <input type="text" class="basic-search" id="basic-asset-search" name="query"
                          size="30" value="<?php echo Format::htmlchars($_REQUEST['query']); ?>"
@@ -89,24 +89,12 @@ $assets->order_by($order . $order_column);
     <div class="sticky bar opaque">
         <div class="content">
             <div class="pull-left flush-left">
-                <h2><?php echo __('Active Assets'); ?></h2>
+                <h2><?php echo __('Retired Assets'); ?></h2>
             </div>
             <div class="pull-right">
-                <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
-                <a class="green button action-button popup-dialog"
-                   href="#asset/add/">
-                    <i class="icon-plus-sign"></i>
-                    <?php echo __('New Asset'); ?>
-                </a>
-                <a class="action-button popup-dialog"
-                   href="#import/bulk/">
-                    <i class="icon-upload"></i>
-                    <?php echo __('Import'); ?>
-                </a>
-                <?php } ?>
-                <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT.'dashboard/retired'; ?>">
+                <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT.'dashboard/active'; ?>">
                     <i class="icon-eye-open icon-fixed-width"></i>
-                    <?php echo __('View Retired'); ?>
+                    <?php echo __('View Active'); ?>
                 </a>
                 <span class="action-button" data-dropdown="#action-dropdown-more"
                       style="/*DELME*/ vertical-align:top; margin-bottom:0">
@@ -122,10 +110,10 @@ $assets->order_by($order . $order_column);
                             <?php echo __('Delete'); ?></a></li>
                         <?php } ?>
                         <li>
-                            <a class="assets-action" href="#retire">
-                                <i class="icon-archive icon-fixed-width"></i>
-                                <?php echo __('Retire'); ?>
-                            </a>
+                           <a class="assets-action" href="#activate">
+                               <i class="icon-archive icon-fixed-width"></i>
+                               <?php echo __('Activate'); ?>
+                           </a>
                         </li>
                     </ul>
                 </div>

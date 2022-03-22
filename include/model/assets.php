@@ -1,17 +1,4 @@
 <?php
-/*********************************************************************
-users.php
-
-Peter Rotich <peter@osticket.com>
-Jared Hancock <jared@osticket.com>
-Copyright (c)  2006-2014 osTicket
-http://www.osticket.com
-
-Released under the GNU General Public License WITHOUT ANY WARRANTY.
-See LICENSE.TXT for details.
-
-vim: expandtab sw=4 ts=4 sts=4:
- **********************************************************************/
 global $ost;
 global $cfg;
 require('staff.inc.php');
@@ -75,25 +62,6 @@ if ($_POST) {
                 );
                 $count = 0;
                 switch (strtolower($_POST['a'])) {
-                    case 'lock':
-                        foreach ($assets as $A)
-                            if (($acct = $A->getAccount()) && $acct->lock()) {
-                                $type = array('type' => 'edited', 'key' => 'locked-flag');
-                                Signal::send('object.edited', $acct, $type);
-                                $count++;
-                            }
-
-                        break;
-
-                    case 'unlock':
-                        foreach ($assets as $A)
-                            if (($acct = $A->getAccount()) && $acct->unlock()) {
-                                $type = array('type' => 'edited', 'key' => 'unlocked-flag');
-                                Signal::send('object.edited', $acct, $type);
-                                $count++;
-                            }
-                        break;
-
                     case 'delete':
                         foreach ($assets as $A) {
                             if ($A->delete())
@@ -101,38 +69,17 @@ if ($_POST) {
                         }
                         break;
 
-                    case 'reset':
-                        foreach ($assets as $A)
-                            if (($acct = $A->getAccount()) && $acct->sendResetEmail()) {
-                                $type = array('type' => 'edited', 'key' => 'pwreset-sent');
-                                Signal::send('object.edited', $acct, $type);
-                                $count++;
-                            }
-                        break;
-
-                    case 'register':
+                    case 'retire':
                         foreach ($assets as $A) {
-                            $type = array('type' => 'edited', 'key' => 'user-registered');
-                            Signal::send('object.edited', $A, $type);
-                            if (($acct = $A->getAccount()) && $acct->sendConfirmEmail())
+                            if ($A->retire())
                                 $count++;
-                            elseif ($acct = UserAccount::register($A,
-                                array('sendemail' => true), $errors
-                            )) {
-                                $count++;
-                            }
                         }
                         break;
 
-                    case 'setorg':
-                        if (!($org = Organization::lookup($_POST['org_id'])))
-                            $errors['err'] = sprintf('%s - %s', __('Unknown action'), __('Get technical help!'));
+                    case 'activate':
                         foreach ($assets as $A) {
-                            if ($A->setOrganization($org)) {
-                                $type = array('type' => 'edited', 'key' => 'user-org');
-                                Signal::send('object.edited', $A, $type);
+                            if ($A->activate())
                                 $count++;
-                            }
                         }
                         break;
 
@@ -177,8 +124,10 @@ if ($_POST) {
 
 if($asset) {
     $page = INVENTORY_VIEWS_DIR.'asset-view.inc.php';
-} else {
+} elseif($_REQUEST['r'] == 'false') {
     $page = INVENTORY_VIEWS_DIR.'dashboard.inc.php';
+} else {
+    $page = INVENTORY_VIEWS_DIR.'dashboard-retired.inc.php';
 }
 
 $nav->setTabActive('apps');

@@ -77,9 +77,10 @@ class InventoryPlugin extends Plugin {
             )
         );
 
-        $dashboard_url = url ( '^/inventory.*dashboard/',
+        $dashboard_url = url ( '^/inventory.*dashboard',
             patterns ( 'controller\Dashboard',
-                url_get ( '.*', 'viewAction' )
+                url_get('^/retired', 'viewRetired'),
+                url_get ( '^/active', 'viewAction' )
             )
         );
 
@@ -94,6 +95,10 @@ class InventoryPlugin extends Plugin {
                 url_get('^/(?P<id>\d+)/user$', 'viewUser'),
                 url_get('^/(?P<id>\d+)/change-user$', 'changeUserForm'),
                 url_post('^/(?P<id>\d+)/note$', 'createNote'),
+                url_get('^/(?P<id>\d+)/retire$', 'retire'),
+                url_post('^/(?P<id>\d+)/retire$', 'retire'),
+                url_get('^/(?P<id>\d+)/activate$', 'activate'),
+                url_post('^/(?P<id>\d+)/activate$', 'activate'),
                 url_get('^/lookup/form$', 'lookup'),
                 url_post('^/lookup/form$', 'addAsset'),
                 url('/add', 'addAsset'),
@@ -116,7 +121,7 @@ class InventoryPlugin extends Plugin {
 
     function createStaffMenu() {
         $app = new Application();
-        $app->registerStaffApp('Inventory', INVENTORY_WEB_ROOT.'dashboard/');
+        $app->registerStaffApp('Inventory', INVENTORY_WEB_ROOT.'dashboard/active/');
     }
 
     function firstRun() {
