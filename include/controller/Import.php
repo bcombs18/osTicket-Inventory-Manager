@@ -23,11 +23,11 @@ class Import {
         if (!$_POST) {
             include INVENTORY_PLUGIN_ROOT . 'views/assetsImport.php';
         } else {
-            require_once 'model\assets.php';
+            require_once INVENTORY_INCLUDE_DIR.'model/assets.php';
         }
     }
 
     function handle() {
-        require_once 'model\assets.php';
+        require_once INVENTORY_INCLUDE_DIR.'model/assets.php';
     }
 }

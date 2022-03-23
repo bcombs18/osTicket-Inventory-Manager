@@ -185,7 +185,7 @@ class Asset {
     }
 
     function handle() {
-        require_once 'model\assets.php';
+        require_once INVENTORY_INCLUDE_DIR.'model/assets.php';
     }
 
     function viewUser($asset_id) {
