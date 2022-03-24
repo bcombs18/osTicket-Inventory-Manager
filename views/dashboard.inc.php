@@ -214,8 +214,7 @@ if ($total) {
 }
 ?>
 </form>
-<script type="text/javascript">let root_url = "<?= ROOT_PATH ?>";</script>
-<script type="text/javascript" src="assets/js/assets.js?b42ddc7"></script>
+
 <script type="text/javascript">
 $(function() {
     $('input#basic-asset-search').typeahead({
@@ -284,5 +283,5 @@ $(function() {
 </script>
 
 <?php
-require(STAFFINC_DIR.'footer.inc.php');
+require(INVENTORY_VIEWS_DIR.'footer.inc.php');
 ?>
