@@ -271,5 +271,5 @@ $(function() {
 </script>
 
 <?php
-include_once(INVENTORY_VIEWS_DIR.'footer.inc.php');
+require(INVENTORY_VIEWS_DIR.'footer.inc.php');
 ?>
