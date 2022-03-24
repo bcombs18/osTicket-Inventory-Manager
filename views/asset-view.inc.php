@@ -194,6 +194,8 @@ require(STAFFINC_DIR . 'header.inc.php');
     <div class="clear"></div>
 </div>
 
+<script type="text/javascript">let root_url = "<?= ROOT_PATH ?>";</script>
+<script type="text/javascript" src="assets/js/scp.js?b42ddc7"></script>
 <script type="text/javascript">
     $(function() {
         $(document).on('click', 'a.change-user', function(e) {
@@ -226,7 +228,7 @@ require(STAFFINC_DIR . 'header.inc.php');
         $(document).on('click', 'a.user-action', function(e) {
             e.preventDefault();
             var url = $(this).attr('href').substr(1);
-            $.dialog(url, [201, 204], function (xhr) {
+            $.assetDialog(url, [201, 204], function (xhr) {
                 if (xhr.status == 204)
                     window.location.href = 'handle';
                 else

@@ -83,7 +83,7 @@ if ($info['error']) {
             e.preventDefault();
             if ($(this).attr('href').length > 1) {
                 var url = $(this).attr('href').substr(1);
-                $.dialog(url, [201, 204], function (xhr) {
+                $.assetDialog(url, [201, 204], function (xhr) {
                     window.location.href = window.location.href;
                 }, {
                     onshow: function() { $('#user-search').focus(); }
