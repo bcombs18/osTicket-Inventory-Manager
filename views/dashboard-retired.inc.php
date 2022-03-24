@@ -202,8 +202,7 @@ if ($total) {
 }
 ?>
 </form>
-<script type="text/javascript">let root_url = "<?= ROOT_PATH ?>";</script>
-<script type="text/javascript" src="assets/js/scp.js?b42ddc7"></script>
+
 <script type="text/javascript">
 $(function() {
     $('input#basic-asset-search').typeahead({
