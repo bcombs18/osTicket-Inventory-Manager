@@ -124,10 +124,10 @@ if ($_POST) {
 
 if($asset) {
     $page = INVENTORY_VIEWS_DIR.'asset-view.inc.php';
-} elseif($_REQUEST['r'] == 'false') {
-    $page = INVENTORY_VIEWS_DIR.'dashboard.inc.php';
-} else {
+} elseif($_REQUEST['r'] == 'true') {
     $page = INVENTORY_VIEWS_DIR.'dashboard-retired.inc.php';
+} else {
+    $page = INVENTORY_VIEWS_DIR.'dashboard.inc.php';
 }
 
 $nav->setTabActive('apps');
