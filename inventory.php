@@ -149,13 +149,27 @@ class InventoryPlugin extends Plugin {
         return  $installer->install();
     }
 
-    function executeFileCopy(){
+    function executeFileCopy() {
+        copy(INCLUDE_DIR."staff/footer.inc.php", INVENTORY_PLUGIN_ROOT."install/backup/footer.inc.php");
+        copy(OST_ROOT."scp/js/scp.js", INVENTORY_PLUGIN_ROOT."install/backup/scp.js");
+
         if(!copy(INVENTORY_PLUGIN_ROOT."dispatcher.php", OST_ROOT."scp/dispatcher.php")) {
+            return false;
+        }
+
+        if(!copy(INVENTORY_ASSETS_DIR."js/scp.js", OST_ROOT."scp/js/scp.js")) {
+            return false;
+        }
+
+        if(!copy(INVENTORY_PLUGIN_ROOT."install/footer/footer.inc.php", INCLUDE_DIR."staff/footer.inc.php")) {
             return false;
         }
     }
 
     function pre_uninstall(&$errors) {
+        copy(INVENTORY_PLUGIN_ROOT."install/backup/footer.inc.php", INCLUDE_DIR."staff/footer.inc.php");
+        copy(INVENTORY_PLUGIN_ROOT."install/backup/scp.js", OST_ROOT."scp/js/scp.js");
+
         $installer = new \util\InventoryInstaller();
         return $installer->remove();
     }

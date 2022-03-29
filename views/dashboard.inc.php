@@ -283,5 +283,5 @@ $(function() {
 </script>
 
 <?php
-require(INVENTORY_VIEWS_DIR.'footer.inc.php');
+require(STAFFINC_DIR.'footer.inc.php');
 ?>

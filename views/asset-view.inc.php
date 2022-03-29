@@ -241,5 +241,5 @@ require(STAFFINC_DIR . 'header.inc.php');
 </script>
 
 <?php
-require(INVENTORY_VIEWS_DIR.'footer.inc.php');
+require(STAFFINC_DIR.'footer.inc.php');
 ?>

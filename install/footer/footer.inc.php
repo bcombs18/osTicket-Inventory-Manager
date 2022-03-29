@@ -47,7 +47,7 @@ if(is_object($thisstaff) && $thisstaff->isStaff()) { ?>
 <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/jquery-ui-timepicker-addon.js?b42ddc7"></script>
 <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/jquery-ui-sliderAccess.js?b42ddc7"></script>
 <script type="text/javascript">let root_url = "<?= ROOT_PATH ?>";</script>
-<script type="text/javascript" src="assets/js/scp.js?b42ddc7"></script>
+<script type="text/javascript" src="<?php echo ROOT_PATH; ?>scp/js/scp.js?b42ddc7"></script>
 <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/filedrop.field.js?b42ddc7"></script>
 <script type="text/javascript" src="<?php echo ROOT_PATH; ?>js/select2.min.js?b42ddc7"></script>
 <script type="text/javascript" src="<?php echo ROOT_PATH; ?>scp/js/tips.js?b42ddc7"></script>
