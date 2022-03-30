@@ -175,39 +175,6 @@ class Asset extends AssetModel
                 return $a;
     }
 
-    static function getVarScope() {
-        $base = array(
-            'email' => array(
-                'class' => 'EmailAddress', 'desc' => __('Default email address')
-            ),
-            'name' => array(
-                'class' => 'PersonsName', 'desc' => 'User name, default format'
-            ),
-            'organization' => array('class' => 'Organization', 'desc' => __('Organization')),
-        );
-        $extra = VariableReplacer::compileFormScope(UserForm::getInstance());
-        return $base + $extra;
-    }
-
-    static function getSearchableFields() {
-        $base = array();
-        $uform = UserForm::getUserForm();
-        $base = array();
-        foreach ($uform->getFields() as $F) {
-            $fname = $F->get('name') ?: ('field_'.$F->get('id'));
-            # XXX: email in the model corresponds to `emails__address` ORM path
-            if ($fname == 'email')
-                $fname = 'emails__address';
-            if (!$F->hasData() || $F->isPresentationOnly())
-                continue;
-            if (!$F->isStorable())
-                $base[$fname] = $F;
-            else
-                $base["cdata__{$fname}"] = $F;
-        }
-        return $base;
-    }
-
     static function supportsCustomData() {
         return true;
     }
@@ -228,25 +195,6 @@ class Asset extends AssetModel
         }
 
         return $this->_entries ?: array();
-    }
-
-    function getFilterData() {
-        $vars = array();
-        foreach ($this->getDynamicData() as $entry) {
-            $vars += $entry->getFilterData();
-
-            // Add in special `name` and `email` fields
-            if ($entry->getDynamicForm()->get('type') != 'U')
-                continue;
-
-            foreach (array('name', 'email') as $name) {
-                if ($f = $entry->getField($name))
-                    $vars['field.'.$f->get('asset_id')] =
-                        $name == 'name' ? $this->getName() : $this->getEmail();
-            }
-        }
-
-        return $vars;
     }
 
     function getForms($data=null, $cb=null) {
@@ -366,7 +314,7 @@ class Asset extends AssetModel
         $type = array('type' => 'deleted');
         \Signal::send('object.deleted', $this, $type);
 
-        // Delete user
+        // Delete asset
         return parent::delete();
     }
 
@@ -431,5 +379,15 @@ class Asset extends AssetModel
             return false;
         unset($this->user);
         return true;
+    }
+
+    static function getSearchableFields()
+    {
+        // TODO: Implement getSearchableFields() method.
+    }
+
+    static function getVarScope()
+    {
+        // TODO: Implement getVarScope() method.
     }
 }

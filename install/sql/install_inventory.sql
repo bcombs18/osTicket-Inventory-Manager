@@ -15,8 +15,8 @@ CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%inventory_asset` (
 ) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=utf8$
 
 DELETE FROM `%TABLE_PREFIX%form` WHERE `title`='Inventory'$
-INSERT INTO `%TABLE_PREFIX%form` (`type`, `title`, `notes`, `created`, `updated`)
-    VALUES ('G', 'Inventory', 'Inventory Asset Information Form: The order of the items in this form matters when using the importer. The order must match the order of the columns in your CSV file.', NOW(), NOW())$
+INSERT INTO `%TABLE_PREFIX%form` (`type`, `title`, `instructions`, `created`, `updated`)
+    VALUES ('G', 'Inventory', 'Dynamic Asset Form: Add form fields to this form to add custom asset data. This form is used for data entry/access and is used by the CSV importer. If the CSV you are using to import data does not contain headers, the columns of the CSV must match the ordering of this form.', NOW(), NOW())$
 
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryFormFields`$
 

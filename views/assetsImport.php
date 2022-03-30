@@ -30,9 +30,10 @@
                 <h2 style="margin-bottom:10px"><?php echo __('Import a CSV File'); ?></h2>
                 <p>
                     <em><?php echo sprintf(__(
-                            'Use the columns shown in the table below. To add more fields, visit the Admin Panel -&gt; Manage -&gt; Forms -&gt; %s page to edit the available fields.  Only fields with `variable` defined can be imported.'),
+                            'Use the columns shown in the table below. To add more fields, visit the Admin Panel -&gt; Manage -&gt; Forms -&gt; %s page to edit the available fields.  Only fields with `variable` defined can be imported. Headers in the CSV MUST match the columns below verbatim to import correctly!'),
                             \model\AssetForm::getAssetForm()->get('title')
                         ); ?>
+                    <strong><br><br><?php echo 'Headers in the CSV MUST match the columns below verbatim to import correctly!'; ?></strong>
                 </p>
                 <table class="list"><tr>
                         <?php
@@ -44,7 +45,7 @@
                             if ($f->get('name'))
                                 $fields[] = $f->get('name');
                         foreach ($fields as $f) { ?>
-                            <th><?php echo mb_convert_case($f, MB_CASE_TITLE); ?></th>
+                            <th><?php echo $f ?></th>
                         <?php } ?>
                     </tr>
                     <?php
