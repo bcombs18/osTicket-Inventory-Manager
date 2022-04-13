@@ -136,3 +136,355 @@ BEGIN
     END$
 
     CALL `%TABLE_PREFIX%CreateInventoryFormFields`()$
+
+DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryQueue`$
+CREATE PROCEDURE `%TABLE_PREFIX%CreateInventoryQueue`()
+BEGIN
+
+INSERT INTO `%TABLE_PREFIX%queue`
+(`id`,
+ `parent_id`,
+ `columns_id`,
+ `sort_id`,
+ `flags`,
+ `staff_id`,
+ `sort`,
+ `title`,
+ `config`,
+ `filter`,
+ `root`,
+ `path`,
+ `created`,
+ `updated`)
+VALUES
+    (101,
+     0,
+     NULL,
+     8,
+     43,
+     0,
+     7,
+     'Assets',
+     '[]',
+     NULL,
+     'U',
+     '/',
+     NOW(),
+     NOW());
+END$
+
+CALL `%TABLE_PREFIX%CreateInventoryQueue`()$
+
+DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryQueueColumns`$
+CREATE PROCEDURE `%TABLE_PREFIX%CreateInventoryQueueColumns`()
+BEGIN
+
+INSERT INTO `%TABLE_PREFIX%queue_column`
+(`flags`,
+ `name`,
+ `primary`,
+ `secondary`,
+ `filter`,
+ `truncate`,
+ `annotations`,
+ `conditions`,
+ `extra`)
+VALUES
+    (0,
+     'Hostname',
+     'host_name',
+     NULL,
+     NULL,
+     'ellipsis',
+     '[]',
+     '[]',
+     NULL);
+INSERT INTO `%TABLE_PREFIX%queue_column`
+(`flags`,
+ `name`,
+ `primary`,
+ `secondary`,
+ `filter`,
+ `truncate`,
+ `annotations`,
+ `conditions`,
+ `extra`)
+VALUES
+    (0,
+     'Model',
+     'model',
+     NULL,
+     NULL,
+     'ellipsis',
+     '[]',
+     '[]',
+     NULL);
+INSERT INTO `%TABLE_PREFIX%queue_column`
+(`flags`,
+ `name`,
+ `primary`,
+ `secondary`,
+ `filter`,
+ `truncate`,
+ `annotations`,
+ `conditions`,
+ `extra`)
+VALUES
+    (0,
+     'Manufacturer',
+     'manufacturer',
+     NULL,
+     NULL,
+     'ellipsis',
+     '[]',
+     '[]',
+     NULL);
+INSERT INTO `%TABLE_PREFIX%queue_column`
+(`flags`,
+ `name`,
+ `primary`,
+ `secondary`,
+ `filter`,
+ `truncate`,
+ `annotations`,
+ `conditions`,
+ `extra`)
+VALUES
+    (0,
+     'Assignee',
+     'assignee',
+     NULL,
+     NULL,
+     'ellipsis',
+     '[]',
+     '[]',
+     NULL);
+INSERT INTO `%TABLE_PREFIX%queue_column`
+(`flags`,
+ `name`,
+ `primary`,
+ `secondary`,
+ `filter`,
+ `truncate`,
+ `annotations`,
+ `conditions`,
+ `extra`)
+VALUES
+    (0,
+     'Location',
+     'location',
+     NULL,
+     NULL,
+     'ellipsis',
+     '[]',
+     '[]',
+     NULL);
+INSERT INTO `%TABLE_PREFIX%queue_column`
+(`flags`,
+ `name`,
+ `primary`,
+ `secondary`,
+ `filter`,
+ `truncate`,
+ `annotations`,
+ `conditions`,
+ `extra`)
+VALUES
+    (0,
+     'Serial',
+     'serial_number',
+     NULL,
+     NULL,
+     'ellipsis',
+     '[]',
+     '[]',
+     NULL);
+INSERT INTO `%TABLE_PREFIX%queue_column`
+(`flags`,
+ `name`,
+ `primary`,
+ `secondary`,
+ `filter`,
+ `truncate`,
+ `annotations`,
+ `conditions`,
+ `extra`)
+VALUES
+    (0,
+     'Create Date',
+     'created',
+     NULL,
+     NULL,
+     'ellipsis',
+     '[]',
+     '[]',
+     NULL);
+INSERT INTO `%TABLE_PREFIX%queue_column`
+(`flags`,
+ `name`,
+ `primary`,
+ `secondary`,
+ `filter`,
+ `truncate`,
+ `annotations`,
+ `conditions`,
+ `extra`)
+VALUES
+    (0,
+     'Last Update',
+     'lastupdate',
+     NULL,
+     NULL,
+     'ellipsis',
+     '[]',
+     '[]',
+     NULL);
+END$
+
+CALL `%TABLE_PREFIX%CreateInventoryQueueColumns`()$
+
+DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryQueueColumnsTable`$
+CREATE PROCEDURE `%TABLE_PREFIX%CreateInventoryQueueColumnsTable`()
+BEGIN
+
+    SET @queue_id = (SELECT `id` FROM `%TABLE_PREFIX%queue` WHERE `title`='Assets');
+    SET @hostname_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Hostname');
+    SET @model_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Model');
+    SET @manufacturer_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Manufacturer');
+    SET @assignee_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Assignee');
+    SET @location_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Location');
+    SET @serial_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Serial');
+    SET @create_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Create Date');
+    SET @update_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Last Update');
+
+INSERT INTO `%TABLE_PREFIX%queue_columns`
+(`queue_id`,
+ `column_id`,
+ `staff_id`,
+ `bits`,
+ `sort`,
+ `heading`,
+ `width`)
+VALUES
+    (@queue_id,
+     @hostname_id,
+     0,
+     1,
+     1,
+     'Hostname',
+     100);
+INSERT INTO `%TABLE_PREFIX%queue_columns`
+(`queue_id`,
+ `column_id`,
+ `staff_id`,
+ `bits`,
+ `sort`,
+ `heading`,
+ `width`)
+VALUES
+    (@queue_id,
+     @model_id,
+     0,
+     1,
+     2,
+     'Model',
+     100);
+INSERT INTO `%TABLE_PREFIX%queue_columns`
+(`queue_id`,
+ `column_id`,
+ `staff_id`,
+ `bits`,
+ `sort`,
+ `heading`,
+ `width`)
+VALUES
+    (@queue_id,
+     @manufacturer_id,
+     0,
+     1,
+     3,
+     'Manufacturer',
+     100);
+INSERT INTO `%TABLE_PREFIX%queue_columns`
+(`queue_id`,
+ `column_id`,
+ `staff_id`,
+ `bits`,
+ `sort`,
+ `heading`,
+ `width`)
+VALUES
+    (@queue_id,
+     @assignee_id,
+     0,
+     1,
+     4,
+     'Assignee',
+     100);
+INSERT INTO `%TABLE_PREFIX%queue_columns`
+(`queue_id`,
+ `column_id`,
+ `staff_id`,
+ `bits`,
+ `sort`,
+ `heading`,
+ `width`)
+VALUES
+    (@queue_id,
+     @location_id,
+     0,
+     1,
+     5,
+     'Location',
+     100);
+INSERT INTO `%TABLE_PREFIX%queue_columns`
+(`queue_id`,
+ `column_id`,
+ `staff_id`,
+ `bits`,
+ `sort`,
+ `heading`,
+ `width`)
+VALUES
+    (@queue_id,
+     @serial_id,
+     0,
+     1,
+     6,
+     'Serial Number',
+     100);
+INSERT INTO `%TABLE_PREFIX%queue_columns`
+(`queue_id`,
+ `column_id`,
+ `staff_id`,
+ `bits`,
+ `sort`,
+ `heading`,
+ `width`)
+VALUES
+    (@queue_id,
+     @create_id,
+     0,
+     1,
+     7,
+     'Create Date',
+     100);
+INSERT INTO `%TABLE_PREFIX%queue_columns`
+(`queue_id`,
+ `column_id`,
+ `staff_id`,
+ `bits`,
+ `sort`,
+ `heading`,
+ `width`)
+VALUES
+    (@queue_id,
+     @update_id,
+     0,
+     1,
+     8,
+     'Last Update',
+     100);
+END$
+
+CALL `%TABLE_PREFIX%CreateInventoryQueueColumnsTable`()$
