@@ -381,9 +381,52 @@ class Asset extends AssetModel
         return true;
     }
 
-    static function getSearchableFields()
-    {
-        // TODO: Implement getSearchableFields() method.
+    static function getSearchableFields() {
+        global $thisstaff;
+
+        $base = array(
+            'host_name' => new \TextboxField(array(
+                'label' => __('Hostname')
+            )),
+            'manufacturer' => new \TextboxField(array(
+                'label' => __('Manufacturer')
+            )),
+            'model' => new \TextboxField(array(
+                'label' => __('Model')
+            )),
+            'assignee' => new \TextboxField(array(
+                'label' => __('Assignee')
+            )),
+            'location' => new \TextboxField(array(
+                'label' => __('Location')
+            )),
+            'serial_number' => new \TextboxField(array(
+                'label' => __('Serial Number')
+            )),
+            'created' => new \DatetimeField(array(
+                'label' => __('Create Date'),
+                'configuration' => array(
+                    'fromdb' => true, 'time' => true,
+                    'format' => 'y-MM-dd HH:mm:ss'),
+            )),
+            'lastupdate' => new \DatetimeField(array(
+                'label' => __('Last Update'),
+                'configuration' => array(
+                    'fromdb' => true, 'time' => true,
+                    'format' => 'y-MM-dd HH:mm:ss'),
+            )),
+        );
+        $aform = AssetForm::getInstance();
+        foreach ($aform->getFields() as $F) {
+            $fname = $F->get('name') ?: ('field_'.$F->get('id'));
+            if (!$F->hasData() || $F->isPresentationOnly() || !$F->isEnabled())
+                continue;
+            if (!$F->isStorable())
+                $base[$fname] = $F;
+            else
+                $base["cdata__{$fname}"] = $F;
+        }
+        return $base;
     }
 
     static function getVarScope()

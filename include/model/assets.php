@@ -7,10 +7,55 @@ if (!$thisstaff->hasPerm(User::PERM_DIRECTORY))
     Http::redirect('index.php');
 
 require_once INCLUDE_DIR.'class.note.php';
+require_once INVENTORY_INCLUDE_DIR.'model/AssetSearch.php';
 
 $asset = null;
 if ($_REQUEST['id'] && !($asset=\model\Asset::lookup($_REQUEST['id'])))
     $errors['err'] = sprintf(__('%s: Unknown or invalid'), _N('asset', 'assets', 1));
+
+// Fetch ticket queues organized by root and sub-queues
+$queues = CustomQueue::getHierarchicalQueues($thisstaff);
+
+$page='';
+$redirect = false;
+
+if (!$asset) {
+    $queue_id = null;
+
+    $queue_key = sprintf('::Q:%s', 'U');
+    $queue_id = $queue_id ?: @$_GET['queue'] ?: $_SESSION[$queue_key]
+        ?? $thisstaff->getDefaultTicketQueueId() ?: $cfg->getDefaultTicketQueueId();
+
+    // Recover advanced search, if requested
+    if (isset($_SESSION['advsearch'])
+        && strpos($queue_id, 'adhoc') === 0
+    ) {
+        list(,$key) = explode(',', $queue_id, 2);
+        // For queue=queue, use the most recent search
+        if (!$key) {
+            reset($_SESSION['advsearch']);
+            $key = key($_SESSION['advsearch']);
+        }
+
+        $queue = \model\AssetAdhocSearch::load($key);
+    }
+
+    if ((int) $queue_id && !isset($queue))
+        $queue = \model\AssetSavedQueue::lookup($queue_id);
+
+    if (!$queue && ($qid=$cfg->getDefaultTicketQueueId()))
+        $queue = \model\AssetSavedQueue::lookup($qid);
+
+    if (!$queue && $queues)
+        list($queue,) = $queues[0];
+
+    if ($queue) {
+        // Set the queue_id for navigation to turn a top-level item bold
+        $_REQUEST['queue'] = $queue->getId();
+        // Make the current queue sticky
+        $_SESSION[$queue_key] = $queue->getId();
+    }
+}
 
 if ($_POST) {
     switch(strtolower($_REQUEST['do'])) {
@@ -124,10 +169,16 @@ if ($_POST) {
 
 if($asset) {
     $page = INVENTORY_VIEWS_DIR.'asset-view.inc.php';
-} elseif($_REQUEST['r'] == 'true') {
+} else if($_REQUEST['r'] == 'true') {
     $page = INVENTORY_VIEWS_DIR.'dashboard-retired.inc.php';
 } else {
     $page = INVENTORY_VIEWS_DIR.'dashboard.inc.php';
+    if ($queue) {
+        // XXX: Check staff access?
+        $page = INVENTORY_VIEWS_DIR.'queue-tickets.tmpl.php';
+        $quick_filter = @$_REQUEST['filter'];
+        $assets = $queue->getQuery(false, $quick_filter);
+    }
 }
 
 $nav->setTabActive('apps');
