@@ -167,6 +167,42 @@ if ($_POST) {
             .' '.__('Internal error occurred');
 }
 
+// Clear advanced search upon request
+if (isset($_GET['clear_filter']))
+    unset($_SESSION['advsearch']);
+
+$nav->setTabActive('apps');
+$nav->addSubNavInfo('jb-overflowmenu', 'customQ_nav');
+
+// Start with all the top-level (container) queues
+foreach ($queues as $_) {
+    list($q, $children) = $_;
+    if ($q->isPrivate() || $q->getName() != 'Assets')
+        continue;
+    $nav->addSubMenu(function() use ($q, $queue, $children) {
+        // A queue is selected if it is the one being displayed. It is
+        // "child" selected if its ID is in the path of the one selected
+        $_selected = ($queue && $queue->getId() == $q->getId());
+        $child_selected = $queue
+            && ($queue->parent_id == $q->getId()
+                || false !== strpos($queue->getPath(), "/{$q->getId()}/"));
+        include STAFFINC_DIR . 'templates/queue-navigation.tmpl.php';
+
+        return ($child_selected || $_selected);
+    });
+}
+
+// Add my advanced searches
+$nav->addSubMenu(function() use ($queue) {
+    global $thisstaff;
+    $selected = false;
+    // A queue is selected if it is the one being displayed. It is
+    // "child" selected if its ID is in the path of the one selected
+    $child_selected = $queue instanceof SavedSearch;
+    include STAFFINC_DIR . 'templates/queue-savedsearches-nav.tmpl.php';
+    return ($child_selected || $selected);
+});
+
 if($asset) {
     $page = INVENTORY_VIEWS_DIR.'asset-view.inc.php';
 } else if($_REQUEST['r'] == 'true') {
@@ -181,7 +217,6 @@ if($asset) {
     }
 }
 
-$nav->setTabActive('apps');
 require STAFFINC_DIR.'header.inc.php';
 require($page);
 require STAFFINC_DIR.'footer.inc.php';
