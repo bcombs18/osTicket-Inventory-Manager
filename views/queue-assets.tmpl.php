@@ -3,8 +3,6 @@
 // $tickets - <QuerySet> with all columns and annotations necessary to
 //      render the full page
 
-include_once STAFFINC_DIR.'header.inc.php';
-
 // Identify columns of output
 $columns = $queue->getColumns();
 
@@ -55,7 +53,7 @@ $sorted = false;
 foreach ($columns as $C) {
     // Sort by this column ?
     if (isset($sort['col']) && $sort['col'] == $C->id) {
-        $tickets = $C->applySort($tickets, $sort['dir']);
+        $assets = $C->applySort($assets, $sort['dir']);
         $sorted = true;
     }
 }
@@ -64,7 +62,7 @@ foreach ($columns as $C) {
 if (!$sorted) {
     // Apply queue sort-dropdown selected preference
     if (isset($sort['queuesort']))
-        $sort['queuesort']->applySort($tickets, $sort['dir']);
+        $sort['queuesort']->applySort($assets, $sort['dir']);
     else // otherwise sort by created DESC
         $assets->order_by('host_name');
 }
@@ -273,7 +271,3 @@ foreach ($assets as $A) {
 <?php
     } ?>
 </form>
-
-<?php
-    include_once STAFFINC_DIR.'footer.inc.php';
-?>

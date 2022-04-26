@@ -24,7 +24,7 @@ if (!$asset) {
 
     $queue_key = sprintf('::Q:%s', 'U');
     $queue_id = $queue_id ?: @$_GET['queue'] ?: $_SESSION[$queue_key]
-        ?? $thisstaff->getDefaultTicketQueueId() ?: $cfg->getDefaultTicketQueueId();
+        ?? 101 ?: 101;
 
     // Recover advanced search, if requested
     if (isset($_SESSION['advsearch'])
@@ -175,12 +175,14 @@ if($asset) {
     $page = INVENTORY_VIEWS_DIR.'dashboard.inc.php';
     if ($queue) {
         // XXX: Check staff access?
-        $page = INVENTORY_VIEWS_DIR.'queue-tickets.tmpl.php';
+        $page = INVENTORY_VIEWS_DIR.'queue-assets.tmpl.php';
         $quick_filter = @$_REQUEST['filter'];
         $assets = $queue->getQuery(false, $quick_filter);
     }
 }
 
 $nav->setTabActive('apps');
+require STAFFINC_DIR.'header.inc.php';
 require($page);
+require STAFFINC_DIR.'footer.inc.php';
 ?>

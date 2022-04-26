@@ -141,7 +141,7 @@ class InventoryPlugin extends Plugin {
 
     function createStaffMenu() {
         $app = new Application();
-        $app->registerStaffApp('Inventory', INVENTORY_WEB_ROOT.'dashboard/active/');
+        $app->registerStaffApp('Inventory', INVENTORY_WEB_ROOT.'asset/handle');
     }
 
     function firstRun() {

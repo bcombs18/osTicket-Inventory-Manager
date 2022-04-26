@@ -6,7 +6,6 @@ global $ost;
 global $thisstaff;
 global $nav;
 global $org;
-require(STAFFINC_DIR . 'header.inc.php');
 ?>
 
 <table width="940" cellpadding="2" cellspacing="0" border="0">
@@ -239,7 +238,3 @@ require(STAFFINC_DIR . 'header.inc.php');
         });
     });
 </script>
-
-<?php
-require(STAFFINC_DIR.'footer.inc.php');
-?>
