@@ -226,3 +226,42 @@ class AssetAdhocSearch extends AssetSavedSearch {
         return $queue;
     }
 }
+
+class AssetLinkWithPreviewFilter extends \TicketLinkWithPreviewFilter {
+    static $id = 'link:assetP';
+    static $desc = /* @trans */ "Asset Link with Preview";
+
+    function filter($text, $row) {
+        $link = $this->getLink($row);
+        return sprintf('<a style="display: inline" class="preview" data-preview="#asset/%d/preview" href="%s">%s</a>',
+            $row['asset_id'], $link, $text);
+    }
+
+    function mangleQuery($query, $column) {
+        static $fields = array(
+            'link:asset'   => 'asset_id',
+            'link:assetP'  => 'asset_id',
+        );
+
+        if (isset($fields[static::$id])) {
+            $query = $query->values($fields[static::$id]);
+        }
+        return $query;
+    }
+
+    function getLink($row) {
+        return \model\Asset::getLink($row['asset_id']);
+    }
+}
+\QueueColumnFilter::register('\model\AssetLinkWithPreviewFilter', __('Link'));
+
+class AssigneeLinkFilter
+    extends \TicketLinkFilter {
+    static $id = 'link:assignee';
+    static $desc = /* @trans */ "Assignee Link";
+
+    function getLink($row) {
+        return \User::getLink($row['assignee']);
+    }
+}
+\QueueColumnFilter::register('\model\AssigneeLinkFilter', __('Link'));
