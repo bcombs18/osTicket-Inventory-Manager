@@ -35,7 +35,7 @@ if ($info['error']) {
 }
 
 // Form action
-$action = '#search/';
+$action = '#asset/search/';
 if ($search->isSaved() && $search->getId())
     $action .= sprintf('/%s/save', $search->getId());
 elseif (!$search instanceof \model\AssetAdhocSearch)
