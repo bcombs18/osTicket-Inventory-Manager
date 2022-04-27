@@ -91,7 +91,7 @@ if (($Q->extra && isset($Q->extra['tables'])) || !$Q->constraints || $empty) {
 
 $count = $count ?? $queue->getCount($thisstaff);
 $pageNav->setTotal($count, true);
-$pageNav->setURL('tickets.php', $args);
+$pageNav->setURL('asset/handle/', $args);
 ?>
 
 <!-- SEARCH FORM START -->
@@ -104,7 +104,7 @@ $pageNav->setURL('tickets.php', $args);
         require STAFFINC_DIR.'templates/queue-sort.tmpl.php';
     ?>
   </div>
-    <form action="tickets.php" method="get" onsubmit="javascript:
+    <form action="asset/handle/" method="get" onsubmit="javascript:
   $.pjax({
     url:$(this).attr('action') + '?' + $(this).serialize(),
     container:'#pjax-container',
@@ -114,14 +114,14 @@ return false;">
     <input type="hidden" name="a" value="search">
     <input type="hidden" name="search-type" value=""/>
     <div class="attached input">
-      <input type="text" class="basic-search" data-url="ajax.php/tickets/lookup" name="query"
+      <input type="text" class="basic-search" data-url="asset/lookup" name="query"
         autofocus size="30" value="<?php echo Format::htmlchars($_REQUEST['query'] ?? null, true); ?>"
         autocomplete="off" autocorrect="off" autocapitalize="off">
       <button type="submit" class="attached button"><i class="icon-search"></i>
       </button>
     </div>
     <a href="#" onclick="javascript:
-        $.dialog('ajax.php/tickets/search', 201);"
+        $.dialog('search/', 201);"
         >[<?php echo __('advanced'); ?>]</a>
         <i class="help-tip icon-question-sign" href="#advanced"></i>
     </form>
@@ -151,14 +151,14 @@ return false;">
                     <ul>
                         <li>
                             <a class="no-pjax" href="#"
-                              data-dialog="ajax.php/tickets/search/<?php echo
+                              data-dialog="asset/search/<?php echo
                               urlencode($queue->getId()); ?>"><i
                             class="icon-fixed-width icon-pencil"></i>
                             <?php echo __('Edit'); ?></a>
                         </li>
                         <li>
                             <a class="no-pjax" href="#"
-                              data-dialog="ajax.php/tickets/search/create?pid=<?php
+                              data-dialog="asset/search/create?pid=<?php
                               echo $queue->getId(); ?>"><i
                             class="icon-fixed-width icon-plus-sign"></i>
                             <?php echo __('Add Sub Queue'); ?></a>
@@ -179,11 +179,42 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
             </div>
 
           <div class="pull-right flush-right">
-            <?php
-            // TODO: Respect queue root and corresponding actions
-            if ($count) {
-                Ticket::agentActions($thisstaff, array('status' => $status ?? null));
-            }?>
+              <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
+                  <a class="green button action-button popup-dialog"
+                     href="#asset/add/">
+                      <i class="icon-plus-sign"></i>
+                      <?php echo __('New Asset'); ?>
+                  </a>
+                  <a class="action-button popup-dialog"
+                     href="#import/bulk/">
+                      <i class="icon-upload"></i>
+                      <?php echo __('Import'); ?>
+                  </a>
+              <?php } ?>
+              <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT.'dashboard/retired'; ?>">
+                  <i class="icon-eye-open icon-fixed-width"></i>
+                  <?php echo __('View Retired'); ?>
+              </a>
+              <span class="action-button" data-dropdown="#action-dropdown-more"
+                    style="/*DELME*/ vertical-align:top; margin-bottom:0">
+                    <i class="icon-caret-down pull-right"></i>
+                    <span ><i class="icon-cog"></i> <?php echo __('More');?></span>
+                </span>
+              <div id="action-dropdown-more" class="action-dropdown anchor-right">
+                  <ul>
+                      <?php
+                      if ($thisstaff->hasPerm(User::PERM_DELETE)) { ?>
+                          <li class="danger"><a class="assets-action" href="#delete">
+                                  <i class="icon-trash icon-fixed-width"></i>
+                                  <?php echo __('Delete'); ?></a></li>
+                      <?php } ?>
+                      <li>
+                          <a class="assets-action" href="#retire">
+                              <i class="icon-archive icon-fixed-width"></i>
+                              <?php echo __('Retire'); ?>
+                          </a>
+                      </li>
+                  </ul>
             </div>
         </div>
     </div>
@@ -263,7 +294,7 @@ foreach ($assets as $A) {
 <?php
         echo __('Page').':'.$pageNav->getPageLinks().'&nbsp;';
         ?>
-        <a href="#tickets/export/<?php echo $queue->getId(); ?>"
+        <a href="#asset/export/<?php echo $queue->getId(); ?>"
         id="queue-export" class="no-pjax export"
             ><?php echo __('Export'); ?></a>
         <i class="help-tip icon-question-sign" href="#export"></i>
@@ -271,3 +302,169 @@ foreach ($assets as $A) {
 <?php
     } ?>
 </form>
+
+<script type="text/javascript">
+$(function() {
+    $('input#basic-asset-search').typeahead({
+        source: function (typeahead, query) {
+            $.ajax({
+                url: "<?php echo INVENTORY_WEB_ROOT.'/asset/handle?q=';?>"+query,
+                dataType: 'json',
+                success: function (data) {
+                    typeahead.process(data);
+                }
+            });
+        },
+        onselect: function (obj) {
+            window.location.href = '<?php echo INVENTORY_WEB_ROOT.'asset/handle?id='?>'+obj.id;
+        },
+        property: "/bin/true"
+    });
+
+    $(document).on('click', 'a.popup-dialog', function(e) {
+        e.preventDefault();
+        $.assetLookup($(this).attr('href').substr(1));
+        return false;
+    });
+
+    var goBaby = function(action, confirmed) {
+        var ids = [],
+            $form = $('form#assets-list');
+        $(':checkbox.mass:checked', $form).each(function() {
+            ids.push($(this).val());
+        });
+        if (ids.length) {
+            var submit = function(data) {
+                $form.find('#action').val(action);
+                $.each(ids, function() { $form.append($('<input type="hidden" name="ids[]">').val(this)); });
+                if (data)
+                    $.each(data, function() { $form.append($('<input type="hidden">').attr('name', this.name).val(this.value)); });
+                $form.find('#selected-count').val(ids.length);
+                $form.submit();
+            };
+            var options = {};
+
+            if (!confirmed)
+                $.confirm(__('You sure?'), undefined, options).then(function(data) {
+                    if (data === false)
+                        return false;
+                    submit(data);
+                });
+            else
+                submit();
+        }
+        else {
+            $.sysAlert(__('Oops'),
+                __('You need to select at least one item'));
+        }
+    };
+    $(document).on('click', 'a.assets-action', function(e) {
+        e.preventDefault();
+        goBaby($(this).attr('href').substr(1));
+        return false;
+    });
+
+    $.assetLookup = function (url, cb) {
+        $.dialog(url, 201, function (xhr, asset) {
+            if ($.type(asset) == 'string')
+                asset = $.parseJSON(asset);
+            if (cb) return cb(asset);
+        }, {
+            onshow: function() { $('#user-search').focus(); }
+        }, true);
+    };
+
+    let root_url = '<?php echo OST_WEB_ROOT; ?>';
+    $.dialog = function (url, codes, cb, options) {
+        options = options||{};
+
+        if (codes && !$.isArray(codes))
+            codes = [codes];
+
+        var $popup = $('.dialog#popup');
+
+        $popup.attr('class',
+            function(pos, classes) {
+                return classes.replace(/\bsize-\S+/g, '');
+            });
+
+        $popup.addClass(options.size ? ('size-'+options.size) : 'size-normal');
+
+        $.toggleOverlay(true);
+        $('div.body', $popup).empty().hide();
+        $('div#popup-loading', $popup).show()
+            .find('h1').css({'margin-top':function() { return $popup.height()/3-$(this).height()/3}});
+        $popup.resize().show();
+        $('div.body', $popup).load(url, options.data, function () {
+            $('div#popup-loading', $popup).hide();
+            $('div.body', $popup).slideDown({
+                duration: 300,
+                queue: false,
+                complete: function() {
+                    if (options.onshow) options.onshow();
+                    $(this).removeAttr('style');
+                }
+            });
+            $("input[autofocus]:visible:enabled:first", $popup).focus();
+            var submit_button = null;
+            $(document).off('.dialog');
+            $(document).on('click.dialog',
+                '#popup input[type=submit], #popup button[type=submit]',
+                function(e) { submit_button = $(this); });
+            $(document).on('submit.dialog', '.dialog#popup form', function(e) {
+                e.preventDefault();
+                var $form = $(this),
+                    data = $form.serialize();
+                if (submit_button) {
+                    data += '&' + escape(submit_button.attr('name')) + '='
+                        + escape(submit_button.attr('value'));
+                }
+                $('div#popup-loading', $popup).show()
+                    .find('h1').css({'margin-top':function() { return $popup.height()/3-$(this).height()/3}});
+
+                console.log('URL BEING USED: ' + root_url + 'scp/dispatcher.php/inventory/'+$form.attr('action').substr(1));
+                $.ajax({
+                    type:  $form.attr('method'),
+                    url: root_url + 'scp/dispatcher.php/inventory/'+$form.attr('action').substr(1),
+                    data: data,
+                    cache: false,
+                    success: function(resp, status, xhr) {
+                        if (xhr && xhr.status && codes
+                            && $.inArray(xhr.status, codes) != -1) {
+                            $.toggleOverlay(false);
+                            $popup.hide();
+                            $('div.body', $popup).empty();
+                            if (cb && (false === cb(xhr, resp)))
+                                // Don't fire event if callback returns false
+                                return;
+                            var done = $.Event('dialog:close');
+                            $popup.trigger(done, [resp, status, xhr]);
+                        } else {
+                            try {
+                                var json = $.parseJSON(resp);
+                                if (json.redirect) return window.location.href = json.redirect;
+                            }
+                            catch (e) { }
+                            $('div.body', $popup).html(resp);
+                            if ($('#msg_error, .error-banner', $popup).length) {
+                                $popup.effect('shake');
+                            }
+                            $('#msg_notice, #msg_error', $popup).delay(5000).slideUp();
+                            $('div.tab_content[id] div.error:not(:empty)', $popup).each(function() {
+                                var div = $(this).closest('.tab_content');
+                                $('a[href^="#'+div.attr('id')+'"]').parent().addClass('error');
+                            });
+                        }
+                    }
+                })
+                    .done(function() {
+                        $('div#popup-loading', $popup).hide();
+                    })
+                    .fail(function() { console.log('AJAX failed')});
+                return false;
+            });
+        });
+        if (options.onload) { options.onload(); }
+    };
+});
+</script>
