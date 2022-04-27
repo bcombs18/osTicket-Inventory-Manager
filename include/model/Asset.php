@@ -433,4 +433,13 @@ class Asset extends AssetModel
     {
         // TODO: Implement getVarScope() method.
     }
+
+    static function getLink($id) {
+        global $thisstaff;
+
+        switch (true) {
+            case ($thisstaff instanceof \Staff):
+                return sprintf(INVENTORY_WEB_ROOT.'asset/handle?id=%s', $id);
+        }
+    }
 }
