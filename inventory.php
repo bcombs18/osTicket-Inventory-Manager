@@ -102,28 +102,27 @@ class InventoryPlugin extends Plugin {
                 url_post('^/(?P<id>\d+)/activate$', 'activate'),
                 url_get('^/lookup/form$', 'lookup'),
                 url_post('^/lookup/form$', 'addAsset'),
+                url('^/search',
+                    patterns('controller\Search',
+                        url_get('^/$', 'getAdvancedSearchDialog'),
+                        url_post('^/$', 'doSearch'),
+                        url_get('^/(?P<id>\d+)$', 'editSearch'),
+                        url_get('^/adhoc,(?P<key>[\w=/+]+)$', 'getAdvancedSearchDialog'),
+                        url_get('^/create$', 'createSearch'),
+                        url_post('^/(?P<id>\d+)/save$', 'saveSearch'),
+                        url_post('^/save$', 'saveSearch'),
+                        url_delete('^/(?P<id>\d+)$', 'deleteSearch'),
+                        url_get('^/field/(?P<id>[\w_!:]+)$', 'addField'),
+                        url('^/column/edit/(?P<id>\d+)$', 'editColumn'),
+                        url('^/sort/edit/(?P<id>\d+)$', 'editSort'),
+                        url_post('^(?P<id>\d+)/delete$', 'deleteQueues'),
+                        url_post('^(?P<id>\d+)/disable$', 'disableQueues'),
+                        url_post('^(?P<id>\d+)/enable$', 'undisableQueues')
+                    )),
                 url('/add', 'addAsset'),
                 url('/handle', 'handle')
             )
         );
-
-        $search_url = url('^/inventory.*search',
-            patterns('controller\Search',
-                url_get('^/$', 'getAdvancedSearchDialog'),
-                url_post('^/$', 'doSearch'),
-                url_get('^/(?P<id>\d+)$', 'editSearch'),
-                url_get('^/adhoc,(?P<key>[\w=/+]+)$', 'getAdvancedSearchDialog'),
-                url_get('^/create$', 'createSearch'),
-                url_post('^/(?P<id>\d+)/save$', 'saveSearch'),
-                url_post('^/save$', 'saveSearch'),
-                url_delete('^/(?P<id>\d+)$', 'deleteSearch'),
-                url_get('^/field/(?P<id>[\w_!:]+)$', 'addField'),
-                url('^/column/edit/(?P<id>\d+)$', 'editColumn'),
-                url('^/sort/edit/(?P<id>\d+)$', 'editSort'),
-                url_post('^(?P<id>\d+)/delete$', 'deleteQueues'),
-                url_post('^(?P<id>\d+)/disable$', 'disableQueues'),
-                url_post('^(?P<id>\d+)/enable$', 'undisableQueues')
-        ));
 
         $import_url = url('^/inventory.*import',
             patterns('controller\Import',
@@ -135,7 +134,6 @@ class InventoryPlugin extends Plugin {
         $object->append ( $media_url );
         $object->append ( $import_url );
         $object->append ( $asset_url );
-        $object->append ( $search_url );
         $object->append ( $dashboard_url );
     }
 
