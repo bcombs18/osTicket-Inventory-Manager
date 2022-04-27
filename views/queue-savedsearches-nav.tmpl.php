@@ -11,9 +11,9 @@ if ($queue && !$queue->parent_id && $queue->staff_id)
 ?>
 <li class="primary-only item <?php if ($child_selected) echo 'active'; ?>">
 <?php
-  $href = 'href="tickets.php?queue=adhoc"';
+  $href = 'href="handle?queue=adhoc"';
   if (!isset($_SESSION['advsearch']))
-      $href = 'href="#" data-dialog="ajax.php/tickets/search"';
+      $href = 'href="#" data-dialog="search/"';
 ?>
   <a class="Ticket" <?php echo $href; ?>><i class="icon-sort-down pull-right"></i><?php echo __('Search');
   ?></a>
@@ -23,7 +23,7 @@ if ($queue && !$queue->parent_id && $queue->staff_id)
       <?php foreach ($searches as $search) {
           list($q, $children) = $search;
           if ($q->checkAccess($thisstaff))
-            include 'queue-subnavigation.tmpl.php';
+            include INVENTORY_VIEWS_DIR.'queue-subnavigation.tmpl.php';
       } ?>
      <?php
      if (isset($_SESSION['advsearch'])) { ?>
@@ -35,7 +35,7 @@ if ($queue && !$queue->parent_id && $queue->staff_id)
               $q->id = 'adhoc,'.$token;
               $q->title = $q->describeCriteria($criteria);
 
-              include 'queue-subnavigation.tmpl.php';
+              include INVENTORY_VIEWS_DIR.'queue-subnavigation.tmpl.php';
           } ?>
       </li>
      <?php
@@ -45,7 +45,7 @@ if ($queue && !$queue->parent_id && $queue->staff_id)
 
      <div class="add-queue">
       <a class="full-width" onclick="javascript:
-        $.dialog('ajax.php/tickets/search', 201);">
+        $.dialog('search/', 201);">
         <span><i class="green icon-plus-sign"></i>
           <?php echo __('Add personal search'); ?></span>
       </a>

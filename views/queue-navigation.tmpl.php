@@ -11,7 +11,7 @@ $selected = (!isset($_REQUEST['a'])  && $_REQUEST['queue'] == $this_queue->getId
 ?>
 <li class="top-queue item <?php if ($child_selected) echo 'child active';
     elseif ($selected) echo 'active'; ?>">
-  <a href="<?php echo $this_queue->getHref(); ?>"
+  <a href="<?php echo "handle?queue=".$this_queue->getId(); ?>"
     class="Ticket"><i class="small icon-sort-down pull-right"></i><?php echo $this_queue->getName(); ?>
 <?php if ($cfg->showTopLevelTicketCounts()) { ?>
     <span id="queue-count-bucket" class="hidden">
@@ -32,7 +32,7 @@ $selected = (!isset($_REQUEST['a'])  && $_REQUEST['queue'] == $this_queue->getId
           data-queue-id="<?php echo $q->id; ?>"><span class="faded-more">-</span>
         </span>
 
-        <a class="truncate <?php if ($selected) echo ' active'; ?>" href="<?php echo $q->getHref();
+        <a class="truncate <?php if ($selected) echo ' active'; ?>" href="<?php echo "handle?queue=".$q->getId();
           ?>" title="<?php echo Format::htmlchars($q->getName()); ?>">
         <?php
           echo Format::htmlchars($q->getName()); ?>
@@ -44,7 +44,7 @@ $selected = (!isset($_REQUEST['a'])  && $_REQUEST['queue'] == $this_queue->getId
       <?php foreach ($childs as $_) {
           list($q, $children) = $_;
           if (!$q->isPrivate())
-              include 'queue-subnavigation.tmpl.php';
+              include INVENTORY_VIEWS_DIR.'queue-subnavigation.tmpl.php';
       }
       $first_child = true;
       foreach ($childs as $_) {
@@ -55,14 +55,14 @@ $selected = (!isset($_REQUEST['a'])  && $_REQUEST['queue'] == $this_queue->getId
             $first_child = false;
             echo '<li class="personalQ"></li>';
         }
-        include 'queue-subnavigation.tmpl.php';
+        include INVENTORY_VIEWS_DIR.'queue-subnavigation.tmpl.php';
       } ?>
     </ul>
     <!-- Add Queue button sticky at the bottom -->
     <div class="add-queue">
       <a class="full-width" onclick="javascript:
         var pid = <?php echo $this_queue->getId() ?: 0; ?>;
-        $.dialog('ajax.php/tickets/search?parent_id='+pid, 201);">
+        $.dialog('asset/search?parent_id='+pid, 201);">
         <span><i class="green icon-plus-sign"></i>
           <?php echo __('Add personal queue'); ?></span>
       </a>
