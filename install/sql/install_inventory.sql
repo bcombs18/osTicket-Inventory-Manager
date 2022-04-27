@@ -194,7 +194,7 @@ VALUES
      'Hostname',
      'host_name',
      NULL,
-     NULL,
+     'link:assetP',
      '',
      '[]',
      '[]',
