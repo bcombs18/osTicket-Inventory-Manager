@@ -62,7 +62,7 @@ $selected = (!isset($_REQUEST['a'])  && $_REQUEST['queue'] == $this_queue->getId
     <div class="add-queue">
       <a class="full-width" onclick="javascript:
         var pid = <?php echo $this_queue->getId() ?: 0; ?>;
-        $.dialog('asset/search?parent_id='+pid, 201);">
+        $.dialog('search?parent_id='+pid, 201);">
         <span><i class="green icon-plus-sign"></i>
           <?php echo __('Add personal queue'); ?></span>
       </a>

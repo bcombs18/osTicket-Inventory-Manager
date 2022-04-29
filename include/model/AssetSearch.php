@@ -41,6 +41,12 @@ class AssetSavedQueue extends \SavedQueue {
         return $core;
     }
 
+    function getBasicQuery() {
+        $root = $this->getRoot();
+        $query = $root::objects();
+        return $this->mangleQuerySet($query);
+    }
+
     function getRoot() {
         switch ($this->root) {
             case 'U':
@@ -146,28 +152,30 @@ class AssetSavedQueue extends \SavedQueue {
                          "id" => 1,
                          "heading" => "Hostname",
                          "primary" => 'host_name',
-                         "width" => 85,
+                         "width" => 230,
                          "bits" => \QueueColumn::FLAG_SORTABLE,
+                         "filter" => 'link:assetP',
                      )),
                      \QueueColumn::placeholder(array(
                          "id" => 2,
                          "heading" => "Model",
                          "primary" => 'model',
-                         "width" => 120,
+                         "width" => 230,
                          "bits" => \QueueColumn::FLAG_SORTABLE,
                      )),
                      \QueueColumn::placeholder(array(
                          "id" => 3,
                          "heading" => "Assignee",
                          "primary" => 'assignee',
-                         "width" => 250,
+                         "width" => 230,
                          "bits" => \QueueColumn::FLAG_SORTABLE,
+                         "filter" => 'link:assignee',
                      )),
                      \QueueColumn::placeholder(array(
                          "id" => 4,
                          "heading" => "Location",
                          "primary" => 'location',
-                         "width" => 150,
+                         "width" => 230,
                          "bits" => \QueueColumn::FLAG_SORTABLE,
                      )),
                  ) as $col)

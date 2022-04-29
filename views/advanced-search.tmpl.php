@@ -35,11 +35,11 @@ if ($info['error']) {
 }
 
 // Form action
-$action = '#asset/search/';
+$action = '#asset/search';
 if ($search->isSaved() && $search->getId())
     $action .= sprintf('/%s/save', $search->getId());
 elseif (!$search instanceof \model\AssetAdhocSearch)
-    $action .= 'save';
+    $action .= '/save';
 ?>
 <form action="<?php echo $action; ?>" method="post" name="search" id="advsearch"
     class="<?php echo ($search->isSaved() || $parent) ? 'savedsearch' : 'assetsearch'; ?>">
@@ -128,7 +128,7 @@ if ($search->isSaved()) { ?>
         $_POST['queue-name']); ?>"
         placeholder="<?php echo __('Search Title'); ?>">
         <?php
-        if ($search instanceof \model\AssetSearch && !$search->isSaved()) { ?>
+        if ($search instanceof \model\AssetAdhocSearch && !$search->isSaved()) { ?>
         <span class="buttons">
              <button class="save button" type="button"  name="save-search"
              value="save"><i class="icon-save"></i>  <?php echo $search->id
@@ -214,7 +214,7 @@ if ($search->isSaved()) { ?>
         if (qid > 0) {
             $.ajax({
                 type: "GET",
-                url: 'ajax.php/queue/'+qid,
+                url: 'asset/queue/'+qid,
                 dataType: 'json',
                 success: function(queue) {
                     $('#parent-name', form).html(queue.name);
@@ -259,7 +259,7 @@ if ($search->isSaved()) { ?>
         var id = parseInt($('input[name=id]', $form).val(), 10) || 0;
         var name = $('input[name=queue-name]', $form).val();
         if (name.length) {
-            var action = '#search';
+            var action = '#asset/search';
             if (id > 0)
                 action = action + '/'+id;
             $form.prop('action', action+'/save');
@@ -278,7 +278,7 @@ if ($search->isSaved()) { ?>
         if ($('button.save', $form).hasClass('pending'))
             alert('Unsaved Changes - save or cancel to discard!');
         else
-            window.location.href = 'tickets.php?queue='+id;
+            window.location.href = 'asset/handle?queue='+id;
     });
 }();
 </script>

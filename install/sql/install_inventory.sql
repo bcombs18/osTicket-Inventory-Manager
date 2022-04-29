@@ -288,7 +288,7 @@ VALUES
      1,
      1,
      'Hostname',
-     100);
+     230);
 INSERT INTO `%TABLE_PREFIX%queue_columns`
 (`queue_id`,
  `column_id`,
@@ -304,7 +304,7 @@ VALUES
      1,
      2,
      'Model',
-     100);
+     230);
 INSERT INTO `%TABLE_PREFIX%queue_columns`
 (`queue_id`,
  `column_id`,
@@ -320,7 +320,7 @@ VALUES
      1,
      4,
      'Assignee',
-     100);
+     230);
 INSERT INTO `%TABLE_PREFIX%queue_columns`
 (`queue_id`,
  `column_id`,
@@ -336,7 +336,7 @@ VALUES
      1,
      5,
      'Location',
-     100);
+     230);
 END$
 
 CALL `%TABLE_PREFIX%CreateInventoryQueueColumnsTable`()$

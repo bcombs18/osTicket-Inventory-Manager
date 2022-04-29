@@ -3,6 +3,7 @@
 namespace controller;
 
 use model\AssetAdhocSearch;
+use model\AssetSavedSearch;
 use model\AssetSearch;
 use SavedSearch;
 
@@ -150,10 +151,10 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff)
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
 
 
-        $search = SavedSearch::create(array(
+        $search = AssetSavedSearch::create(array(
             'title' => __('Add Queue'),
             'root' => 'U',
             'staff_id' => $thisstaff->getId(),
@@ -166,14 +167,14 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff)
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
 
         if ($id) { //  update
-            if (!($search = SavedSearch::lookup($id))
+            if (!($search = AssetSavedSearch::lookup($id))
                 || !$search->checkAccess($thisstaff))
                 Http::response(404, 'No such saved search');
         } else { // new search
-            $search = SavedSearch::create(array(
+            $search = AssetSavedSearch::create(array(
                 'root' => 'U',
                 'staff_id' => $thisstaff->getId()
             ));
@@ -191,7 +192,7 @@ class Search extends \AjaxController {
         $this->_tryAgain($search, null, null, $info);
     }
 
-    function _saveSearch(SavedSearch $search) {
+    function _saveSearch(AssetSavedSearch $search) {
         $_POST['queue-name'] = \Format::htmlchars($_POST['queue-name']);
 
         // Validate the form.
@@ -281,25 +282,25 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff) {
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
         }
-        if ($id && (!($queue = CustomQueue::lookup($id)))) {
-            Http::response(404, 'No such queue');
+        if ($id && (!($queue = \CustomQueue::lookup($id)))) {
+            \Http::response(404, 'No such queue');
         }
         if (!$queue || !$queue->checkAccess($thisstaff)) {
-            Http::response(404, 'No such queue');
+            \Http::response(404, 'No such queue');
         }
         if ($_POST) {
             if (!$queue->delete()) {
                 Http::response(500, 'Unable to delete queue');
             }
-            Http::response(201, 'Have a nice day');
+            \Http::response(201, 'Have a nice day');
             $_SESSION['::sysmsgs']['msg'] = sprintf(__( 'Successfully deleted%s.'),
                 $queue->getName());
         }
 
         $info = array(
-            ':action' => sprintf('#queue/%s/delete', $queue->getId()),
+            ':action' => sprintf('#asset/queue/%s/delete', $queue->getId()),
             ':title' => sprintf('%s %s', __('Please Confirm'), __('Queue Deletion')),
             'warn' => __('Deleted Queues cannot be recovered'),
             ':message' => sprintf('Are you sure you want to delete %s queue?', $queue->getName()),

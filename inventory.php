@@ -104,8 +104,8 @@ class InventoryPlugin extends Plugin {
                 url_post('^/lookup/form$', 'addAsset'),
                 url('^/search',
                     patterns('controller\Search',
-                        url_get('^/$', 'getAdvancedSearchDialog'),
-                        url_post('^/$', 'doSearch'),
+                        url_get('^$', 'getAdvancedSearchDialog'),
+                        url_post('^$', 'doSearch'),
                         url_get('^/(?P<id>\d+)$', 'editSearch'),
                         url_get('^/adhoc,(?P<key>[\w=/+]+)$', 'getAdvancedSearchDialog'),
                         url_get('^/create$', 'createSearch'),
@@ -119,6 +119,15 @@ class InventoryPlugin extends Plugin {
                         url_post('^(?P<id>\d+)/disable$', 'disableQueues'),
                         url_post('^(?P<id>\d+)/enable$', 'undisableQueues')
                     )),
+                url('^/queue', patterns('controller\Search',
+                    url('^(?P<id>\d+/)?preview$', 'previewQueue'),
+                    url_get('^(?P<id>\d+)$', 'getQueue'),
+                    url_get('^addColumn$', 'addColumn'),
+                    url_get('^condition/add$', 'addCondition'),
+                    url_get('^condition/addProperty$', 'addConditionProperty'),
+                    url_get('^counts$', 'collectQueueCounts'),
+                    url('^/(?P<id>\d+)/delete$', 'deleteQueue')
+                )),
                 url('/add', 'addAsset'),
                 url('/handle', 'handle')
             )

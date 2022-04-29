@@ -121,7 +121,7 @@ return false;">
       </button>
     </div>
     <a href="#" onclick="javascript:
-        $.dialog('search/', 201);"
+        $.dialog('search', 201);"
         >[<?php echo __('advanced'); ?>]</a>
         <i class="help-tip icon-question-sign" href="#advanced"></i>
     </form>
@@ -168,7 +168,7 @@ return false;">
 if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
                         <li class="danger">
                             <a class="no-pjax confirm-action" href="#"
-                                data-dialog="ajax.php/queue/<?php
+                                data-dialog="asset/queue/<?php
                                 echo $queue->id; ?>/delete"><i
                             class="icon-fixed-width icon-trash"></i>
                             <?php echo __('Delete'); ?></a>

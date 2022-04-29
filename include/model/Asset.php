@@ -140,7 +140,7 @@ class Asset extends AssetModel
 
     function addForm($form, $sort=1, $data=null) {
         $entry = $form->instanciate($sort, $data);
-        $entry->set('object_type', 'G');
+        $entry->set('object_type', 'U');
         $entry->set('object_id', $this->getId());
         $entry->save();
         return $entry;
