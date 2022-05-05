@@ -69,8 +69,9 @@ if (!$sorted) {
 
 // Apply pagination
 
+$total = $assets->count();
 $page = (isset($_GET['p']) && is_numeric($_GET['p']))?$_GET['p']:1;
-$pageNav = new Pagenate(PHP_INT_MAX, $page, PAGE_LIMIT);
+$pageNav = new Pagenate($total, $page, PAGE_LIMIT);
 $assets = $pageNav->paginateSimple($assets);
 
 $Q = $queue->getBasicQuery();
@@ -89,9 +90,8 @@ if (($Q->extra && isset($Q->extra['tables'])) || !$Q->constraints || $empty) {
     $count = '-';
 }
 
-$count = $count ?? $queue->getCount($thisstaff);
-$pageNav->setTotal($count, true);
-$pageNav->setURL('asset/handle/', $args);
+$pageNav->setTotal($total, true);
+$pageNav->setURL('handle', $args);
 ?>
 
 <!-- SEARCH FORM START -->
@@ -220,7 +220,13 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
     </div>
 </div>
 <div class="clear"></div>
-
+    <?php
+    $showing = $search ? __('Search Results').': ' : '';
+    if($assets->exists(true))
+        $showing .= $pageNav->showing();
+    else
+        $showing .= __('No assets found!');
+    ?>
 <form action="?" method="POST" name='tickets' id="tickets">
 <?php csrf_token(); ?>
  <input type="hidden" name="a" value="mass_process" >
@@ -272,35 +278,30 @@ foreach ($assets as $A) {
   <tfoot>
     <tr>
       <td colspan="<?php echo count($columns)+1; ?>">
-        <?php if ($count) {
-        echo __('Select');?>:&nbsp;
-        <a id="selectAll" href="#ckb"><?php echo __('All');?></a>&nbsp;&nbsp;
-        <a id="selectNone" href="#ckb"><?php echo __('None');?></a>&nbsp;&nbsp;
-        <a id="selectToggle" href="#ckb"><?php echo __('Toggle');?></a>&nbsp;&nbsp;
-        <?php }else{
-            echo '<i>';
-            echo $ferror?Format::htmlchars($ferror):__('Query returned 0 results.');
-            echo '</i>';
-        } ?>
+          <?php if ($total) { ?>
+              <?php echo __('Select');?>:&nbsp;
+              <a id="selectAll" href="#ckb"><?php echo __('All');?></a>
+              <a id="selectNone" href="#ckb"><?php echo __('None');?></a>
+              <a id="selectToggle" href="#ckb"><?php echo __('Toggle');?></a>
+          <?php }else{
+              echo '<i>';
+              echo __('Query returned 0 results.');
+              echo '</i>';
+          } ?>
       </td>
     </tr>
   </tfoot>
 </table>
-
 <?php
-    if ($count > 0 || $skipCount) { //if we actually had any tickets returned.
-?>  <div>
-      <span class="faded pull-right"><?php echo $pageNav->showing(); ?></span>
-<?php
-        echo __('Page').':'.$pageNav->getPageLinks().'&nbsp;';
-        ?>
-        <a href="#asset/export/<?php echo $queue->getId(); ?>"
-        id="queue-export" class="no-pjax export"
-            ><?php echo __('Export'); ?></a>
-        <i class="help-tip icon-question-sign" href="#export"></i>
-    </div>
-<?php
-    } ?>
+    if ($total) {
+        echo '<div>';
+        echo '<span class="faded pull-right">'.$showing.'</span>';
+        echo sprintf('&nbsp;'.__('Page').': %s &nbsp; <a class="no-pjax"
+            href="asset/handle?a=export&qh=%s">'.__('Export').'</a></div>',
+            $pageNav->getPageLinks(),
+            $qhash);
+    }
+?>
 </form>
 
 <script type="text/javascript">
