@@ -104,7 +104,7 @@ $pageNav->setURL('asset/handle/', $args);
         require STAFFINC_DIR.'templates/queue-sort.tmpl.php';
     ?>
   </div>
-    <form action="asset/handle/" method="get" onsubmit="javascript:
+    <form action="asset/handle" method="get" onsubmit="javascript:
   $.pjax({
     url:$(this).attr('action') + '?' + $(this).serialize(),
     container:'#pjax-container',
@@ -114,7 +114,7 @@ return false;">
     <input type="hidden" name="a" value="search">
     <input type="hidden" name="search-type" value=""/>
     <div class="attached input">
-      <input type="text" class="basic-search" data-url="asset/lookup" name="query"
+      <input type="text" id="basic-asset-search" class="basic-search" data-url="asset/lookup" name="query"
         autofocus size="30" value="<?php echo Format::htmlchars($_REQUEST['query'] ?? null, true); ?>"
         autocomplete="off" autocorrect="off" autocapitalize="off">
       <button type="submit" class="attached button"><i class="icon-search"></i>
@@ -308,7 +308,7 @@ $(function() {
     $('input#basic-asset-search').typeahead({
         source: function (typeahead, query) {
             $.ajax({
-                url: "<?php echo INVENTORY_WEB_ROOT.'/asset/handle?q=';?>"+query,
+                url: "<?php echo INVENTORY_WEB_ROOT.'asset/handle?q=';?>"+query,
                 dataType: 'json',
                 success: function (data) {
                     typeahead.process(data);

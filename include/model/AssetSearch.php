@@ -47,6 +47,43 @@ class AssetSavedQueue extends \SavedQueue {
         return $this->mangleQuerySet($query);
     }
 
+    function mangleQuerySet(\QuerySet $qs, $form=false) {
+        $qs = clone $qs;
+        $searchable = $this->getSupportedMatches();
+
+        // Figure out fields to search on
+        foreach ($this->getCriteria() as $I) {
+            list($name, $method, $value) = $I;
+
+            // Consider keyword searching
+            if ($name === ':keywords') {
+                $searcher = new AssetMysqlSearchBackend();
+                $qs = $searcher->find($value, $qs, false);
+            }
+            else {
+                // XXX: Move getOrmPath to be more of a utility
+                // Ensure the special join is created to support custom data joins
+                $name = @static::getOrmPath($name, $qs);
+
+                if (preg_match('/__answers!\d+__/', $name)) {
+                    $qs->annotate(array($name => SqlAggregate::MAX($name)));
+                }
+
+                // Fetch a criteria Q for the query
+                if (list(,$field) = $searchable[$name]) {
+                    // Add annotation if the field supports it.
+                    if (is_subclass_of($field, 'AnnotatedField'))
+                        $qs = $field->annotate($qs, $name);
+
+                    if ($q = $field->getSearchQ($method, $value, $name))
+                        $qs = $qs->filter($q);
+                }
+            }
+        }
+
+        return $qs;
+    }
+
     function getRoot() {
         switch ($this->root) {
             case 'U':
@@ -273,3 +310,127 @@ class AssigneeLinkFilter
     }
 }
 \QueueColumnFilter::register('\model\AssigneeLinkFilter', __('Link'));
+
+class AssetMysqlSearchBackend extends \MysqlSearchBackend {
+    function find($query, \QuerySet $criteria, $addRelevance=true) {
+        global $thisstaff;
+
+        // MySQL usually doesn't handle words shorter than three letters
+        // (except with special configuration)
+        if (strlen($query) < 3)
+            return $criteria;
+
+        $criteria = clone $criteria;
+
+        $mode = ' IN NATURAL LANGUAGE MODE';
+
+        // According to the MySQL full text boolean mode, this grammar is
+        // assumed:
+        // see http://dev.mysql.com/doc/refman/5.6/en/fulltext-boolean.html
+        //
+        // PREOP    = [<>~+-]
+        // POSTOP   = [*]
+        // WORD     = [\w][\w-]*
+        // TERM     = PREOP? WORD POSTOP?
+        // QWORD    = " [^"]+ "
+        // PARENS   = \( { { TERM | QWORD } { \s+ { TERM | QWORD } }+ } \)
+        // EXPR     = { PREOP? PARENS | TERM | QWORD }
+        // BOOLEAN  = EXPR { \s+ EXPR }*
+        //
+        // Changing '{' for (?: and '}' for ')', collapsing whitespace, we
+        // have this regular expression
+        $BOOLEAN = '(?:[<>~+-]?\((?:(?:[<>~+-]?[\w][\w-]*[*]?|"[^"]+")(?:\s+(?:[<>~+-]?[\w][\w-]*[*]?|"[^"]+"))+)\)|[<>~+-]?[\w][\w-]*[*]?|"[^"]+")(?:\s+(?:[<>~+-]?\((?:(?:[<>~+-]?[\w][\w-]*[*]?|"[^"]+")(?:\s+(?:[<>~+-]?[\w][\w-]*[*]?|"[^"]+"))+)\)|[<>~+-]?[\w][\w-]*[*]?|"[^"]+"))*';
+
+        // Require the use of at least one operator and conform to the
+        // boolean mode grammar
+        $T = array();
+        if (preg_match('`(^|\s)["()<>~+-]`u', $query, $T)
+            && preg_match("`^{$BOOLEAN}$`u", $query, $T)
+        ) {
+            // If using boolean operators, search in boolean mode. This regex
+            // will ensure proper placement of operators, whitespace, and quotes
+            // in an effort to avoid crashing the query at MySQL
+            $query = $this->quote($query);
+            $mode = ' IN BOOLEAN MODE';
+        }
+        #elseif (count(explode(' ', $query)) == 1)
+        #    $mode = ' WITH QUERY EXPANSION';
+        $search = 'MATCH (Z1.title, Z1.content) AGAINST ('.db_input($query).$mode.')';
+
+        switch ($criteria->model) {
+            case false:
+            case 'model\Asset':
+                $criteria->extra(array(
+                    'select' => array(
+                        '__relevance__' => 'Z1.`relevance`',
+                    ),
+                    'tables' => array(
+                        str_replace(array(':', '{}'), array(TABLE_PREFIX, $search),
+                            "(SELECT Z6.`asset_id` as `asset_id`, {} AS `relevance` FROM `:_search` Z1 LEFT JOIN `:inventory_asset` Z6 ON (Z6.`asset_id` = Z1.`object_id` and Z1.`object_type` = 'G')  WHERE {}) Z1"),
+                    ),
+                ));
+                $criteria->filter(array('asset_id' => new \SqlCode('Z1.`asset_id`')));
+                break;
+            case 'User':
+                $criteria->extra(array(
+                    'select' => array(
+                        '__relevance__' => 'Z1.`relevance`',
+                    ),
+                    'tables' => array(
+                        str_replace(array(':', '{}'), array(TABLE_PREFIX, $search),
+                            "(SELECT Z6.`id` as `user_id`, {} AS `relevance` FROM `:_search` Z1 LEFT JOIN `:user` Z6 ON (Z6.`id` = Z1.`object_id` and Z1.`object_type` = 'U') LEFT JOIN `:organization` Z7 ON (Z7.`id` = Z1.`object_id` AND Z7.`id` = Z6.`org_id` AND Z1.`object_type` = 'O') WHERE {}) Z1"),
+                    )
+                ));
+                $criteria->filter(array('id'=>new SqlCode('Z1.`user_id`')));
+                break;
+        }
+
+        // TODO: Ensure search table exists;
+        if (false) {
+            // TODO: Create the search table automatically
+            // $class::createSearchTable();
+        }
+
+        $this->IndexOldStuff();
+
+        return $criteria;
+    }
+
+    function IndexOldStuff() {
+        $class = get_class();
+        $auto_create = function($db_error) use ($class) {
+
+            if ($db_error != 1146)
+                // Perform the standard error handling
+                return true;
+
+            // Create the search table automatically
+            $class::__init();
+
+        };
+
+        // ASSETS ------------------------------------
+
+        $sql = "SELECT A1.`asset_id` FROM `".INVENTORY_TABLE."` A1
+            LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`asset_id` = A2.`object_id` AND A2.`object_type`='G')
+            WHERE A2.`object_id` IS NULL";
+        if (!($res = db_query_unbuffered($sql, $auto_create)))
+            return false;
+
+        while ($row = db_fetch_row($res)) {
+            $asset = Asset::lookup($row[0]);
+            $cdata = $asset->getDynamicData();
+            $content = array();
+
+            foreach ($cdata as $e)
+                foreach ($e->getAnswers() as $a)
+                    if ($c = $a->getSearchable())
+                        $content[] = $c;
+            $record = array('G', $asset->getId(),
+                \Format::searchable($asset->getHostname()),
+                trim(implode("\n", $content)));
+            if (!$this->__index($record))
+                return;
+        }
+    }
+}
