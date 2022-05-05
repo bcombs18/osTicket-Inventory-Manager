@@ -371,18 +371,6 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
                 ));
                 $criteria->filter(array('asset_id' => new \SqlCode('Z1.`asset_id`')));
                 break;
-            case 'User':
-                $criteria->extra(array(
-                    'select' => array(
-                        '__relevance__' => 'Z1.`relevance`',
-                    ),
-                    'tables' => array(
-                        str_replace(array(':', '{}'), array(TABLE_PREFIX, $search),
-                            "(SELECT Z6.`id` as `user_id`, {} AS `relevance` FROM `:_search` Z1 LEFT JOIN `:user` Z6 ON (Z6.`id` = Z1.`object_id` and Z1.`object_type` = 'U') LEFT JOIN `:organization` Z7 ON (Z7.`id` = Z1.`object_id` AND Z7.`id` = Z6.`org_id` AND Z1.`object_type` = 'O') WHERE {}) Z1"),
-                    )
-                ));
-                $criteria->filter(array('id'=>new SqlCode('Z1.`user_id`')));
-                break;
         }
 
         // TODO: Ensure search table exists;
