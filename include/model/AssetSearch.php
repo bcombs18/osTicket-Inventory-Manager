@@ -305,6 +305,11 @@ class AssigneeLinkFilter
     static $id = 'link:assignee';
     static $desc = /* @trans */ "Assignee Link";
 
+    function filter($text, $row) {
+        $link = $this->getLink($row);
+        return sprintf('<a style="display: inline" href="%s">%s</a>', $link, \User::getNameById($text));
+    }
+
     function getLink($row) {
         return \User::getLink($row['assignee']);
     }
