@@ -191,10 +191,6 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
                       <?php echo __('Import'); ?>
                   </a>
               <?php } ?>
-              <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT.'dashboard/retired'; ?>">
-                  <i class="icon-eye-open icon-fixed-width"></i>
-                  <?php echo __('View Retired'); ?>
-              </a>
               <span class="action-button" data-dropdown="#action-dropdown-more"
                     style="/*DELME*/ vertical-align:top; margin-bottom:0">
                     <i class="icon-caret-down pull-right"></i>

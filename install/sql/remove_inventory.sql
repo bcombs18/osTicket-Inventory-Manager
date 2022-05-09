@@ -11,6 +11,7 @@ DELETE FROM `%TABLE_PREFIX%form` WHERE `id`=@form_id$
 
 SET @queue_id = (SELECT `id` FROM `%TABLE_PREFIX%queue` WHERE `title`='Assets')$
 DELETE FROM `%TABLE_PREFIX%queue` WHERE `id`=@queue_id$
+DELETE FROM `%TABLE_PREFIX%queue` WHERE `parent_id`=@queue_id$
 
 DELETE FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Hostname'$
 DELETE FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Model'$

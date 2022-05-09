@@ -58,7 +58,7 @@ BEGIN
          'text',
          'Manufacturer',
          'manufacturer',
-         4,
+         2,
          NOW(),
          NOW());
     INSERT INTO `%TABLE_PREFIX%form_field`
@@ -76,7 +76,7 @@ BEGIN
          'text',
          'Model',
          'model',
-         5,
+         3,
          NOW(),
          NOW());
     INSERT INTO `%TABLE_PREFIX%form_field`
@@ -94,7 +94,7 @@ BEGIN
          'text',
          'Serial',
          'serial',
-         9,
+         4,
          NOW(),
          NOW());
     INSERT INTO `%TABLE_PREFIX%form_field`
@@ -112,7 +112,7 @@ BEGIN
          'text',
          'Location',
          'location',
-         13,
+         5,
          NOW(),
          NOW());
     INSERT INTO `%TABLE_PREFIX%form_field`
@@ -130,7 +130,7 @@ BEGIN
          'text',
          'Assignee',
          'assignee',
-         15,
+         6,
          NOW(),
          NOW());
     END$
@@ -234,7 +234,7 @@ VALUES
      'Assignee',
      'assignee',
      NULL,
-     NULL,
+     'link:assignee',
      '',
      '[]',
      '[]',
@@ -318,7 +318,7 @@ VALUES
      @assignee_id,
      0,
      1,
-     4,
+     3,
      'Assignee',
      230);
 INSERT INTO `%TABLE_PREFIX%queue_columns`
@@ -334,9 +334,122 @@ VALUES
      @location_id,
      0,
      1,
-     5,
+     4,
      'Location',
      230);
 END$
 
 CALL `%TABLE_PREFIX%CreateInventoryQueueColumnsTable`()$
+
+DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryActiveQueue`$
+CREATE PROCEDURE `%TABLE_PREFIX%CreateInventoryActiveQueue`()
+BEGIN
+
+INSERT INTO `%TABLE_PREFIX%queue`
+(`id`,
+ `parent_id`,
+ `columns_id`,
+ `sort_id`,
+ `flags`,
+ `staff_id`,
+ `sort`,
+ `title`,
+ `config`,
+ `filter`,
+ `root`,
+ `path`,
+ `created`,
+ `updated`)
+VALUES
+    (103,
+     101,
+     NULL,
+     8,
+     43,
+     0,
+     7,
+     'Active Assets',
+     '{"criteria": [["retired", "equal", "false"]], "conditions":[]}',
+     NULL,
+     'U',
+     '/',
+     NOW(),
+     NOW());
+END$
+
+CALL `%TABLE_PREFIX%CreateInventoryActiveQueue`()$
+
+DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryRetiredQueue`$
+CREATE PROCEDURE `%TABLE_PREFIX%CreateInventoryRetiredQueue`()
+BEGIN
+
+INSERT INTO `%TABLE_PREFIX%queue`
+(`id`,
+ `parent_id`,
+ `columns_id`,
+ `sort_id`,
+ `flags`,
+ `staff_id`,
+ `sort`,
+ `title`,
+ `config`,
+ `filter`,
+ `root`,
+ `path`,
+ `created`,
+ `updated`)
+VALUES
+    (102,
+     101,
+     NULL,
+     8,
+     43,
+     0,
+     7,
+     'Retired Assets',
+     '{"criteria": [["retired", "equal", "true"]], "conditions":[]}',
+     NULL,
+     'U',
+     '/',
+     NOW(),
+     NOW());
+END$
+
+CALL `%TABLE_PREFIX%CreateInventoryRetiredQueue`()$
+
+DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryUnassignedQueue`$
+CREATE PROCEDURE `%TABLE_PREFIX%CreateInventoryUnassignedQueue`()
+BEGIN
+
+INSERT INTO `%TABLE_PREFIX%queue`
+(`id`,
+ `parent_id`,
+ `columns_id`,
+ `sort_id`,
+ `flags`,
+ `staff_id`,
+ `sort`,
+ `title`,
+ `config`,
+ `filter`,
+ `root`,
+ `path`,
+ `created`,
+ `updated`)
+VALUES
+    (104,
+     101,
+     NULL,
+     8,
+     43,
+     0,
+     7,
+     'Unassigned Assets',
+     '{"criteria": [["assignee", "equal", null]], "conditions":[]}',
+     NULL,
+     'U',
+     '/',
+     NOW(),
+     NOW());
+END$
+CALL `%TABLE_PREFIX%CreateInventoryUnassignedQueue`()$
