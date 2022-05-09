@@ -6,7 +6,7 @@ require_once(INCLUDE_DIR.'class.forms.php');
 class InventoryConfig extends PluginConfig {
 
     function getOptions() {
-        $form_choices = array('0' => '--None--');
+        $form_choices = array();
         foreach (DynamicForm::objects()->filter(array('type'=>'G')) as $group)
         {
             $form_choices[$group->get('id')] = $group->get('title');
