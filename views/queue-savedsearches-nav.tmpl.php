@@ -13,7 +13,7 @@ if ($queue && !$queue->parent_id && $queue->staff_id)
 <?php
   $href = 'href="handle?queue=adhoc"';
   if (!isset($_SESSION['advsearch']))
-      $href = 'href="#" data-dialog="search/"';
+      $href = 'href="#" data-dialog="search"';
 ?>
   <a class="Ticket" <?php echo $href; ?>><i class="icon-sort-down pull-right"></i><?php echo __('Search');
   ?></a>
@@ -45,7 +45,7 @@ if ($queue && !$queue->parent_id && $queue->staff_id)
 
      <div class="add-queue">
       <a class="full-width" onclick="javascript:
-        $.dialog('search/', 201);">
+        $.dialog('search', 201);">
         <span><i class="green icon-plus-sign"></i>
           <?php echo __('Add personal search'); ?></span>
       </a>
