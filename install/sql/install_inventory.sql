@@ -39,7 +39,7 @@ BEGIN
          28673,
          'text',
          'Hostname',
-         'hostname',
+         'host_name',
          1,
          NOW(),
          NOW());
@@ -93,7 +93,7 @@ BEGIN
          20481,
          'text',
          'Serial',
-         'serial',
+         'serial_number',
          4,
          NOW(),
          NOW());

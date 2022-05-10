@@ -220,6 +220,83 @@ class AssetSavedQueue extends \SavedQueue {
 
         return $this->getColumns();
     }
+
+    static function getExportableFields() {
+        $cdata = $fields = array();
+        foreach (AssetForm::getInstance()->getFields() as $f) {
+            // Ignore core fields
+            if (in_array($f->get('name'), array('priority')))
+                continue;
+            // Ignore non-data fields
+            elseif (!$f->hasData() || $f->isPresentationOnly())
+                continue;
+
+            $name = $f->get('name') ?: 'field_'.$f->get('id');
+            $key = $name;
+            $cdata[$key] = $f->getLocal('label');
+        }
+
+        // Standard export fields if none is provided.
+        $fields = array() + $cdata;
+
+        return $fields;
+    }
+
+    function export(\CsvExporter $exporter, $options=array()) {
+        global $thisstaff;
+
+        if (!$thisstaff
+            || !($query=$this->getQuery())
+            || !($fields=$this->getExportFields()))
+            return false;
+
+        // Do not store results in memory
+        $query->setOption(\QuerySet::OPT_NOCACHE, true);
+
+        // See if we have cached export preference
+        if (isset($_SESSION['Export:Q'.$this->getId()])) {
+            $opts = $_SESSION['Export:Q'.$this->getId()];
+            if (isset($opts['fields'])) {
+                $fields = array_intersect_key($fields,
+                    array_flip($opts['fields']));
+                $exportableFields = AssetSavedSearch::getExportableFields();
+                foreach ($opts['fields'] as $key => $name) {
+                    if (is_null($fields[$name]) && isset($exportableFields)) {
+                        $fields[$name] = $exportableFields[$name];
+                    }
+                }
+            }
+        }
+
+        // Apply columns
+        $columns = $this->getExportColumns($fields);
+        $headers = array(); // Reset fields based on validity of columns
+        foreach ($columns as $column) {
+            $query = $column->mangleQuery($query, $this->getRoot());
+            $headers[] = $column->getHeading();
+        }
+
+        $query->order_by('host_name');
+
+        // Distinct ticket_id to avoid duplicate results
+        $query->distinct('asset_id');
+
+        // Render Util
+        $render = function ($row) use($columns) {
+            if (!$row) return false;
+
+            $record = array();
+            foreach ($columns as $path => $column) {
+                $record[] = (string) $column->from_query($row) ?:
+                    $row[$path] ?: '';
+            }
+            return $record;
+        };
+
+        $exporter->write($headers);
+        foreach ($query as $row)
+            $exporter->write($render($row));
+    }
 }
 
 class AssetSavedSearch extends AssetSavedQueue {

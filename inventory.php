@@ -100,6 +100,7 @@ class InventoryPlugin extends Plugin {
                 url_post('^/(?P<id>\d+)/retire$', 'retire'),
                 url_get('^/(?P<id>\d+)/activate$', 'activate'),
                 url_post('^/(?P<id>\d+)/activate$', 'activate'),
+                url('^/export/(?P<id>\d+)$', 'export'),
                 url_get('^/lookup', 'lookup'),
                 url('^/search',
                     patterns('controller\Search',
@@ -139,9 +140,25 @@ class InventoryPlugin extends Plugin {
             )
         );
 
+        $queue_url = url('^/inventory.*queue/', patterns('controller\Search',
+            url('^(?P<id>\d+/)?preview$', 'previewQueue'),
+            url_get('^(?P<id>\d+)$', 'getQueue'),
+            url_get('^addColumn$', 'addColumn'),
+            url_get('^condition/add$', 'addCondition'),
+            url_get('^condition/addProperty$', 'addConditionProperty'),
+            url_get('^counts$', 'collectQueueCounts'),
+            url('^(?P<id>\d+)/delete$', 'deleteQueue')
+        ));
+
+        $export_url = url('^/inventory.*export/', patterns('controller\Export',
+            url('^(?P<id>\w+)/check$', 'check')
+        ));
+
         $object->append ( $media_url );
         $object->append ( $import_url );
         $object->append ( $asset_url );
+        $object->append ( $queue_url );
+        $object->append ( $export_url );
         $object->append ( $dashboard_url );
     }
 

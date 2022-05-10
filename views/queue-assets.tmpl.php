@@ -96,14 +96,6 @@ $pageNav->setURL('handle', $args);
 
 <!-- SEARCH FORM START -->
 <div id='basic_search'>
-  <div class="pull-right" style="height:25px">
-    <span class="valign-helper"></span>
-    <?php
-    require STAFFINC_DIR.'templates/queue-quickfilter.tmpl.php';
-    if ($queue->getSortOptions())
-        require STAFFINC_DIR.'templates/queue-sort.tmpl.php';
-    ?>
-  </div>
     <form action="asset/handle" method="get" onsubmit="javascript:
   $.pjax({
     url:$(this).attr('action') + '?' + $(this).serialize(),
@@ -223,10 +215,10 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
     else
         $showing .= __('No assets found!');
     ?>
-<form action="?" method="POST" name='tickets' id="tickets">
+<form action="?" method="POST" name='assets' id="assets-list">
 <?php csrf_token(); ?>
- <input type="hidden" name="a" value="mass_process" >
- <input type="hidden" name="do" id="action" value="" >
+ <input type="hidden" name="do" value="mass_process" >
+ <input type="hidden" name="a" id="action" value="" >
 
 <table class="list queue tickets" border="0" cellspacing="1" cellpadding="2" width="940">
   <thead>
@@ -255,7 +247,7 @@ foreach ($columns as $C) {
 foreach ($assets as $A) {
     echo '<tr>';
     ?>
-        <td><input type="checkbox" class="ckb" name="tids[]"
+        <td><input type="checkbox" class="ckb mass nowarn" name="tids[]"
             value="<?php echo $A['asset_id']; ?>" /></td>
 <?php
     foreach ($columns as $C) {
@@ -288,16 +280,20 @@ foreach ($assets as $A) {
     </tr>
   </tfoot>
 </table>
-<?php
-    if ($total) {
-        echo '<div>';
-        echo '<span class="faded pull-right">'.$showing.'</span>';
-        echo sprintf('&nbsp;'.__('Page').': %s &nbsp; <a class="no-pjax"
-            href="asset/handle?a=export&qh=%s">'.__('Export').'</a></div>',
-            $pageNav->getPageLinks(),
-            $qhash);
-    }
-?>
+    <?php
+    if ($total > 0) { //if we actually had any tickets returned.
+        ?>  <div>
+            <span class="faded pull-right"><?php echo $pageNav->showing(); ?></span>
+            <?php
+            echo __('Page').':'.$pageNav->getPageLinks().'&nbsp;';
+            ?>
+            <a href="#asset/export/<?php echo $queue->getId(); ?>"
+               id="queue-export" class="no-pjax asset-export"
+            ><?php echo __('Export'); ?></a>
+            <i class="help-tip icon-question-sign" href="#export"></i>
+        </div>
+        <?php
+    } ?>
 </form>
 
 <script type="text/javascript">
@@ -463,5 +459,36 @@ $(function() {
         });
         if (options.onload) { options.onload(); }
     };
+
+    $(document).on('click', 'a.asset-export', function(e) {
+        e.preventDefault();
+        var url = '<?php echo INVENTORY_WEB_ROOT; ?>' + $(this).attr('href').substr(1)
+        $.dialog(url, 201, function (xhr) {
+            var resp = $.parseJSON(xhr.responseText);
+            var checker = '<?php echo INVENTORY_WEB_ROOT; ?>' + 'export/'+resp.eid+'/check';
+            $.dialog(checker, 201, function (xhr) { });
+            return false;
+        });
+        return false;
+    });
+
+    $(function() {
+        var fired = false;
+        $('#customQ_nav li.item').hover(function() {
+            if (fired) return;
+            fired = true;
+            $.ajax({
+                url: '<?php echo INVENTORY_WEB_ROOT.'queue/counts'; ?>',
+                dataType: 'json',
+                success: function(json) {
+                    $('li span.queue-count').each(function(i, e) {
+                        var $e = $(e);
+                        $e.text(json['q' + $e.data('queueId')]);
+                        $(e).parents().find('#queue-count-bucket').show();
+                    });
+                }
+            });
+        });
+    });
 });
 </script>
