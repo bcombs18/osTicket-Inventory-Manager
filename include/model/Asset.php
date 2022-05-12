@@ -277,7 +277,7 @@ class Asset extends AssetModel
 
             if ($entry->getDynamicForm()->get('type') == 'G') {
                 //  Name field
-                if (($hostname = $entry->getField('hostname')) && $isEditable($hostname) ) {
+                if (($hostname = $entry->getField('host_name')) && $isEditable($hostname) ) {
                     $hostname = $hostname->getClean();
                     if ($this->host_name != $hostname) {
                         $type = array('type' => 'edited', 'key' => 'Hostname');
