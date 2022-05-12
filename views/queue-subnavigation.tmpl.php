@@ -10,11 +10,6 @@ global $thisstaff;
 <!-- SubQ class: only if top level Q has subQ -->
 <li <?php if ($hasChildren)  echo 'class="subQ"'; ?>>
 
-  <span class="<?php if ($thisstaff->isAdmin() || $q->isPrivate())  echo 'personalQmenu'; ?>
-    pull-right newItemQ queue-count"
-    data-queue-id="<?php echo $q->id; ?>"><span class="faded-more">-</span>
-  </span>
-
   <a class="truncate <?php if ($selected) echo ' active'; ?>" href="<?php echo "handle?queue=".$queue->getId();
     ?>" title="<?php echo Format::htmlchars($q->getName()); ?>">
       <?php

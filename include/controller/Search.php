@@ -3,6 +3,7 @@
 namespace controller;
 
 use model\AssetAdhocSearch;
+use model\AssetSavedQueue;
 use model\AssetSavedSearch;
 use model\AssetSearch;
 use SavedSearch;
@@ -224,7 +225,7 @@ class Search extends \AjaxController {
         if (!$thisstaff) {
             Http::response(403, 'Agent login is required');
         }
-        elseif (!($column = QueueColumn::lookup($column_id))) {
+        elseif (!($column = \QueueColumn::lookup($column_id))) {
             Http::response(404, 'No such queue');
         }
 
@@ -233,11 +234,11 @@ class Search extends \AjaxController {
             if ($data_form->isValid()) {
                 $column->update($_POST, 'Asset');
                 if ($column->save())
-                    Http::response(201, 'Successfully updated');
+                    \Http::response(201, 'Successfully updated');
             }
         }
 
-        $root = 'Asset';
+        $root = '\model\Asset';
         include INVENTORY_VIEWS_DIR . 'queue-column-edit.tmpl.php';
     }
 
@@ -337,20 +338,20 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff) {
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
         }
         elseif (!isset($_GET['field']) || !isset($_GET['id'])
             || !isset($_GET['object_id'])
         ) {
-            Http::response(400, '`field`, `id`, and `object_id` parameters required');
+            \Http::response(400, '`field`, `id`, and `object_id` parameters required');
         }
         elseif (!is_numeric($_GET['object_id'])) {
-            Http::response(400, '`object_id` should be an integer');
+            \Http::response(400, '`object_id` should be an integer');
         }
-        $fields = SavedSearch::getSearchableFields('Ticket');
+        $fields = \SavedSearch::getSearchableFields('\model\Asset');
         if (!isset($fields[$_GET['field']])) {
-            Http::response(400, sprintf('%s: No such searchable field'),
-                Format::htmlchars($_GET['field']));
+            \Http::response(400, sprintf('%s: No such searchable field'),
+                \Format::htmlchars($_GET['field']));
         }
 
         list($label, $field) = $fields[$_GET['field']];
@@ -358,7 +359,7 @@ class Search extends \AjaxController {
         $field_name = $_GET['field'];
         $id = $_GET['id'];
         $object_id = $_GET['object_id'];
-        $condition = new QueueColumnCondition(array());
+        $condition = new \QueueColumnCondition(array());
         include INVENTORY_VIEWS_DIR . 'queue-column-condition.tmpl.php';
     }
 
@@ -375,19 +376,5 @@ class Search extends \AjaxController {
         $prop = $_GET['prop'];
         $id = $_GET['condition'];
         include INVENTORY_VIEWS_DIR . 'queue-column-condition-prop.tmpl.php';
-    }
-
-    function collectQueueCounts($ids=null) {
-        global $thisstaff;
-
-        if (!$thisstaff)
-            \Http::response(403, 'Agent login is required');
-
-        $criteria = array();
-        if ($ids && is_array($ids))
-            $criteria = array('id__in' => $ids);
-        $counts = \SavedQueue::counts($thisstaff, true, $criteria);
-        \Http::response(200, false, 'application/json');
-        return $this->encode(\Format::number($counts));
     }
 }

@@ -472,23 +472,26 @@ $(function() {
         return false;
     });
 
-    $(function() {
-        var fired = false;
-        $('#customQ_nav li.item').hover(function() {
-            if (fired) return;
-            fired = true;
-            $.ajax({
-                url: '<?php echo INVENTORY_WEB_ROOT.'queue/counts'; ?>',
-                dataType: 'json',
-                success: function(json) {
-                    $('li span.queue-count').each(function(i, e) {
-                        var $e = $(e);
-                        $e.text(json['q' + $e.data('queueId')]);
-                        $(e).parents().find('#queue-count-bucket').show();
-                    });
+    $(document).on('change', 'select[data-quick-add]', function() {
+        var $select = $(this),
+            selected = $select.find('option:selected'),
+            type = selected.parent().closest('[data-quick-add]').data('quickAdd');
+        if (!type || (selected.data('quickAdd') === undefined && selected.val() !== ':new:'))
+            return;
+        $.dialog('<?php echo INVENTORY_WEB_ROOT.'admin/quick-add/'; ?>' + type, 201,
+            function(xhr, data) {
+                data = JSON.parse(data);
+                if (data && data.id && data.name) {
+                    var id = data.id;
+                    if (selected.data('idPrefix'))
+                        id = selected.data('idPrefix') + id;
+                    $('<option>')
+                        .attr('value', id)
+                        .text(data.name)
+                        .insertBefore(selected)
+                    $select.val(id);
                 }
             });
-        });
     });
 });
 </script>

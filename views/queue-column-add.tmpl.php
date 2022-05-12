@@ -4,18 +4,16 @@
  *
  * $column - <QueueColumn> instance for this column
  */
-$colid = $column->getId();
+$colid = 0;
 ?>
-<h3 class="drag-handle"><?php echo __('Manage Queue Column'); ?> &mdash;
-    <?php echo $column->get('name') ?></h3>
+<h3 class="drag-handle"><?php echo __('Add Queue Column'); ?></h3>
 <a class="close" href=""><i class="icon-remove-circle"></i></a>
 <hr/>
 
-<form method="post" action="#asset/search/column/edit/<?php
-    echo $colid; ?>">
+<form method="post" action="#admin/quick-add/queue-column">
 
 <?php
-include INVENTORY_VIEWS_DIR . 'queue-column.tmpl.php';
+include INVENTORY_VIEWS_DIR.'queue-column.tmpl.php';
 ?>
 
 <hr>

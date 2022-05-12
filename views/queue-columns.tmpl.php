@@ -53,7 +53,7 @@ $hidden_cols = $queue->inheritColumns() || $queue->useStandardColumns();
         <a class="inline action-button"
             href="#" onclick="javascript:
             var colid = $(this).closest('tr').find('[data-name=column_id]').val();
-            $.dialog('ajax.php/tickets/search/column/edit/' + colid, 201);
+            $.dialog('asset/search/column/edit/' + colid, 201);
             return false;
             "><i class="icon-cog"></i> <?php echo __('Config'); ?></a>
         </div>

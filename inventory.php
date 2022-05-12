@@ -154,11 +154,18 @@ class InventoryPlugin extends Plugin {
             url('^(?P<id>\w+)/check$', 'check')
         ));
 
+        $admin_url = url('^/inventory.*admin', patterns('controller\Admin',
+            url('^/quick-add', patterns('controller\Admin',
+                url('^/queue-column$', 'addQueueColumn')
+            ))
+        ));
+
         $object->append ( $media_url );
         $object->append ( $import_url );
         $object->append ( $asset_url );
         $object->append ( $queue_url );
         $object->append ( $export_url );
+        $object->append ( $admin_url );
         $object->append ( $dashboard_url );
     }
 
