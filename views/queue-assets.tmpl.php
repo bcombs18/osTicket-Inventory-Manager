@@ -115,7 +115,6 @@ return false;">
     <a href="#" onclick="javascript:
         $.dialog('search', 201);"
         >[<?php echo __('advanced'); ?>]</a>
-        <i class="help-tip icon-question-sign" href="#advanced"></i>
     </form>
 </div>
 <!-- SEARCH FORM END -->
@@ -290,7 +289,6 @@ foreach ($assets as $A) {
             <a href="#asset/export/<?php echo $queue->getId(); ?>"
                id="queue-export" class="no-pjax asset-export"
             ><?php echo __('Export'); ?></a>
-            <i class="help-tip icon-question-sign" href="#export"></i>
         </div>
         <?php
     } ?>
