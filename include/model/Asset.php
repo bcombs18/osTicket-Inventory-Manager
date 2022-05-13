@@ -38,7 +38,7 @@ class Asset extends AssetModel
         }
         if (!$asset && $create) {
             $asset = new Asset(array(
-                'host_name' => \Format::htmldecode(\Format::sanitize($vars['hostname'])),
+                'host_name' => \Format::htmldecode(\Format::sanitize($vars['host_name'])),
                 'manufacturer' => \Format::htmldecode(\Format::sanitize($vars['manufacturer'])),
                 'model' => \Format::htmldecode(\Format::sanitize($vars['model'])),
                 'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial'])),
