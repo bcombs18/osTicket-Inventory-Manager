@@ -2,10 +2,10 @@
 
 namespace controller;
 
-use model\AssetAdhocSearch;
-use model\AssetSavedQueue;
-use model\AssetSavedSearch;
-use model\AssetSearch;
+use \AssetAdhocSearch;
+use \AssetSavedQueue;
+use \AssetSavedSearch;
+use \AssetSearch;
 use SavedSearch;
 
 require_once(INCLUDE_DIR.'class.ajax.php');
@@ -39,9 +39,9 @@ class Search extends \AjaxController {
 
         $search = SavedSearch::lookup($id);
         if (!$thisstaff)
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
         elseif (!$search || !$search->checkAccess($thisstaff))
-            Http::response(404, 'No such saved search');
+            \Http::response(404, 'No such saved search');
 
         $this->_tryAgain($search);
     }
@@ -50,14 +50,14 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff)
-            Http::response(403, 'Agent login required');
+            \Http::response(403, 'Agent login required');
 
         $search = new \SavedSearch(array(
             'root'=>'U'
         ));
         $searchable = $search->getSupportedMatches();
         if (!($F = $searchable[$name]))
-            Http::response(404, 'No such field: ', print_r($name, true));
+            \Http::response(404, 'No such field: ', print_r($name, true));
 
         $fields = \SavedSearch::getSearchField($F, $name);
         $form = new \AdvancedSearchForm($fields);
@@ -79,7 +79,7 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff)
-            Http::response(403, 'Agent login is required');
+           \Http::response(403, 'Agent login is required');
 
         $search = new AssetAdhocSearch(array(
             'root' => 'U',
@@ -95,14 +95,14 @@ class Search extends \AjaxController {
         )));
     }
 
-    function _hasErrors(\model\AssetSavedSearch $search, $form) {
+    function _hasErrors(AssetSavedSearch $search, $form) {
         if (!$form->isValid()) {
             $this->_tryAgain($search, $form);
             return true;
         }
     }
 
-    function _setupSearch(\model\AssetSavedSearch $search, $form, $key='advsearch') {
+    function _setupSearch(AssetSavedSearch $search, $form, $key='advsearch') {
         if ($this->_hasErrors($search, $form))
             return false;
 
@@ -223,10 +223,10 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff) {
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
         }
         elseif (!($column = \QueueColumn::lookup($column_id))) {
-            Http::response(404, 'No such queue');
+            \Http::response(404, 'No such queue');
         }
 
         if ($_POST) {
@@ -246,10 +246,10 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff) {
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
         }
         elseif (!($sort = QueueSort::lookup($sort_id))) {
-            Http::response(404, 'No such queue sort');
+            \Http::response(404, 'No such queue sort');
         }
 
         $data_form = $sort->getDataConfigForm($_POST ?: false);
@@ -257,7 +257,7 @@ class Search extends \AjaxController {
             if ($data_form->isValid()) {
                 $sort->update($data_form->getClean() + $_POST);
                 if ($sort->save())
-                    Http::response(201, 'Successfully updated');
+                    \Http::response(201, 'Successfully updated');
             }
         }
 
@@ -269,11 +269,11 @@ class Search extends \AjaxController {
 
         $queue = SavedSearch::lookup($id);
         if (!$thisstaff)
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
         elseif (!$queue || !$queue->checkAccess($thisstaff))
-            Http::response(404, 'No such queue');
+            \Http::response(404, 'No such queue');
 
-        Http::response(200, $this->encode(array(
+        \Http::response(200, $this->encode(array(
             'name' => $queue->getName(),
             'criteria' => nl2br(Format::htmlchars($queue->describeCriteria())),
         )));
@@ -367,10 +367,10 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff) {
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
         }
         elseif (!isset($_GET['prop']) || !isset($_GET['condition'])) {
-            Http::response(400, '`prop` and `condition` parameters required');
+            \Http::response(400, '`prop` and `condition` parameters required');
         }
 
         $prop = $_GET['prop'];

@@ -1,6 +1,6 @@
 <?php
 
-namespace model;
+use \model\AssetForm;
 
 class AssetSavedQueue extends \SavedQueue {
     function getCurrentSearchFields($source=array(), $criteria=array()) {
@@ -297,6 +297,40 @@ class AssetSavedQueue extends \SavedQueue {
         foreach ($query as $row)
             $exporter->write($render($row));
     }
+
+    static function getHierarchicalQueues(\Staff $staff, $pid=0,
+                                                $primary=true) {
+        $query = static::objects()
+            ->annotate(array('_sort' =>  \SqlCase::N()
+                ->when(array('sort' => 0), 999)
+                ->otherwise(new \SqlField('sort'))))
+            ->filter(\Q::any(array(
+                'flags__hasbit' => self::FLAG_PUBLIC,
+                'flags__hasbit' => static::FLAG_QUEUE,
+                'staff_id' => $staff->getId(),
+            )))
+            ->order_by('parent_id', '_sort', 'title');
+        $all = $query->asArray();
+        // Find all the queues with a given parent
+        $for_parent = function($pid) use ($primary, $all, &$for_parent) {
+            $results = [];
+            foreach (new \ArrayIterator($all) as $q) {
+                if ($q->parent_id != $pid)
+                    continue;
+
+                if ($pid == 0 && (
+                        ($primary &&  !$q->isAQueue())
+                        || (!$primary && $q->isAQueue())))
+                    continue;
+
+                $results[] = [ $q, $for_parent($q->getId()) ];
+            }
+
+            return $results;
+        };
+
+        return $for_parent($pid);
+    }
 }
 
 class AssetSavedSearch extends AssetSavedQueue {
@@ -375,7 +409,7 @@ class AssetLinkWithPreviewFilter extends \TicketLinkWithPreviewFilter {
         return \model\Asset::getLink($row['asset_id']);
     }
 }
-\QueueColumnFilter::register('\model\AssetLinkWithPreviewFilter', __('Link'));
+\QueueColumnFilter::register('\AssetLinkWithPreviewFilter', __('Link'));
 
 class AssigneeLinkFilter
     extends \TicketLinkFilter {
@@ -391,7 +425,7 @@ class AssigneeLinkFilter
         return \User::getLink($row['assignee']);
     }
 }
-\QueueColumnFilter::register('\model\AssigneeLinkFilter', __('Link'));
+\QueueColumnFilter::register('\AssigneeLinkFilter', __('Link'));
 
 class AssetMysqlSearchBackend extends \MysqlSearchBackend {
     function find($query, \QuerySet $criteria, $addRelevance=true) {

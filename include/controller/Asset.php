@@ -5,9 +5,9 @@ namespace controller;
 require_once(INCLUDE_DIR . 'class.staff.php');
 
 use Format;
-use model\AssetAdhocSearch;
+use \AssetAdhocSearch;
 use model\AssetForm;
-use model\AssetSavedSearch;
+use \AssetSavedSearch;
 use User;
 
 class Asset {

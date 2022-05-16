@@ -14,7 +14,7 @@ if ($_REQUEST['id'] && !($asset=\model\Asset::lookup($_REQUEST['id'])))
     $errors['err'] = sprintf(__('%s: Unknown or invalid'), _N('asset', 'assets', 1));
 
 // Fetch ticket queues organized by root and sub-queues
-$queues = CustomQueue::getHierarchicalQueues($thisstaff);
+$queues = \AssetSavedQueue::getHierarchicalQueues($thisstaff);
 
 $page='';
 $redirect = false;
@@ -58,14 +58,14 @@ if (!$asset) {
             $key = key($_SESSION['advsearch']);
         }
 
-        $queue = \model\AssetAdhocSearch::load($key);
+        $queue = \AssetAdhocSearch::load($key);
     }
 
     if ((int) $queue_id && !isset($queue))
-        $queue = \model\AssetSavedQueue::lookup($queue_id);
+        $queue = \AssetSavedQueue::lookup($queue_id);
 
     if (!$queue && ($qid=$cfg->getDefaultTicketQueueId()))
-        $queue = \model\AssetSavedQueue::lookup($qid);
+        $queue = \AssetSavedQueue::lookup($qid);
 
     if (!$queue && $queues)
         list($queue,) = $queues[0];
@@ -198,7 +198,7 @@ $nav->addSubNavInfo('jb-overflowmenu', 'customQ_nav');
 // Start with all the top-level (container) queues
 foreach ($queues as $_) {
     list($q, $children) = $_;
-    if ($q->isPrivate() || $q->getName() != 'Assets')
+    if ($q->getStatus() != 'Disabled' && $q->getName() != 'Assets')
         continue;
     $nav->addSubMenu(function() use ($q, $queue, $children) {
         // A queue is selected if it is the one being displayed. It is
