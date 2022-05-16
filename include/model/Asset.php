@@ -41,7 +41,7 @@ class Asset extends AssetModel
                 'host_name' => \Format::htmldecode(\Format::sanitize($vars['host_name'])),
                 'manufacturer' => \Format::htmldecode(\Format::sanitize($vars['manufacturer'])),
                 'model' => \Format::htmldecode(\Format::sanitize($vars['model'])),
-                'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial'])),
+                'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial_number'])),
                 'location' => $vars['location'],
                 'assignee' => $user,
                 'retired' => 'false',
