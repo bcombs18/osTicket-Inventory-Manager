@@ -371,7 +371,7 @@ class AssetAdhocSearch extends AssetSavedSearch {
             || !($config=$_SESSION['advsearch'][$key]))
             return null;
 
-        $queue = new \model\AssetAdhocSearch(array(
+        $queue = new AssetAdhocSearch(array(
             'id' => "adhoc,$key",
             'root' => 'U',
             'staff_id' => $thisstaff->getId(),
@@ -522,7 +522,7 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
             return false;
 
         while ($row = db_fetch_row($res)) {
-            $asset = Asset::lookup($row[0]);
+            $asset = \model\Asset::lookup($row[0]);
             $cdata = $asset->getDynamicData();
             $content = array();
 
