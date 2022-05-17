@@ -7,6 +7,15 @@ class AssetModel extends \VerySimpleModel {
     static $meta = array(
         'table' => 'ost_inventory_asset',
         'pk' => 'asset_id',
+        'joins' => array(
+            'entries' => array(
+                'constraint' => array(
+                    "'G'" => 'DynamicFormEntry.object_type',
+                    'asset_id' => 'DynamicFormEntry.object_id',
+                ),
+                'list' => true,
+            ),
+        )
     );
 
     function getId() {

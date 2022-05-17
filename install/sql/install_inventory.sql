@@ -161,7 +161,7 @@ VALUES
      0,
      NULL,
      8,
-     43,
+     47,
      0,
      7,
      'Assets',
