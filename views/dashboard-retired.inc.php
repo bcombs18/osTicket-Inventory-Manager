@@ -5,7 +5,6 @@ global $ost;
 global $thisstaff;
 global $nav;
 global $org;
-require(STAFFINC_DIR . 'header.inc.php');
 
 $qs = array();
 $assets = \model\Asset::objects();
@@ -269,7 +268,3 @@ $(function() {
     };
 });
 </script>
-
-<?php
-require(STAFFINC_DIR.'footer.inc.php');
-?>

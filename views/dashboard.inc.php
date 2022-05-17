@@ -5,7 +5,6 @@ global $ost;
 global $thisstaff;
 global $nav;
 global $org;
-require(STAFFINC_DIR . 'header.inc.php');
 
 $qs = array();
 $assets = \model\Asset::objects();
@@ -80,6 +79,11 @@ $assets->order_by($order . $order_column);
                 <button type="submit" class="attached button"><i class="icon-search"></i>
                 </button>
             </div>
+            <a href="#" onclick="javascript:
+            $.dialog('search/', 201);"
+            >[<?php echo __('advanced'); ?>]</a>
+            <i class="help-tip icon-question-sign" href="#advanced"></i>
+        </form>
         </form>
     </div>
  </div>
@@ -290,19 +294,12 @@ $(function() {
         }, true);
     };
 
-    let root_url = '<?php echo ROOT_DIR; ?>';
-    $.dialog = function (url, codes, cb, options, useDispatcher=false) {
+    let root_url = '<?php echo OST_WEB_ROOT; ?>';
+    $.dialog = function (url, codes, cb, options) {
         options = options||{};
 
         if (codes && !$.isArray(codes))
             codes = [codes];
-
-        let urlDispatcher = null;
-        if(useDispatcher === true) {
-            urlDispatcher = root_url + 'scp/dispatcher.php/inventory/';
-        } else {
-            urlDispatcher = root_url + 'scp/ajax.php/';
-        }
 
         var $popup = $('.dialog#popup');
 
@@ -345,9 +342,10 @@ $(function() {
                 $('div#popup-loading', $popup).show()
                     .find('h1').css({'margin-top':function() { return $popup.height()/3-$(this).height()/3}});
 
+                console.log('URL BEING USED: ' + root_url + 'scp/dispatcher.php/inventory/'+$form.attr('action').substr(1));
                 $.ajax({
                     type:  $form.attr('method'),
-                    url: urlDispatcher+$form.attr('action').substr(1),
+                    url: root_url + 'scp/dispatcher.php/inventory/'+$form.attr('action').substr(1),
                     data: data,
                     cache: false,
                     success: function(resp, status, xhr) {
@@ -382,7 +380,7 @@ $(function() {
                     .done(function() {
                         $('div#popup-loading', $popup).hide();
                     })
-                    .fail(function() { });
+                    .fail(function() { console.log('AJAX failed')});
                 return false;
             });
         });
@@ -390,7 +388,3 @@ $(function() {
     };
 });
 </script>
-
-<?php
-require(STAFFINC_DIR.'footer.inc.php');
-?>

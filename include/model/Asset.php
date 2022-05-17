@@ -7,6 +7,15 @@ class AssetModel extends \VerySimpleModel {
     static $meta = array(
         'table' => 'ost_inventory_asset',
         'pk' => 'asset_id',
+        'joins' => array(
+            'entries' => array(
+                'constraint' => array(
+                    "'G'" => 'DynamicFormEntry.object_type',
+                    'asset_id' => 'DynamicFormEntry.object_id',
+                ),
+                'list' => true,
+            ),
+        )
     );
 
     function getId() {
@@ -38,10 +47,10 @@ class Asset extends AssetModel
         }
         if (!$asset && $create) {
             $asset = new Asset(array(
-                'host_name' => \Format::htmldecode(\Format::sanitize($vars['hostname'])),
+                'host_name' => \Format::htmldecode(\Format::sanitize($vars['host_name'])),
                 'manufacturer' => \Format::htmldecode(\Format::sanitize($vars['manufacturer'])),
                 'model' => \Format::htmldecode(\Format::sanitize($vars['model'])),
-                'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial'])),
+                'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial_number'])),
                 'location' => $vars['location'],
                 'assignee' => $user,
                 'retired' => 'false',
@@ -277,7 +286,7 @@ class Asset extends AssetModel
 
             if ($entry->getDynamicForm()->get('type') == 'G') {
                 //  Name field
-                if (($hostname = $entry->getField('hostname')) && $isEditable($hostname) ) {
+                if (($hostname = $entry->getField('host_name')) && $isEditable($hostname) ) {
                     $hostname = $hostname->getClean();
                     if ($this->host_name != $hostname) {
                         $type = array('type' => 'edited', 'key' => 'Hostname');
@@ -381,13 +390,68 @@ class Asset extends AssetModel
         return true;
     }
 
-    static function getSearchableFields()
-    {
-        // TODO: Implement getSearchableFields() method.
+    static function getSearchableFields() {
+        global $thisstaff;
+
+        $base = array(
+            'host_name' => new \TextboxField(array(
+                'label' => __('Hostname')
+            )),
+            'manufacturer' => new \TextboxField(array(
+                'label' => __('Manufacturer')
+            )),
+            'model' => new \TextboxField(array(
+                'label' => __('Model')
+            )),
+            'assignee' => new \TextboxField(array(
+                'label' => __('Assignee')
+            )),
+            'location' => new \TextboxField(array(
+                'label' => __('Location')
+            )),
+            'serial_number' => new \TextboxField(array(
+                'label' => __('Serial Number')
+            )),
+            'retired' => new \BooleanField(array(
+                'label' => __('Is Retired')
+            )),
+            'created' => new \DatetimeField(array(
+                'label' => __('Create Date'),
+                'configuration' => array(
+                    'fromdb' => true, 'time' => true,
+                    'format' => 'y-MM-dd HH:mm:ss'),
+            )),
+            'lastupdate' => new \DatetimeField(array(
+                'label' => __('Last Update'),
+                'configuration' => array(
+                    'fromdb' => true, 'time' => true,
+                    'format' => 'y-MM-dd HH:mm:ss'),
+            )),
+        );
+        $aform = AssetForm::getInstance();
+        foreach ($aform->getFields() as $F) {
+            $fname = $F->get('name') ?: ('field_'.$F->get('id'));
+            if (!$F->hasData() || $F->isPresentationOnly() || !$F->isEnabled())
+                continue;
+            if (!$F->isStorable())
+                $base[$fname] = $F;
+            else
+                $base["cdata__{$fname}"] = $F;
+        }
+        return $base;
     }
 
     static function getVarScope()
     {
         // TODO: Implement getVarScope() method.
+    }
+
+    static function getLink($id) {
+        global $thisstaff;
+
+        switch (true) {
+            case ($thisstaff instanceof \Staff):
+                return sprintf(INVENTORY_WEB_ROOT.'asset/handle?id=%s', $id);
+        }
     }
 }

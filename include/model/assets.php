@@ -7,10 +7,76 @@ if (!$thisstaff->hasPerm(User::PERM_DIRECTORY))
     Http::redirect('index.php');
 
 require_once INCLUDE_DIR.'class.note.php';
+require_once INVENTORY_INCLUDE_DIR.'model/AssetSearch.php';
 
 $asset = null;
 if ($_REQUEST['id'] && !($asset=\model\Asset::lookup($_REQUEST['id'])))
     $errors['err'] = sprintf(__('%s: Unknown or invalid'), _N('asset', 'assets', 1));
+
+// Fetch ticket queues organized by root and sub-queues
+$queues = \AssetSavedQueue::getHierarchicalQueues($thisstaff);
+
+$page='';
+$redirect = false;
+
+if (!$asset) {
+    $queue_id = null;
+
+    // Basic search (click on 🔍 )
+    if (isset($_GET['a']) && $_GET['a'] === 'search'
+        && ($_GET['query'])
+    ) {
+        $wc = mb_str_wc($_GET['query']);
+        if ($wc < 4) {
+            $key = substr(md5($_GET['query']), -10);
+            if ($_GET['search-type'] == 'typeahead') {
+                // Use a faster index
+                $criteria = ['user__emails__address', 'equal', $_GET['query']];
+            } else {
+                $criteria = [':keywords', null, $_GET['query']];
+            }
+            $_SESSION['advsearch'][$key] = [$criteria];
+            $queue_id = "adhoc,{$key}";
+        } else {
+            $errors['err'] = sprintf(
+                __('Search term cannot have more than %d keywords', 4));
+        }
+    }
+
+    $queue_key = sprintf('::Q:%s', 'U');
+    $queue_id = $queue_id ?: @$_GET['queue'] ?: $_SESSION[$queue_key]
+        ?? 101 ?: 101;
+
+    // Recover advanced search, if requested
+    if (isset($_SESSION['advsearch'])
+        && strpos($queue_id, 'adhoc') === 0
+    ) {
+        list(,$key) = explode(',', $queue_id, 2);
+        // For queue=queue, use the most recent search
+        if (!$key) {
+            reset($_SESSION['advsearch']);
+            $key = key($_SESSION['advsearch']);
+        }
+
+        $queue = \AssetAdhocSearch::load($key);
+    }
+
+    if ((int) $queue_id && !isset($queue))
+        $queue = \AssetSavedQueue::lookup($queue_id);
+
+    if (!$queue && ($qid=$cfg->getDefaultTicketQueueId()))
+        $queue = \AssetSavedQueue::lookup($qid);
+
+    if (!$queue && $queues)
+        list($queue,) = $queues[0];
+
+    if ($queue) {
+        // Set the queue_id for navigation to turn a top-level item bold
+        $_REQUEST['queue'] = $queue->getId();
+        // Make the current queue sticky
+        $_SESSION[$queue_key] = $queue->getId();
+    }
+}
 
 if ($_POST) {
     switch(strtolower($_REQUEST['do'])) {
@@ -122,14 +188,57 @@ if ($_POST) {
             .' '.__('Internal error occurred');
 }
 
+// Clear advanced search upon request
+if (isset($_GET['clear_filter']))
+    unset($_SESSION['advsearch']);
+
+$nav->setTabActive('apps');
+$nav->addSubNavInfo('jb-overflowmenu', 'customQ_nav');
+
+// Start with all the top-level (container) queues
+foreach ($queues as $_) {
+    list($q, $children) = $_;
+    if ($q->getStatus() != 'Disabled' && $q->getName() != 'Assets')
+        continue;
+    $nav->addSubMenu(function() use ($q, $queue, $children) {
+        // A queue is selected if it is the one being displayed. It is
+        // "child" selected if its ID is in the path of the one selected
+        $_selected = ($queue && $queue->getId() == $q->getId());
+        $child_selected = $queue
+            && ($queue->parent_id == $q->getId()
+                || false !== strpos($queue->getPath(), "/{$q->getId()}/"));
+        include INVENTORY_VIEWS_DIR . 'queue-navigation.tmpl.php';
+
+        return ($child_selected || $_selected);
+    });
+}
+
+// Add my advanced searches
+$nav->addSubMenu(function() use ($queue) {
+    global $thisstaff;
+    $selected = false;
+    // A queue is selected if it is the one being displayed. It is
+    // "child" selected if its ID is in the path of the one selected
+    $child_selected = $queue instanceof SavedSearch;
+    include INVENTORY_VIEWS_DIR . 'queue-savedsearches-nav.tmpl.php';
+    return ($child_selected || $selected);
+});
+
 if($asset) {
     $page = INVENTORY_VIEWS_DIR.'asset-view.inc.php';
-} elseif($_REQUEST['r'] == 'true') {
+} else if($_REQUEST['r'] == 'true') {
     $page = INVENTORY_VIEWS_DIR.'dashboard-retired.inc.php';
 } else {
     $page = INVENTORY_VIEWS_DIR.'dashboard.inc.php';
+    if ($queue) {
+        // XXX: Check staff access?
+        $page = INVENTORY_VIEWS_DIR.'queue-assets.tmpl.php';
+        $quick_filter = @$_REQUEST['filter'];
+        $assets = $queue->getQuery(false, $quick_filter);
+    }
 }
 
-$nav->setTabActive('apps');
+require STAFFINC_DIR.'header.inc.php';
 require($page);
+require STAFFINC_DIR.'footer.inc.php';
 ?>
