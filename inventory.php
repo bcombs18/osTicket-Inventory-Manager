@@ -77,14 +77,6 @@ class InventoryPlugin extends Plugin {
             )
         );
 
-        $dashboard_url = url ( '^/inventory.*dashboard',
-            patterns ( 'controller\Dashboard',
-                url_get('^/retired', 'viewRetired'),
-                url_get ( '^/active', 'viewAction' ),
-                url('/handle', 'handle')
-            )
-        );
-
         $asset_url = url ( '^/inventory.*asset',
             patterns( 'controller\Asset',
                 url_get('^/(?P<id>\d+)$', 'getAsset'),
@@ -166,7 +158,6 @@ class InventoryPlugin extends Plugin {
         $object->append ( $queue_url );
         $object->append ( $export_url );
         $object->append ( $admin_url );
-        $object->append ( $dashboard_url );
     }
 
     function createStaffMenu() {
