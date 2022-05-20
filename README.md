@@ -1,6 +1,6 @@
 # osTicket Inventory Manager
 
-##Overview
+## Overview
 - osTicket Inventory Manager adds Inventory Tracking functionality to your osTicket instance so you can quickly find information about assets deployed in your environment. Take a look at the included features below. There's more to come!
 
 ## Requirements
