@@ -162,7 +162,7 @@ global $org;
         <?php
         $notes = \model\AssetNote::forAsset($asset);
         $create_note_url = $asset->getId().'/note';
-        include STAFFINC_DIR . 'templates/notes.tmpl.php';
+        include INVENTORY_VIEWS_DIR . 'notes.tmpl.php';
         ?>
     </div>
 </div>
@@ -234,6 +234,95 @@ global $org;
             }, {
                 onshow: function() { $('#user-search').focus(); }
             }, true);
+            return false;
+        });
+
+        $(document).on('click.note', '.quicknote .action.assetedit-note', function(e) {
+            // Prevent Auto-Scroll to top of page
+            e.preventDefault();
+            var note = $(this).closest('.quicknote'),
+                body = note.find('.body'),
+                T = $('<textarea>').text(body.html());
+            if (note.closest('.dialog, .tip_box').length)
+                T.addClass('no-bar small');
+            body.replaceWith(T);
+            T.redactor({ focusEnd: true });
+            note.find('.action.assetedit-note').hide();
+            note.find('.action.assetsave-note').show();
+            note.find('.action.assetcancel-edit').show();
+            $('#new-note-box').hide();
+            return false;
+        });
+        $(document).on('click.note', '.quicknote .action.assetcancel-edit', function() {
+            var note = $(this).closest('.quicknote'),
+                T = note.find('textarea'),
+                body = $('<div class="body">');
+            body.load('asset/note/' + note.data('id'), function() {
+                try { T.redactor('stop'); } catch (e) {}
+                T.replaceWith(body);
+                note.find('.action.assetsave-note').hide();
+                note.find('.action.assetcancel-edit').hide();
+                note.find('.action.assetedit-note').show();
+                $('#new-note-box').show();
+            });
+            return false;
+        });
+        $(document).on('click.note', '.quicknote .action.assetsave-note', function() {
+            var note = $(this).closest('.quicknote'),
+                T = note.find('textarea');
+            $.post('note/' + note.data('id'),
+                { note: T.redactor('source.getCode') },
+                function(html) {
+                    var body = $('<div class="body">').html(html);
+                    try { T.redactor('stop'); } catch (e) {}
+                    T.replaceWith(body);
+                    note.find('.action.assetsave-note').hide();
+                    note.find('.action.assetcancel-edit').hide();
+                    note.find('.action.assetedit-note').show();
+                    $('#new-note-box').show();
+                },
+                'html'
+            );
+            return false;
+        });
+        $(document).on('click.note', '.quicknote .assetdelete', function() {
+            if (!window.confirm(__('Confirm Deletion')))
+                return;
+            var that = $(this),
+                id = $(this).closest('.quicknote').data('id');
+            $.ajax('asset/note/' + id, {
+                type: 'delete',
+                success: function() {
+                    that.closest('.quicknote').animate(
+                        {height: 0, opacity: 0}, 'slow', function() {
+                            $(this).remove();
+                        });
+                }
+            });
+            return false;
+        });
+        $(document).on('click', '#assetnew-note', function() {
+            var note = $(this).closest('.quicknote'),
+                T = $('<textarea>'),
+                button = $('<input type="button">').val(__('Create'));
+            button.click(function() {
+                $.post('asset/' + note.data('url'),
+                    { note: T.redactor('source.getCode'), no_options: note.hasClass('no-options') },
+                    function(response) {
+                        T.redactor('stop');
+                        T.replaceWith(note);
+                        $(response).show('highlight').insertBefore(note.parent());
+                        $('.submit', note.parent()).remove();
+                    },
+                    'html'
+                );
+            });
+            if (note.closest('.dialog, .tip_box').length)
+                T.addClass('no-bar small');
+            note.replaceWith(T);
+            $('<p>').addClass('submit').css('text-align', 'center')
+                .append(button).appendTo(T.parent());
+            T.redactor({ focusEnd: true });
             return false;
         });
     });

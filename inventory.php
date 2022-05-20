@@ -120,6 +120,12 @@ class InventoryPlugin extends Plugin {
                     url_get('^counts$', 'collectQueueCounts'),
                     url('^/(?P<id>\d+)/delete$', 'deleteQueue')
                 )),
+                url('^/note/', patterns('controller\Note',
+                    url_get('^(?P<id>\d+)$', 'getNote'),
+                    url_post('^(?P<id>\d+)$', 'updateNote'),
+                    url_delete('^(?P<id>\d+)$', 'deleteNote'),
+                    url_post('^attach/(?P<ext_id>\w\d+)$', 'createNote')
+                )),
                 url('/add', 'addAsset'),
                 url('/handle', 'handle')
             )
@@ -162,7 +168,7 @@ class InventoryPlugin extends Plugin {
 
     function createStaffMenu() {
         $app = new Application();
-        $app->registerStaffApp('Inventory', INVENTORY_WEB_ROOT.'asset/handle');
+        $app->registerStaffApp('Inventory Manager', INVENTORY_WEB_ROOT.'asset/handle');
     }
 
     function firstRun() {
