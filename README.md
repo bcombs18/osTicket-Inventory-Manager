@@ -18,7 +18,7 @@
 7. Check "Staff Backend Interface" and select "Inventory" from the Forms dropdown.
 8. You can now access the plugin interface from Agent Panel > Applications > Inventory.
 
-##Features
+## Features
 - Create custom global and personal queues
 - Assign assets to osTicket users
 - Customizeable data fields to fit your data needs
