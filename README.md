@@ -1,5 +1,8 @@
 # osTicket Inventory Manager
 
+##Overview
+- osTicket Inventory Manager adds Inventory Tracking functionality to your osTicket instance so you can quickly find information about assets deployed in your environment. Take a look at the included features below. There's more to come!
+
 ## Requirements
 - PHP version 8.0
 - MySQL database 5.5
@@ -14,3 +17,11 @@
 6. Enable the plugin and then click on the plugin to access the plugin settings.
 7. Check "Staff Backend Interface" and select "Inventory" from the Forms dropdown.
 8. You can now access the plugin interface from Agent Panel > Applications > Inventory.
+
+##Features
+- Create custom global and personal queues
+- Assign assets to osTicket users
+- Customizeable data fields to fit your data needs
+- Export customizeable reports
+- Add notes to your assets
+- Retire assets that are no longer deployed in your organization
