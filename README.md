@@ -25,3 +25,12 @@
 - Export customizeable reports
 - Add notes to your assets
 - Retire assets that are no longer deployed in your organization
+
+## Screenshots
+![Dashboard](/images/Dashboard.png)
+![Dashboard-Preview](/images/Dashboard-Preview.png)
+![Asset Info](/images/AssetInfo.png)
+![Add Asset](/images/AddAsset.png)
+![Import Assets](/images/Import.png)
+![Advanced Search](/images/AdvancedSearch.png)
+![Global Queues](/images/GlobalQueues.png)
