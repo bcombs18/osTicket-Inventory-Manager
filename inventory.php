@@ -94,6 +94,8 @@ class InventoryPlugin extends Plugin {
                 url_post('^/(?P<id>\d+)/activate$', 'activate'),
                 url('^/export/(?P<id>\d+)$', 'export'),
                 url_get('^/lookup', 'lookup'),
+                url_get('^/lookup/form$', 'lookup'),
+                url_post('^/lookup/form$', 'addAsset'),
                 url('^/search',
                     patterns('controller\Search',
                         url_get('^$', 'getAdvancedSearchDialog'),
