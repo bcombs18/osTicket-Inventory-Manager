@@ -88,6 +88,8 @@ class InventoryPlugin extends Plugin {
                 url_get('^/(?P<id>\d+)/user$', 'viewUser'),
                 url_get('^/(?P<id>\d+)/change-user$', 'changeUserForm'),
                 url_post('^/users/lookup$', 'getUser'),
+                url_get('^/users/lookup/form$', 'lookupUser'),
+                url_post('^/users/lookup/form$', 'addUser'),
                 url_get('^/users/select$', 'selectUser'),
                 url_get('^/users/select/(?P<id>\d+)$', 'selectUser'),
                 url_post('^/(?P<id>\d+)/note$', 'createNote'),

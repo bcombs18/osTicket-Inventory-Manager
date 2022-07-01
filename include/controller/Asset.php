@@ -292,6 +292,35 @@ class Asset {
         return $resp;
     }
 
+    function lookupUser() {
+        return self::addUser();
+    }
+
+    static function addUser() {
+        global $thisstaff;
+
+        $info = array();
+
+        if (!\AuthenticationBackend::getSearchDirectories())
+            $info['lookup'] = 'local';
+
+        if ($_POST) {
+            if (!$thisstaff->hasPerm(User::PERM_CREATE))
+                \Http::response(403, 'Permission Denied');
+
+            $info['title'] = __('Add New User');
+            $form = \UserForm::getUserForm()->getForm($_POST);
+            if (!is_string($form->getField('name')->getValue()))
+                \Http::response(404, 'Invalid Data');
+            if (($user = User::fromForm($form)))
+                \Http::response(201, $user->to_json(), 'application/json');
+
+            $info['error'] = sprintf('%s - %s', __('Error adding user'), __('Please try again!'));
+        }
+
+        return self::_lookupUserForm($form, $info);
+    }
+
     function createNote($id) {
         if (!($asset = \model\Asset::lookup($id)))
             Http::response(404, 'Unknown asset');
