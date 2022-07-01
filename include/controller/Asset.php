@@ -249,6 +249,49 @@ class Asset {
 
     }
 
+    function getUser($id=false) {
+
+        if(($user=\User::lookup(($id) ? $id : $_REQUEST['id'])))
+            \Http::response(201, $user->to_json(), 'application/json');
+
+        $info = array('error' => sprintf(__('%s: Unknown or invalid ID.'), _N('end user', 'end users', 1)));
+
+        return self::_lookupUserForm(null, $info);
+    }
+
+    function selectUser($id) {
+        global $thisstaff;
+
+        if ($id)
+            $user = \User::lookup($id);
+
+        $info = array('title' => __('Select User'));
+
+        ob_start();
+        include(INVENTORY_VIEWS_DIR . 'user-lookup.tmpl.php');
+        $resp = ob_get_contents();
+        ob_end_clean();
+        return $resp;
+
+    }
+
+    static function _lookupUserForm($form=null, $info=array()) {
+        global $thisstaff;
+
+        if (!$info or !$info['title']) {
+            if ($thisstaff->hasPerm(\User::PERM_CREATE))
+                $info += array('title' => __('Lookup or create a user'));
+            else
+                $info += array('title' => __('Lookup a user'));
+        }
+
+        ob_start();
+        include(INVENTORY_VIEWS_DIR . 'user-lookup.tmpl.php');
+        $resp = ob_get_contents();
+        ob_end_clean();
+        return $resp;
+    }
+
     function createNote($id) {
         if (!($asset = \model\Asset::lookup($id)))
             Http::response(404, 'Unknown asset');
