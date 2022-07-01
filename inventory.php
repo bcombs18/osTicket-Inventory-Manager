@@ -24,6 +24,8 @@ const INVENTORY_ASSETS_DIR = INVENTORY_PLUGIN_ROOT . 'assets/';
 const INVENTORY_VENDOR_DIR = INVENTORY_PLUGIN_ROOT . 'vendor/';
 const INVENTORY_VIEWS_DIR = INVENTORY_PLUGIN_ROOT . 'views/';
 
+const INVENTORY_PLUGIN_VERSION = '1.0.2';
+
 require_once INVENTORY_VENDOR_DIR.'autoload.php';
 spl_autoload_register(array(
     'InventoryPlugin',
@@ -56,6 +58,8 @@ class InventoryPlugin extends Plugin {
             if(!$this->configureFirstRun()) {
                 return false;
             }
+        } else if ($this->needsUpgrade()) {
+            $this->configureUpgrade();
         }
 
         $config = $this->getConfig();
@@ -196,6 +200,28 @@ class InventoryPlugin extends Plugin {
         }
 
         return true;
+    }
+
+    function needsUpgrade() {
+        $sql = 'SELECT version FROM ' . PLUGIN_TABLE . ' WHERE name=\'Inventory Manager\'';
+
+        if (! ($res = db_query($sql))) {
+            return true;
+        } else {
+            $ht = db_fetch_array($res);
+            if(floatval($ht['version']) < floatval(INVENTORY_PLUGIN_VERSION)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function configureUpgrade() {
+        $installer = new \util\InventoryInstaller();
+
+        if(!$installer->upgrade()) {
+            echo "Upgrade configuration error. " . "Unable to upgrade database tables!";
+        }
     }
 
     function createDBTables() {
