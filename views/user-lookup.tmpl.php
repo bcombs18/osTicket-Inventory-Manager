@@ -80,7 +80,7 @@ if ($user) { ?>
 </div>
 <div id="new-user-form" style="display:<?php echo $user ? 'none' :'block'; ?>;">
 <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
-<form method="post" class="user" action="#users/lookup/form">
+<form method="post" class="user" action="#asset/users/lookup/form">
     <table width="100%" class="fixed">
     <?php
         $form = $form ?: UserForm::getInstance();
