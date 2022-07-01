@@ -25,7 +25,7 @@ if ($info['error']) {
     echo sprintf('<p id="msg_notice">%s</p>', $info['msg']);
 } ?>
 <div id="selected-user-info" style="display:<?php echo $user ? 'block' :'none'; ?>;margin:5px;">
-<form method="post" class="user" action="#users/lookup">
+<form method="post" class="user" action="#asset/users/lookup">
     <input type="hidden" id="user-id" name="id" value="<?php echo $user ? $user->getId() : 0; ?>"/>
 <?php
 if ($user) { ?>
@@ -127,7 +127,7 @@ $(function() {
         },
         onselect: function (obj) {
             $('#the-lookup-form').load(
-                '<?php echo $info['onselect']? $info['onselect']: OST_WEB_ROOT."scp/ajax.php/users/select/"; ?>'+encodeURIComponent(obj.id)
+                '<?php echo $info['onselect']? $info['onselect']: INVENTORY_WEB_ROOT."asset/users/select/"; ?>'+encodeURIComponent(obj.id)
             );
         },
         property: "/bin/true"
