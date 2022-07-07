@@ -30,20 +30,21 @@
                 <h2 style="margin-bottom:10px"><?php echo __('Import a CSV File'); ?></h2>
                 <p>
                     <em><?php echo sprintf(__(
-                            'Use the columns shown in the table below. To add more fields, visit the Admin Panel -&gt; Manage -&gt; Forms -&gt; %s page to edit the available fields.  Only fields with `variable` defined can be imported. Headers in the CSV MUST match the columns below verbatim to import correctly!'),
+                            'Use the columns shown in the table below. To add more fields, visit the Admin Panel -&gt; Manage -&gt; Forms -&gt; %s page to edit the available fields.  Only fields with `variable` defined can be imported.'),
                             \model\AssetForm::getAssetForm()->get('title')
                         ); ?>
                     <strong><br><br><?php echo 'Headers in the CSV MUST match the columns below verbatim to import correctly!'; ?></strong>
+                    <strong><br><?php echo 'Assignee must be a user email in order for assets to be linked to user profiles.'; ?></strong>
                 </p>
                 <table class="list"><tr>
                         <?php
                         $fields = array();
                         $data = array(
-                            array('name' => __('John Doe'), 'email' => __('john.doe@osticket.com'))
+                            array('Hostname' => __('ExamplePC-1'), 'Manufacturer' => __('HP'), 'Model' => __('Example Model'), 'Serial' => __('ABCD123'), 'Location' => __('Room 102'), 'Assignee' => __('john.doe@example.com'))
                         );
                         foreach (\model\AssetForm::getAssetForm()->getFields() as $f)
-                            if ($f->get('name'))
-                                $fields[] = $f->get('name');
+                            if ($f->get('label'))
+                                $fields[] = $f->get('label');
                         foreach ($fields as $f) { ?>
                             <th><?php echo $f ?></th>
                         <?php } ?>
