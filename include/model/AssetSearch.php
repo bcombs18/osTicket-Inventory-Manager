@@ -242,6 +242,15 @@ class AssetSavedQueue extends \SavedQueue {
         return $fields;
     }
 
+    function getExportFields($inherit=true) {
+
+        $fields = array();
+
+        $fields = $this->getExportableFields();
+
+        return $fields;
+    }
+
     function export(\CsvExporter $exporter, $options=array()) {
         global $thisstaff;
 
