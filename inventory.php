@@ -24,7 +24,7 @@ const INVENTORY_ASSETS_DIR = INVENTORY_PLUGIN_ROOT . 'assets/';
 const INVENTORY_VENDOR_DIR = INVENTORY_PLUGIN_ROOT . 'vendor/';
 const INVENTORY_VIEWS_DIR = INVENTORY_PLUGIN_ROOT . 'views/';
 
-const INVENTORY_PLUGIN_VERSION = '1.0.2';
+const INVENTORY_PLUGIN_VERSION = '1.0.3';
 
 require_once INVENTORY_VENDOR_DIR.'autoload.php';
 spl_autoload_register(array(
@@ -209,7 +209,7 @@ class InventoryPlugin extends Plugin {
             return true;
         } else {
             $ht = db_fetch_array($res);
-            if(floatval($ht['version']) < floatval(INVENTORY_PLUGIN_VERSION)) {
+            if($ht['version'] != INVENTORY_PLUGIN_VERSION) {
                 return true;
             }
         }
