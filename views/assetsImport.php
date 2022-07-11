@@ -40,11 +40,11 @@
                         <?php
                         $fields = array();
                         $data = array(
-                            array('Hostname' => __('ExamplePC-1'), 'Manufacturer' => __('HP'), 'Model' => __('Example Model'), 'Serial' => __('ABCD123'), 'Location' => __('Room 102'), 'Assignee' => __('john.doe@example.com'))
+                            array('host_name' => __('ExamplePC-1'), 'manufacturer' => __('HP'), 'model' => __('Example Model'), 'serial_number' => __('ABCD123'), 'location' => __('Room 102'), 'assignee' => __('john.doe@example.com'))
                         );
                         foreach (\model\AssetForm::getAssetForm()->getFields() as $f)
-                            if ($f->get('label'))
-                                $fields[] = $f->get('label');
+                            if ($f->get('name'))
+                                $fields[] = $f->get('name');
                         foreach ($fields as $f) { ?>
                             <th><?php echo $f ?></th>
                         <?php } ?>
