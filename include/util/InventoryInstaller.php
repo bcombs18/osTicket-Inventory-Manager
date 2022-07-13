@@ -3,10 +3,17 @@
 namespace util;
 
 require_once 'class.setup.php';
+require_once INVENTORY_MODEL_DIR.'AssetForm.php';
+
 class InventoryInstaller extends \SetupWizard {
     function install() {
         $schemaFile = INVENTORY_PLUGIN_ROOT . 'install/sql/install_inventory.sql';
-        return $this->runJob($schemaFile);
+        if(!$this->runJob($schemaFile)) {
+            return false;
+        } elseif (\model\AssetForm::ensureDynamicDataViews()) {
+            return false;
+        }
+        return true;
     }
 
     function upgrade() {

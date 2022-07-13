@@ -240,3 +240,18 @@ class InventoryPlugin extends Plugin {
         return $installer->remove();
     }
 }
+
+// Recreate the dynamic view after new or removed fields to the inventory form
+Signal::connect('model.created',
+    array('\model\AssetForm', 'updateDynamicFormField'),
+    'DynamicFormField');
+Signal::connect('model.deleted',
+    array('\model\AssetForm', 'updateDynamicFormField'),
+    'DynamicFormField');
+// If the `name` column is in the dirty list, we would be renaming a
+// column. Delete the view instead.
+\Signal::connect('model.updated',
+    array('\model\AssetForm', 'updateDynamicFormField'),
+    'DynamicFormField',
+    function($o, $d) { return isset($d['dirty'])
+        && (isset($d['dirty']['name']) || isset($d['dirty']['type'])); });

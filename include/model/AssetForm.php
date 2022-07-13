@@ -12,6 +12,12 @@ class AssetForm extends \DynamicForm {
         'pk' => array('id'),
     );
 
+    static $cdata = array(
+        'table' => TABLE_PREFIX.'inventory__cdata',
+        'object_id' => 'asset_id',
+        'object_type' => 'G',
+    );
+
     static function objects() {
         $os = parent::objects();
         return $os->filter(array('type'=>'G'));
@@ -35,7 +41,39 @@ class AssetForm extends \DynamicForm {
         static::$instance = $o->instanciate();
         return static::$instance;
     }
+
+    // ensure cdata tables exists
+    static function ensureDynamicDataViews($build=true, $force=false) {
+        if ($force && $build)
+            self::dropDynamicDataView(false);
+        self::ensureDynamicDataView($build);
+    }
+
+    static function updateDynamicFormEntryAnswer($answer, $data) {
+        if (!$answer
+            || !($e = $answer->getEntry())
+            || !$e->form)
+            return;
+
+        return self::updateDynamicDataView($answer, $data);
+    }
+
+    static function updateDynamicFormField($field, $data) {
+        if (!$field || !$field->form)
+            return;
+
+        return self::dropDynamicDataView();
+    }
 }
+
+// Manage materialized view on custom data updates
+\Signal::connect('model.created',
+    array('\model\AssetForm', 'updateDynamicFormEntryAnswer'),
+    'DynamicFormEntryAnswer');
+\Signal::connect('model.updated',
+    array('\model\AssetForm', 'updateDynamicFormEntryAnswer'),
+    'DynamicFormEntryAnswer');
+
 \Filter::addSupportedMatches(/* @trans */ 'Asset Data', function() {
     $matches = array();
     foreach (AssetForm::getInstance()->getFields() as $f) {
