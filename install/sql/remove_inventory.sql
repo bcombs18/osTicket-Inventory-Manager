@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS `%TABLE_PREFIX%inventory_asset`$
+DROP TABLE IF EXISTS `%TABLE_PREFIX%inventory__cdata`$
 
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%update_version`$
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryFormFields`$
