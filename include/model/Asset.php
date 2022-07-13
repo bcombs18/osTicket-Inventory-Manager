@@ -8,6 +8,10 @@ class AssetModel extends \VerySimpleModel {
         'table' => 'ost_inventory_asset',
         'pk' => 'asset_id',
         'joins' => array(
+            'cdata' => array(
+                'constraint' => array('asset_id' => 'AssetCdata.asset_id'),
+                'list' => false
+            ),
             'entries' => array(
                 'constraint' => array(
                     "'G'" => 'DynamicFormEntry.object_type',
@@ -28,6 +32,18 @@ class AssetModel extends \VerySimpleModel {
         else
             $this->status &= ~$flag;
     }
+}
+
+class AssetCdata extends \VerySimpleModel {
+    static $meta = array(
+        'table' => TABLE_PREFIX.'inventory__cdata',
+        'pk' => array('asset_id'),
+        'joins' => array(
+            'asset' => array(
+                'constraint' => array('asset_id' => 'AssetModel.asset_id'),
+            ),
+        ),
+    );
 }
 
 class Asset extends AssetModel
