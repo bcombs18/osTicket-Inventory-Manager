@@ -4,6 +4,7 @@
 //      render the full page
 
 // Make sure the cdata materialized view is available
+\model\AssetForm::dropDynamicDataView();
 \model\AssetForm::ensureDynamicDataView();
 
 // Identify columns of output
