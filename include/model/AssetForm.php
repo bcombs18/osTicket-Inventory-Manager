@@ -48,7 +48,25 @@ class AssetForm extends \DynamicForm {
             self::dropDynamicDataView(false);
         self::ensureDynamicDataView($build);
     }
+
+    static function updateDynamicFormEntryAnswer($answer, $data) {
+        if (!$answer
+            || !($e = $answer->getEntry())
+            || !$e->form)
+            return;
+
+        return self::updateDynamicDataView($answer, $data);
+    }
 }
+
+// Manage materialized view on custom data updates
+\Signal::connect('model.created',
+    array('\model\AssetForm', 'updateDynamicFormEntryAnswer'),
+    'DynamicFormEntryAnswer');
+\Signal::connect('model.updated',
+    array('\model\AssetForm', 'updateDynamicFormEntryAnswer'),
+    'DynamicFormEntryAnswer');
+
 \Filter::addSupportedMatches(/* @trans */ 'Asset Data', function() {
     $matches = array();
     foreach (AssetForm::getInstance()->getFields() as $f) {
