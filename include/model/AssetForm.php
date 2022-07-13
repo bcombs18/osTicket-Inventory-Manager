@@ -12,6 +12,12 @@ class AssetForm extends \DynamicForm {
         'pk' => array('id'),
     );
 
+    static $cdata = array(
+        'table' => TABLE_PREFIX.'inventory__cdata',
+        'object_id' => 'asset_id',
+        'object_type' => 'G',
+    );
+
     static function objects() {
         $os = parent::objects();
         return $os->filter(array('type'=>'G'));
@@ -34,6 +40,13 @@ class AssetForm extends \DynamicForm {
         $o = static::objects()->one();
         static::$instance = $o->instanciate();
         return static::$instance;
+    }
+
+    // ensure cdata tables exists
+    static function ensureDynamicDataViews($build=true, $force=false) {
+        if ($force && $build)
+            self::dropDynamicDataView(false);
+        self::ensureDynamicDataView($build);
     }
 }
 \Filter::addSupportedMatches(/* @trans */ 'Asset Data', function() {
