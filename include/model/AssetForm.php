@@ -57,6 +57,13 @@ class AssetForm extends \DynamicForm {
 
         return self::updateDynamicDataView($answer, $data);
     }
+
+    static function updateDynamicFormField($field, $data) {
+        if (!$field || !$field->form)
+            return;
+
+        return self::dropDynamicDataView();
+    }
 }
 
 // Manage materialized view on custom data updates
