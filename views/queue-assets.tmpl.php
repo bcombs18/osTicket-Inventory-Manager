@@ -3,6 +3,9 @@
 // $tickets - <QuerySet> with all columns and annotations necessary to
 //      render the full page
 
+// Make sure the cdata materialized view is available
+\model\AssetForm::ensureDynamicDataView();
+
 // Identify columns of output
 $columns = $queue->getColumns();
 
