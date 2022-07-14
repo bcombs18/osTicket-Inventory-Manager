@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS `%TABLE_PREFIX%inventory__cdata`$
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%update_version`$
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryFormFields`$
 
+DELETE FROM `%TABLE_PREFIX%_search` WHERE `object_type`='G'$
+
 SET @form_id = (SELECT `id` FROM `%TABLE_PREFIX%form` WHERE `type`='G')$
 DELETE FROM `%TABLE_PREFIX%form_entry_values` WHERE `entry_id` IN (SELECT `id` FROM `%TABLE_PREFIX%form_entry` WHERE `form_id`=@form_id)$
 DELETE FROM `%TABLE_PREFIX%form_entry` WHERE `form_id`=@form_id$
