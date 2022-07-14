@@ -31,7 +31,7 @@ if (!$asset) {
             $key = substr(md5($_GET['query']), -10);
             if ($_GET['search-type'] == 'typeahead') {
                 // Use a faster index
-                $criteria = ['user__emails__address', 'equal', $_GET['query']];
+                $criteria = ['host_name', 'equal', $_GET['query']];
             } else {
                 $criteria = [':keywords', null, $_GET['query']];
             }
