@@ -110,7 +110,7 @@ return false;">
     <input type="hidden" name="a" value="search">
     <input type="hidden" name="search-type" value=""/>
     <div class="attached input">
-      <input type="text" id="basic-asset-search" class="basic-search" data-url="asset/lookup" name="query"
+      <input type="text" id="basic-asset-search" class="basic-search" data-url="lookup" name="query"
         autofocus size="30" value="<?php echo Format::htmlchars($_REQUEST['query'] ?? null, true); ?>"
         autocomplete="off" autocorrect="off" autocapitalize="off">
       <button type="submit" class="attached button"><i class="icon-search"></i>
