@@ -3,6 +3,9 @@
 namespace controller;
 
 require_once(INCLUDE_DIR . 'class.staff.php');
+require_once(INCLUDE_DIR . 'class.orm.php');
+require_once(INCLUDE_DIR . 'class.ajax.php');
+require_once(INVENTORY_MODEL_DIR . 'AssetSearch.php');
 
 use Format;
 use \AssetAdhocSearch;
@@ -10,7 +13,42 @@ use model\AssetForm;
 use \AssetSavedSearch;
 use User;
 
-class Asset {
+class Asset extends \AjaxController {
+
+    function lookup() {
+        global $thisstaff;
+
+        $limit = isset($_REQUEST['limit']) ? (int) $_REQUEST['limit']:25;
+        $assets=array();
+        // Bail out of query is empty
+        if (!$_REQUEST['q'])
+            return $this->json_encode($assets);
+
+        $hits = \model\Asset::objects()
+            ->values('host_name', 'model', 'manufacturer', 'location', 'serial_number')
+            ->order_by(\SqlAggregate::SUM(new \SqlCode('Z1.relevance')), \QuerySet::DESC)
+            ->distinct('asset_id')
+            ->limit($limit);
+
+        $q = $_REQUEST['q'];
+
+        if (strlen(\Format::searchable($q)) < 3)
+            return $this->encode(array());
+
+        $searcher = new \AssetMysqlSearchBackend();
+        $hits = $searcher->find($q, $hits, false);
+
+        if (!count($hits) && preg_match('`\w$`u', $q)) {
+            // Do wild-card fulltext search
+            $_REQUEST['q'] = $q.'*';
+            return $this->lookup();
+        }
+
+        $assets = array_values($assets);
+
+        return $this->json_encode($assets);
+    }
+
     function addAsset() {
         global $thisstaff;
 

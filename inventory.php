@@ -24,7 +24,7 @@ const INVENTORY_ASSETS_DIR = INVENTORY_PLUGIN_ROOT . 'assets/';
 const INVENTORY_VENDOR_DIR = INVENTORY_PLUGIN_ROOT . 'vendor/';
 const INVENTORY_VIEWS_DIR = INVENTORY_PLUGIN_ROOT . 'views/';
 
-const INVENTORY_PLUGIN_VERSION = '1.0.3';
+const INVENTORY_PLUGIN_VERSION = '1.1.0';
 
 require_once INVENTORY_VENDOR_DIR.'autoload.php';
 spl_autoload_register(array(
@@ -236,10 +236,10 @@ class InventoryPlugin extends Plugin {
 }
 
 // Recreate the dynamic view after new or removed fields to the inventory form
-Signal::connect('model.created',
+\Signal::connect('model.created',
     array('\model\AssetForm', 'updateDynamicFormField'),
     'DynamicFormField');
-Signal::connect('model.deleted',
+\Signal::connect('model.deleted',
     array('\model\AssetForm', 'updateDynamicFormField'),
     'DynamicFormField');
 // If the `name` column is in the dirty list, we would be renaming a
