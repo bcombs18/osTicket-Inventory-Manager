@@ -183,7 +183,7 @@ if ($_POST) {
     $ts = strftime('%Y%m%d');
     if (!($query=$_SESSION[':Q:assets']))
         $errors['err'] = __('Query token not found');
-    elseif (!\model\Asset::saveAssets($query, __("assets")."-$ts.csv", 'csv'))
+    elseif (!\model\AssetExport::saveAssets($query, __("assets")."-$ts.csv", 'csv'))
         $errors['err'] = __('Unable to dump query results.')
             .' '.__('Internal error occurred');
 }

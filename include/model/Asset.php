@@ -9,8 +9,8 @@ class AssetModel extends \VerySimpleModel {
         'pk' => 'asset_id',
         'joins' => array(
             'cdata' => array(
-                'constraint' => array('asset_id' => 'AssetCdata.asset_id'),
-                'list' => false
+                'constraint' => array('asset_id' => '\model\AssetCdata.asset_id'),
+                'list' => true
             ),
             'entries' => array(
                 'constraint' => array(
@@ -40,7 +40,7 @@ class AssetCdata extends \VerySimpleModel {
         'pk' => array('asset_id'),
         'joins' => array(
             'asset' => array(
-                'constraint' => array('asset_id' => 'AssetModel.asset_id'),
+                'constraint' => array('asset_id' => '\model\AssetModel.asset_id'),
             ),
         ),
     );
@@ -349,47 +349,6 @@ class Asset extends AssetModel
 
     static function lookupBySerial($serial) {
         return static::lookup(array('serial_number'=>$serial));
-    }
-
-    static function saveAssets($sql, $filename, $how='csv') {
-
-        $exclude = array();
-        $form = \model\AssetForm::getAssetForm();
-        $fields = $form->getExportableFields($exclude);
-
-        $cdata = array_combine(array_keys($fields),
-            array_values(array_map(
-                function ($f) { return $f->getLocal('label'); }, $fields)));
-
-        $assets = $sql->models();
-
-        ob_start();
-        echo \Export::dumpQuery($assets,
-            array(
-                'host_name'  =>          __('Hostname'),
-                'manufacturer' =>   __('Manufacturer'),
-                'model' =>          __('Model'),
-                'serial_number' => __("Serial Number"),
-                'assignee' => __("Assigned To"),
-                'location' => __("Location")
-            ),
-            $how,
-            array('modify' => function(&$record, $keys, $obj) use ($fields) {
-                foreach ($fields as $k=>$f) {
-                    if ($f && ($i = array_search($k, $keys)) !== false) {
-                        $record[$i] = $f->export($f->to_php($record[$i]));
-                    }
-                }
-                return $record;
-            })
-        );
-        $stuff = ob_get_contents();
-        ob_end_clean();
-
-        if ($stuff)
-            \Http::download($filename, "text/$how", $stuff);
-
-        return false;
     }
 
     function changeAssignee($user) {

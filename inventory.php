@@ -101,7 +101,6 @@ class InventoryPlugin extends Plugin {
                 url_post('^/(?P<id>\d+)/retire$', 'retire'),
                 url_get('^/(?P<id>\d+)/activate$', 'activate'),
                 url_post('^/(?P<id>\d+)/activate$', 'activate'),
-                url('^/export/(?P<id>\d+)$', 'export'),
                 url_get('^/lookup', 'lookup'),
                 url_get('^/lookup/form$', 'lookup'),
                 url_post('^/lookup/form$', 'addAsset'),
@@ -159,10 +158,6 @@ class InventoryPlugin extends Plugin {
             url('^(?P<id>\d+)/delete$', 'deleteQueue')
         ));
 
-        $export_url = url('^/inventory.*export/', patterns('controller\Export',
-            url('^(?P<id>\w+)/check$', 'check')
-        ));
-
         $admin_url = url('^/inventory.*admin', patterns('controller\Admin',
             url('^/quick-add', patterns('controller\Admin',
                 url('^/queue-column$', 'addQueueColumn')
@@ -173,7 +168,6 @@ class InventoryPlugin extends Plugin {
         $object->append ( $import_url );
         $object->append ( $asset_url );
         $object->append ( $queue_url );
-        $object->append ( $export_url );
         $object->append ( $admin_url );
     }
 
