@@ -437,6 +437,11 @@ class AssigneeLinkFilter
 \QueueColumnFilter::register('\AssigneeLinkFilter', __('Link'));
 
 class AssetMysqlSearchBackend extends \MysqlSearchBackend {
+
+    function bootstrap() {
+        \Signal::connect('cron', array($this, 'IndexOldStuff'));
+    }
+
     function find($query, \QuerySet $criteria, $addRelevance=true) {
         global $thisstaff;
 
@@ -503,9 +508,6 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
             // TODO: Create the search table automatically
             // $class::createSearchTable();
         }
-
-        $this->IndexOldStuff();
-
         return $criteria;
     }
 
@@ -526,12 +528,14 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
 
         $sql = "SELECT A1.`asset_id` FROM `".INVENTORY_TABLE."` A1
             LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`asset_id` = A2.`object_id` AND A2.`object_type`='G')
-            WHERE A2.`object_id` IS NULL";
+            WHERE A2.`object_id` IS NULL
+            ORDER BY A1.`asset_id` DESC LIMIT 300";
         if (!($res = db_query_unbuffered($sql, $auto_create)))
             return false;
 
         while ($row = db_fetch_row($res)) {
-            $asset = \model\Asset::lookup($row[0]);
+            if(!($asset = \model\Asset::lookup($row[0])))
+                continue;
             $cdata = $asset->getDynamicData();
             $content = array();
 
@@ -547,3 +551,5 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
         }
     }
 }
+
+AssetMysqlSearchBackend::register();
