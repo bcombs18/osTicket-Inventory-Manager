@@ -236,10 +236,10 @@ class InventoryPlugin extends Plugin {
 }
 
 // Recreate the dynamic view after new or removed fields to the inventory form
-Signal::connect('model.created',
+\Signal::connect('model.created',
     array('\model\AssetForm', 'updateDynamicFormField'),
     'DynamicFormField');
-Signal::connect('model.deleted',
+\Signal::connect('model.deleted',
     array('\model\AssetForm', 'updateDynamicFormField'),
     'DynamicFormField');
 // If the `name` column is in the dirty list, we would be renaming a
