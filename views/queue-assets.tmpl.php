@@ -70,8 +70,9 @@ if (!$sorted) {
         $assets->order_by('host_name');
 }
 
-// Apply pagination
+$_SESSION[':Q:assets'] = $assets;
 
+// Apply pagination
 $total = $assets->count();
 $page = (isset($_GET['p']) && is_numeric($_GET['p']))?$_GET['p']:1;
 $pageNav = new Pagenate($total, $page, PAGE_LIMIT);
@@ -289,8 +290,8 @@ foreach ($assets as $A) {
             <?php
             echo __('Page').':'.$pageNav->getPageLinks().'&nbsp;';
             ?>
-            <a href="#asset/export/<?php echo $queue->getId(); ?>"
-               id="queue-export" class="no-pjax asset-export"
+            <a href="<?php echo INVENTORY_WEB_ROOT; ?>asset/handle?a=export"
+               id="" class="no-pjax"
             ><?php echo __('Export'); ?></a>
         </div>
         <?php
