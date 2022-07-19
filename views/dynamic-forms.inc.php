@@ -59,11 +59,7 @@
                     <a id="selectAll" href="#ckb"><?php echo __('All'); ?></a>&nbsp;&nbsp;
                     <a id="selectNone" href="#ckb"><?php echo __('None'); ?></a>&nbsp;&nbsp;
                     <a id="selectToggle" href="#ckb"><?php echo __('Toggle'); ?></a>&nbsp;&nbsp;
-                <?php }else{
-                    echo sprintf(__(
-                        'No extra forms defined yet &mdash; %s add one! %s'),
-                        '<a href="forms?a=add">','</a>');
-                } ?>
+                <?php } ?>
             </td>
         </tr>
         </tfoot>
