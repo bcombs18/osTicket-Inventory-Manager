@@ -206,7 +206,7 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info, true);
                     </select>
                     <?php if ($f->isConfigurable()) { ?>
                         <a class="action-button field-config" style="overflow:inherit"
-                           href="#ajax.php/form/field-config/<?php
+                           href="#form/field-config/<?php
                            echo $f->get('id'); ?>"
                            onclick="javascript:
                         $.dialog($(this).attr('href').substr(1), [201]);
