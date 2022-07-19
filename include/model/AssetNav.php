@@ -33,7 +33,6 @@ class AssetNav extends \StaffNav {
                 case 'apps':
                     $subnav[] = array('desc' => __('Inventory Manager'), 'href' => INVENTORY_WEB_ROOT.'asset/handle');
                     $subnav[] = array('desc' => __('Forms'), 'href' => INVENTORY_WEB_ROOT.'settings/forms', 'iconclass'=>'forms');
-                    $subnav[] = array('desc' => __('Queues'), 'href' => '', 'iconclass'=>'forms');
                     break;
             }
             if($subnav)
