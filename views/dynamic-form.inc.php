@@ -77,12 +77,10 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info, true);
                         <div>
                             <input type="text" name="title" size="60" autofocus
                                    value="<?php echo $info['title']; ?>"/>
-                            <i class="help-tip icon-question-sign" href="#form_title"></i>
                             <div class="error"><?php
                                 if ($errors['title']) echo '<br/>'; echo $errors['title']; ?></div>
                         </div>
                         <div style="margin-top: 8px"><?php echo __('Instructions'); ?>:
-                            <i class="help-tip icon-question-sign" href="#form_instructions"></i>
                         </div>
                         <textarea name="instructions" rows="3" cols="40" class="richtext small"><?php
                             echo $info['instructions']; ?></textarea>
@@ -98,10 +96,8 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info, true);
                                     <div class="required"><?php echo __('Title'); ?>:</div>
                                     <input type="text" name="trans[<?php echo $tag; ?>][title]" size="60"
                                            value="<?php echo $info['trans'][$tag]['title']; ?>"/>
-                                    <i class="help-tip icon-question-sign" href="#form_title"></i>
                                 </div>
                                 <div style="margin-top: 8px"><?php echo __('Instructions'); ?>:
-                                    <i class="help-tip icon-question-sign" href="#form_instructions"></i>
                                 </div>
                                 <textarea name="trans[<?php echo $tag; ?>][instructions]" cols="21" rows="12"
                                           style="width:100%" class="richtext small"><?php
@@ -122,18 +118,12 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info, true);
             </th>
         </tr>
         <tr>
-            <th nowrap width="4%"
-            ><i class="help-tip icon-question-sign" href="#field_sort"></i></th>
-            <th nowrap><?php echo __('Label'); ?>
-                <i class="help-tip icon-question-sign" href="#field_label"></i></th>
-            <th nowrap><?php echo __('Type'); ?>
-                <i class="help-tip icon-question-sign" href="#field_type"></i></th>
-            <th nowrap><?php echo __('Visibility'); ?>
-                <i class="help-tip icon-question-sign" href="#field_visibility"></i></th>
-            <th nowrap><?php echo __('Variable'); ?>
-                <i class="help-tip icon-question-sign" href="#field_variable"></i></th>
-            <th nowrap><?php echo __('Delete'); ?>
-                <i class="help-tip icon-question-sign" href="#field_delete"></i></th>
+            <th nowrap width="4%"></th>
+            <th nowrap><?php echo __('Label'); ?></th>
+            <th nowrap><?php echo __('Type'); ?></th>
+            <th nowrap><?php echo __('Visibility'); ?></th>
+            <th nowrap><?php echo __('Variable'); ?></th>
+            <th nowrap><?php echo __('Delete'); ?></th>
         </tr>
         </thead>
         <tbody class="sortable-rows" data-sort="sort-">
