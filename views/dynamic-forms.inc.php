@@ -3,7 +3,7 @@
     <div class="sticky bar opaque">
         <div class="content">
             <div class="pull-left flush-left">
-                <h2><?php echo __('Custom Forms'); ?></h2>
+                <h2><?php echo __('Custom Asset Form'); ?></h2>
             </div>
         </div>
     </div>
