@@ -187,7 +187,7 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
                   </a>
               <?php }
               if($thisstaff->isAdmin()) { ?>
-                  <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT; ?>settings/">
+                  <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT; ?>settings">
                       <i class="icon-cog"></i>
                       <?php echo __('Settings'); ?>
                   </a>
