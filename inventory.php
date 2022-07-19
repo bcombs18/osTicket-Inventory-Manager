@@ -164,11 +164,16 @@ class InventoryPlugin extends Plugin {
             ))
         ));
 
+        $settings_url = url('^/inventory.*settings', patterns('controller\Settings',
+            url('^/', 'handle')
+        ));
+
         $object->append ( $media_url );
         $object->append ( $import_url );
         $object->append ( $asset_url );
         $object->append ( $queue_url );
         $object->append ( $admin_url );
+        $object->append ( $settings_url );
     }
 
     function createStaffMenu() {
