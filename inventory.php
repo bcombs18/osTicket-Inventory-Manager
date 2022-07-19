@@ -171,7 +171,8 @@ class InventoryPlugin extends Plugin {
             url_post('^/form/field-config/(?P<id>\d+)$', 'saveFieldConfiguration'),
             url_delete('^/form/answer/(?P<entry>\d+)/(?P<field>\d+)$', 'deleteAnswer'),
             url_get('^/form/(?P<id>\d+)/fields/view$', 'getAllFields'),
-            url('^/forms', 'formsPage'),
+            url('^/forms$', 'formsPage'),
+            url('^/queues$', 'queuesPage')
             ),
         );
 
