@@ -165,8 +165,13 @@ class InventoryPlugin extends Plugin {
         ));
 
         $settings_url = url('^/inventory.*settings', patterns('controller\Settings',
-            url('^/', 'handle')
-        ));
+            url_get('^/form/field-config/(?P<id>\d+)$', 'getFieldConfiguration'),
+            url_post('^/form/field-config/(?P<id>\d+)$', 'saveFieldConfiguration'),
+            url_delete('^/form/answer/(?P<entry>\d+)/(?P<field>\d+)$', 'deleteAnswer'),
+            url_get('^/form/(?P<id>\d+)/fields/view$', 'getAllFields'),
+            url('^/', 'handle'),
+            ),
+        );
 
         $object->append ( $media_url );
         $object->append ( $import_url );
