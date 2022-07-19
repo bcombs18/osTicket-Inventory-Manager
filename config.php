@@ -7,7 +7,7 @@ class InventoryConfig extends PluginConfig {
 
     function getOptions() {
         $form_choices = array();
-        foreach (DynamicForm::objects()->filter(array('type'=>'G')) as $group)
+        foreach (DynamicForm::objects()->filter(array('type'=>'I')) as $group)
         {
             $form_choices[$group->get('id')] = $group->get('title');
         }
