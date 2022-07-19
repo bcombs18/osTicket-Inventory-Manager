@@ -26,6 +26,8 @@ const INVENTORY_VIEWS_DIR = INVENTORY_PLUGIN_ROOT . 'views/';
 
 const INVENTORY_PLUGIN_VERSION = '1.1.0';
 
+require_once INVENTORY_MODEL_DIR.'AssetSearch.php';
+
 require_once INVENTORY_VENDOR_DIR.'autoload.php';
 spl_autoload_register(array(
     'InventoryPlugin',
@@ -244,6 +246,8 @@ class InventoryPlugin extends Plugin {
         return $installer->remove();
     }
 }
+
+\AssetMysqlSearchBackend::register();
 
 // Recreate the dynamic view after new or removed fields to the inventory form
 \Signal::connect('model.created',

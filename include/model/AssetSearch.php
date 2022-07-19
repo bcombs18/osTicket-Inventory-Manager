@@ -551,5 +551,3 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
         }
     }
 }
-
-AssetMysqlSearchBackend::register();
