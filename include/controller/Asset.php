@@ -366,6 +366,6 @@ class Asset extends \AjaxController {
         require_once INCLUDE_DIR . 'class.ajax.php';
         require_once INCLUDE_DIR . 'ajax.note.php';
         $ajax = new \NoteAjaxAPI();
-        return $ajax->createNote('G'.$id);
+        return $ajax->createNote('I'.$id);
     }
 }
