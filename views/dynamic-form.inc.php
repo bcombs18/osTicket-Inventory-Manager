@@ -257,7 +257,7 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info, true);
         <p>
             <strong><?php echo sprintf(__('You are about to delete %s fields.'),
                     '<span id="deleted-count"></span>'); ?></strong>
-            <?php echo __('Would you also like to remove data currently entered for this field? <em> If you opt not to remove the data now, you will have the option to delete the the data when editing it.</em>'); ?>
+            <?php echo __('Would you also like to remove data currently entered for this field? <em> If you opt not to remove the data now, you will have the option to delete the data when editing it.</em>'); ?>
         </p><p style="color:red">
             <?php echo __('Deleted data CANNOT be recovered.'); ?>
         </p>
