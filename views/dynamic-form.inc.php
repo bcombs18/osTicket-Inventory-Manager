@@ -114,44 +114,6 @@ $info=Format::htmlchars(($errors && $_POST)?$_POST:$info, true);
         </tbody>
     </table>
     <table class="form_table" width="940" border="0" cellspacing="0" cellpadding="2">
-        <?php if ($form && $form->get('type') == 'T') {
-            $uform = UserForm::objects()->one();
-            ?>
-            <thead>
-            <tr>
-                <th colspan="7">
-                    <em><strong><?php echo __('User Information Fields'); ?></strong>
-                        <?php echo sprintf(__('(These fields are requested for new tickets
-                via the %s form)'),
-                            $uform->get('title')); ?></em>
-                </th>
-            </tr>
-            <tr>
-                <th></th>
-                <th><?php echo __('Label'); ?></th>
-                <th><?php echo __('Type'); ?></th>
-                <th><?php echo __('Visibility'); ?></th>
-                <th><?php echo __('Variable'); ?></th>
-                <th><?php echo __('Delete'); ?></th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-            $ftypes = FormField::allTypes();
-            foreach ($uform->getFields() as $f) {
-                if (!$f->isVisibleToUsers()) continue;
-                ?>
-                <tr>
-                    <td></td>
-                    <td><?php echo $f->get('label'); ?></td>
-                    <td><?php $t=FormField::getFieldType($f->get('type')); echo __($t[0]); ?></td>
-                    <td><?php echo $f->getVisibilityDescription(); ?></td>
-                    <td><?php echo $f->get('name'); ?></td>
-                    <td><input type="checkbox" disabled="disabled"/></td></tr>
-
-            <?php } ?>
-            </tbody>
-        <?php } # form->type == 'T' ?>
         <thead>
         <tr>
             <th colspan="7">

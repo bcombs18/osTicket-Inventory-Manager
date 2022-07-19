@@ -94,25 +94,6 @@
             if ($field->hasFlag(DynamicFormField::FLAG_AGENT_EDIT)) echo 'checked="checked"';
         ?>> <?php echo __('For Agents'); ?><br/>
     </div>
-
-<?php if (in_array($field->get('form')->get('type'), array('G', 'T', 'A'))) { ?>
-    <hr class="faded"/>
-
-    <div class="span4">
-        <div style="margin-bottom:5px"><strong><?php echo __('Data Integrity');
-    ?></strong>
-        <i class="help-tip icon-question-sign"
-            data-title="<?php echo __('Required to close a thread'); ?>"
-            data-content="<?php echo __('Optionally, this field can prevent closing a thread until it has valid data.'); ?>"></i>
-        </div>
-    </div>
-    <div class="span6">
-        <input type="checkbox" name="flags[]" value="<?php
-            echo DynamicFormField::FLAG_CLOSE_REQUIRED; ?>" <?php
-            if ($field->hasFlag(DynamicFormField::FLAG_CLOSE_REQUIRED)) echo 'checked="checked"';
-        ?>> <?php echo __('Require entry to close a thread'); ?><br/>
-    </div>
-<?php } ?>
 <?php } ?>
     </div>
 </div>
