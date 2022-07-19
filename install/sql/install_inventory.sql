@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%inventory_asset` (
 
 DELETE FROM `%TABLE_PREFIX%form` WHERE `title`='Inventory'$
 INSERT INTO `%TABLE_PREFIX%form` (`type`, `title`, `instructions`, `created`, `updated`)
-    VALUES ('G', 'Inventory', 'Dynamic Asset Form: Add form fields to this form to add custom asset data. This form is used for data entry/access and is used by the CSV importer. If the CSV you are using to import data does not contain headers, the columns of the CSV must match the ordering of this form.', NOW(), NOW())$
+    VALUES ('I', 'Inventory', 'Dynamic Asset Form: Add form fields to this form to add custom asset data. This form is used for data entry/access and is used by the CSV importer. If the CSV you are using to import data does not contain headers, the columns of the CSV must match the ordering of this form.', NOW(), NOW())$
 
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryFormFields`$
 
