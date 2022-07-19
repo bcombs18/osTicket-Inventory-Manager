@@ -3,6 +3,7 @@ global $ost;
 global $cfg;
 require('staff.inc.php');
 require_once(INCLUDE_DIR."/class.dynamic_forms.php");
+require(INVENTORY_MODEL_DIR.'AssetNav.php');
 
 $form=null;
 if($_REQUEST['id'] && !($form=DynamicForm::lookup($_REQUEST['id'])))
@@ -155,6 +156,9 @@ if($form || ($_REQUEST['a'] && !strcasecmp($_REQUEST['a'],'add')))
 
 $ost->addExtraHeader('<meta name="tip-namespace" content="forms" />',
     "$('#content').data('tipNamespace', 'forms');");
+
+$nav = new \AssetNav($thisstaff);
+
 $nav->setTabActive('apps');
 require(STAFFINC_DIR.'header.inc.php');
 require(INVENTORY_VIEWS_DIR.$page);

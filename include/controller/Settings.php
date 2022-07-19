@@ -6,7 +6,7 @@ require_once INCLUDE_DIR . 'class.ajax.php';
 
 class Settings extends \AjaxController {
 
-    function handle() {
+    function formsPage() {
         require_once INVENTORY_MODEL_DIR.'forms.php';
     }
 
