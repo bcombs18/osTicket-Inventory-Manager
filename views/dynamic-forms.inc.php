@@ -5,24 +5,6 @@
             <div class="pull-left flush-left">
                 <h2><?php echo __('Custom Forms'); ?></h2>
             </div>
-            <div class="pull-right flush-right">
-                <a href="<?php echo INVENTORY_WEB_ROOT; ?>settings/forms?a=add" class="green button action-button"><i class="icon-plus-sign"></i> <?php
-                    echo __('Add New Custom Form'); ?></a>
-                <span class="action-button" data-dropdown="#action-dropdown-more">
-                    <i class="icon-caret-down pull-right"></i>
-                    <span ><i class="icon-cog"></i> <?php echo __('More');?></span>
-            </span>
-                <div id="action-dropdown-more" class="action-dropdown anchor-right">
-                    <ul id="actions">
-                        <li class="danger">
-                            <a class="confirm" data-name="delete" href="<?php echo INVENTORY_WEB_ROOT; ?>settings/forms?a=delete">
-                                <i class="icon-trash icon-fixed-width"></i>
-                                <?php echo __( 'Delete'); ?>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
         </div>
     </div>
     <div class="clear"></div>
