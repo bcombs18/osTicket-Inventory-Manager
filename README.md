@@ -4,7 +4,7 @@
 - osTicket Inventory Manager adds Inventory Tracking functionality to your osTicket instance so you can quickly find information about assets deployed in your environment. Take a look at the included features below. There's more to come!
 
 ## Requirements
-- PHP version 8.0
+- PHP version 8.0 (PHP v8.1 is not supported)
 - MySQL database 5.5
 - osTicket v1.16.1
 
