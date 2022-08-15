@@ -5,7 +5,7 @@ namespace model;
 class AssetModel extends \VerySimpleModel {
 
     static $meta = array(
-        'table' => 'ost_inventory_asset',
+        'table' => TABLE_PREFIX.'inventory_asset',
         'pk' => 'asset_id',
         'joins' => array(
             'cdata' => array(
