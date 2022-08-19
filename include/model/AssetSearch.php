@@ -496,7 +496,7 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
                     ),
                     'tables' => array(
                         str_replace(array(':', '{}'), array(TABLE_PREFIX, $search),
-                            "(SELECT Z6.`asset_id` as `asset_id`, {} AS `relevance` FROM `:_search` Z1 LEFT JOIN `:inventory_asset` Z6 ON (Z6.`asset_id` = Z1.`object_id` and Z1.`object_type` = 'G')  WHERE {}) Z1"),
+                            "(SELECT Z6.`asset_id` as `asset_id`, {} AS `relevance` FROM `:_search` Z1 LEFT JOIN `:inventory_asset` Z6 ON (Z6.`asset_id` = Z1.`object_id` and Z1.`object_type` = 'I')  WHERE {}) Z1"),
                     ),
                 ));
                 $criteria->filter(array('asset_id' => new \SqlCode('Z1.`asset_id`')));
@@ -527,7 +527,7 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
         // ASSETS ------------------------------------
 
         $sql = "SELECT A1.`asset_id` FROM `".INVENTORY_TABLE."` A1
-            LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`asset_id` = A2.`object_id` AND A2.`object_type`='G')
+            LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`asset_id` = A2.`object_id` AND A2.`object_type`='I')
             WHERE A2.`object_id` IS NULL
             ORDER BY A1.`asset_id` DESC LIMIT 300";
         if (!($res = db_query_unbuffered($sql, $auto_create)))
@@ -543,7 +543,7 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
                 foreach ($e->getAnswers() as $a)
                     if ($c = $a->getSearchable())
                         $content[] = $c;
-            $record = array('G', $asset->getId(),
+            $record = array('I', $asset->getId(),
                 \Format::searchable($asset->getHostname()),
                 trim(implode("\n", $content)));
             if (!$this->__index($record))
@@ -551,5 +551,3 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
         }
     }
 }
-
-AssetMysqlSearchBackend::register();

@@ -26,6 +26,8 @@ const INVENTORY_VIEWS_DIR = INVENTORY_PLUGIN_ROOT . 'views/';
 
 const INVENTORY_PLUGIN_VERSION = '1.1.0';
 
+require_once INVENTORY_MODEL_DIR.'AssetSearch.php';
+
 require_once INVENTORY_VENDOR_DIR.'autoload.php';
 spl_autoload_register(array(
     'InventoryPlugin',
@@ -164,11 +166,22 @@ class InventoryPlugin extends Plugin {
             ))
         ));
 
+        $settings_url = url('^/inventory.*settings', patterns('controller\Settings',
+            url_get('^/form/field-config/(?P<id>\d+)$', 'getFieldConfiguration'),
+            url_post('^/form/field-config/(?P<id>\d+)$', 'saveFieldConfiguration'),
+            url_delete('^/form/answer/(?P<entry>\d+)/(?P<field>\d+)$', 'deleteAnswer'),
+            url_get('^/form/(?P<id>\d+)/fields/view$', 'getAllFields'),
+            url('^/forms$', 'formsPage'),
+            url('^/queues$', 'queuesPage')
+            ),
+        );
+
         $object->append ( $media_url );
         $object->append ( $import_url );
         $object->append ( $asset_url );
         $object->append ( $queue_url );
         $object->append ( $admin_url );
+        $object->append ( $settings_url );
     }
 
     function createStaffMenu() {
@@ -234,6 +247,8 @@ class InventoryPlugin extends Plugin {
         return $installer->remove();
     }
 }
+
+\AssetMysqlSearchBackend::register();
 
 // Recreate the dynamic view after new or removed fields to the inventory form
 \Signal::connect('model.created',

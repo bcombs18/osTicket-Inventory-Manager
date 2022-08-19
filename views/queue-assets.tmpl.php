@@ -185,6 +185,12 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
                       <i class="icon-upload"></i>
                       <?php echo __('Import'); ?>
                   </a>
+              <?php }
+              if($thisstaff->isAdmin()) { ?>
+                  <a class="action-button" href="<?php echo INVENTORY_WEB_ROOT; ?>settings/forms">
+                      <i class="icon-cogs"></i>
+                      <?php echo __('Settings'); ?>
+                  </a>
               <?php } ?>
               <span class="action-button" data-dropdown="#action-dropdown-more"
                     style="/*DELME*/ vertical-align:top; margin-bottom:0">

@@ -14,7 +14,7 @@ class AssetModel extends \VerySimpleModel {
             ),
             'entries' => array(
                 'constraint' => array(
-                    "'G'" => 'DynamicFormEntry.object_type',
+                    "'I'" => 'DynamicFormEntry.object_type',
                     'asset_id' => 'DynamicFormEntry.object_id',
                 ),
                 'list' => true,
@@ -165,7 +165,7 @@ class Asset extends AssetModel
 
     function addForm($form, $sort=1, $data=null) {
         $entry = $form->instanciate($sort, $data);
-        $entry->set('object_type', 'G');
+        $entry->set('object_type', 'I');
         $entry->set('object_id', $this->getId());
         $entry->save();
         return $entry;
@@ -210,7 +210,7 @@ class Asset extends AssetModel
 
     function getDynamicData($create=true) {
         if (!isset($this->_entries)) {
-            $this->_entries = \DynamicFormEntry::forObject($this->asset_id, 'G')->all();
+            $this->_entries = \DynamicFormEntry::forObject($this->asset_id, 'I')->all();
             if (!$this->_entries && $create) {
                 $g = \model\AssetForm::getNewInstance();
                 $g->setClientId($this->asset_id);
@@ -300,7 +300,7 @@ class Asset extends AssetModel
                 }
             }
 
-            if ($entry->getDynamicForm()->get('type') == 'G') {
+            if ($entry->getDynamicForm()->get('type') == 'I') {
                 //  Name field
                 if (($hostname = $entry->getField('host_name')) && $isEditable($hostname) ) {
                     $hostname = $hostname->getClean();

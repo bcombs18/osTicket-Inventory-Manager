@@ -15,12 +15,12 @@ class AssetForm extends \DynamicForm {
     static $cdata = array(
         'table' => TABLE_PREFIX.'inventory__cdata',
         'object_id' => 'asset_id',
-        'object_type' => 'G',
+        'object_type' => 'I',
     );
 
     static function objects() {
         $os = parent::objects();
-        return $os->filter(array('type'=>'G'));
+        return $os->filter(array('type'=>'I'));
     }
 
     static function getAssetForm() {
