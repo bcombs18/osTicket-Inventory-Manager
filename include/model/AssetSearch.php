@@ -426,12 +426,13 @@ class AssigneeLinkFilter
     static $desc = /* @trans */ "Assignee Link";
 
     function filter($text, $row) {
-        $link = $this->getLink($row);
-        return sprintf('<a style="display: inline" href="%s">%s</a>', $link, \User::getNameById($text));
+        $text = json_decode($text->value, true);
+        $link = $this->getLink($text['id']);
+        return sprintf('<a style="display: inline" href="%s">%s</a>', $link, $text['name']);
     }
 
-    function getLink($row) {
-        return \User::getLink($row['assignee']);
+    function getLink($id) {
+        return \User::getLink($id);
     }
 }
 \QueueColumnFilter::register('\AssigneeLinkFilter', __('Link'));

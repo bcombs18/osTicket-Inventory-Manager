@@ -2,6 +2,8 @@
 
 namespace model;
 
+use function MongoDB\BSON\toJSON;
+
 class AssetModel extends \VerySimpleModel {
 
     static $meta = array(
@@ -57,7 +59,7 @@ class Asset extends AssetModel
         $asset = static::lookupBySerial($vars['serial_number']);
         $user = \User::lookupByEmail($vars['assignee']);
         if($user) {
-            $user = $user->getId();
+            $user = json_encode(array('name' => $user->getFullName(), 'id' => $user->getId()));
         } else {
             $user = null;
         }
@@ -126,8 +128,14 @@ class Asset extends AssetModel
         return $this->serial_number;
     }
 
+    function getAssignee() {
+        $assignee = json_decode($this->assignee, true);
+        return $assignee['name'];
+    }
+
     function getAssigneeID() {
-        return $this->assignee;
+        $assignee = json_decode($this->assignee, true);
+        return $assignee['id'];
     }
 
     function getLocation() {
@@ -358,7 +366,7 @@ class Asset extends AssetModel
             return false;
         }
         $errors = array();
-        $this->assignee = $user->getId();
+        $this->assignee = json_encode(array('name' => $user->getFullname(), 'id' => $user->getId()));
         if (!$this->save())
             return false;
         unset($this->user);

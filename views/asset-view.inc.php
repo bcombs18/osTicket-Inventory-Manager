@@ -96,7 +96,7 @@ global $org;
             <table border="0" cellspacing="" cellpadding="4" width="100%">
                 <h2 style="text-align: center">Entry Information</h2>
                 <tr><th><?php echo __('User'); ?>:</th>
-                    <?php if($asset->getAssigneeID()) { ?>
+                    <?php if($asset->getAssignee()) { ?>
                     <td><a href="#asset/<?php echo $asset->getId(); ?>/user"
                            onclick="javascript:
                                    $.userLookup('asset/<?php echo $asset->getId(); ?>/user',
@@ -108,7 +108,7 @@ global $org;
                                    });
                                    return false;
                                    "><i class="icon-user"></i> <span id="user-<?php echo $asset->getAssigneeID(); ?>-name"
-                            ><?php echo Format::htmlchars(User::getNameById($asset->getAssigneeID()));
+                            ><?php echo Format::htmlchars($asset->getAssignee());
                                 ?></span></a>
                     </td>
                     <?php } else { ?>
