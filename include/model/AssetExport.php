@@ -5,7 +5,7 @@ namespace model;
 class AssetExport extends \Export {
     static function saveAssets($sql, $filename, $how='csv') {
 
-        $exclude = array('host_name', 'manufacturer', 'model', 'serial_number', 'location', 'assignee');
+        $exclude = array('host_name', 'manufacturer', 'model', 'serial_number', 'location');
         $form = \model\AssetForm::getAssetForm();
         $fields = $form->getExportableFields($exclude, 'cdata.');
 
@@ -24,7 +24,7 @@ class AssetExport extends \Export {
                 'model' =>          __('Model'),
                 'serial_number' => __('Serial Number'),
                 'location' => __('Location'),
-                'assignee' => __('Assignee')
+                'assignee' => __('Assignee Metadata')
             ) + $cdata,
             $how,
             array('modify' => function(&$record, $keys, $obj) use ($fields) {
