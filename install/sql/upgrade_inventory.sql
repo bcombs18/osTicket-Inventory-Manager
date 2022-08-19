@@ -1,1 +1,7 @@
-UPDATE `%TABLE_PREFIX%plugin` SET version = '1.0.3' WHERE `name`='Inventory Manager'$
+UPDATE `%TABLE_PREFIX%plugin` SET version = '1.1.1' WHERE `name`='Inventory Manager'$
+
+ALTER `%TABLE_PREFIX%inventory_asset` ALTER COLUMN `assignee` varchar(255)$
+
+UPDATE `%TABLE_PREFIX%form` SET `type` = 'I' WHERE `title`='INVENTORY'$
+
+UPDATE `%TABLE_PREFIX%form_entry` SET `object_type` = 'I' WHERE `object_type` = 'G'$
