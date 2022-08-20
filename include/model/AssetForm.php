@@ -7,7 +7,7 @@ class AssetForm extends \DynamicForm {
     static $form;
 
     static $meta = array(
-        'table' => 'ost_form',
+        'table' => TABLE_PREFIX.'form',
         'ordering' => array('title'),
         'pk' => array('id'),
     );
