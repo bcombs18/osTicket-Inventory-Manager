@@ -261,7 +261,7 @@ class Asset extends AssetModel
             }
             db_autocommit(true);
         }
-        catch (Exception $ex) {
+        catch (\Exception $ex) {
             db_rollback();
             return $ex->getMessage();
         }
