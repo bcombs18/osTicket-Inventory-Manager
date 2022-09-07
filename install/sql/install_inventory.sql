@@ -453,3 +453,5 @@ VALUES
      NOW());
 END$
 CALL `%TABLE_PREFIX%CreateInventoryUnassignedQueue`()$
+
+ALTER TABLE `%TABLE_PREFIX%api_key` ADD `can_create_assets` int(1)$

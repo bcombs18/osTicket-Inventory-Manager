@@ -10,6 +10,10 @@ class Settings extends \AjaxController {
         require_once INVENTORY_MODEL_DIR.'forms.php';
     }
 
+    function apiPage() {
+        require_once INVENTORY_MODEL_DIR.'api.php';
+    }
+
     function getFieldConfiguration($field_id) {
         $field = \DynamicFormField::lookup($field_id);
         include(INVENTORY_VIEWS_DIR . 'dynamic-field-config.tmpl.php');
