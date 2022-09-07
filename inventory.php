@@ -172,9 +172,9 @@ class InventoryPlugin extends Plugin {
             url_delete('^/form/answer/(?P<entry>\d+)/(?P<field>\d+)$', 'deleteAnswer'),
             url_get('^/form/(?P<id>\d+)/fields/view$', 'getAllFields'),
             url('^/forms$', 'formsPage'),
-            url('^/queues$', 'queuesPage')
-            ),
-        );
+            url('^/queues$', 'queuesPage'),
+            url('^/api$', 'apiPage')
+        ));
 
         $object->append ( $media_url );
         $object->append ( $import_url );
