@@ -1,7 +1,16 @@
 # osTicket Inventory Manager
 
 ## Overview
-- osTicket Inventory Manager adds Inventory Tracking functionality to your osTicket instance so you can quickly find information about assets deployed in your environment. Take a look at the included features below. There's more to come!
+- osTicket Inventory Manager adds Inventory Tracking functionality to your osTicket instance so you can quickly find information about assets deployed in your environment. Take a look at the currently included features below.
+
+## Features
+- Create custom global and personal queues
+- Assign assets to osTicket users
+- Customizeable data fields to fit your data needs
+- Export customizeable reports
+- Add notes to your assets
+- Retire assets that are no longer deployed in your organization
+- Access osTicket Inventory Manager with the API to create/update assets. A possible usecase for the API is to allow your imaging server to automatically create/update assets.
 
 ## Requirements
 - PHP version 8.0 (PHP v8.1 is not supported)
@@ -47,15 +56,6 @@
 **Curl example:**
                 
     curl -d "{}" -H "X-API-Key: [API KEY HERE]" http://[uri]/inventory-api/assets.json
-
-## Features
-- Create custom global and personal queues
-- Assign assets to osTicket users
-- Customizeable data fields to fit your data needs
-- Export customizeable reports
-- Add notes to your assets
-- Retire assets that are no longer deployed in your organization
-- Access osTicket Inventory Manager with the API to create/update assets. A possible usecase for the API is to allow your imaging server to automatically create/update assets.
 
 ## Customization
 ### Adding Custom Data Fields
