@@ -33,3 +33,5 @@ DELETE FROM `%TABLE_PREFIX%queue_columns` WHERE `heading`='Location'$
 DELETE FROM `%TABLE_PREFIX%queue_columns` WHERE `heading`='Serial Number'$
 DELETE FROM `%TABLE_PREFIX%queue_columns` WHERE `heading`='Create Date'$
 DELETE FROM `%TABLE_PREFIX%queue_columns` WHERE `heading`='Last Update'$
+
+ALTER TABLE `%TABLE_PREFIX%api_key` DROP COLUMN `can_create_assets`$
