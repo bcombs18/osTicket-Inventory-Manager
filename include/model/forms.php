@@ -159,7 +159,7 @@ $ost->addExtraHeader('<meta name="tip-namespace" content="forms" />',
 
 $nav = new \AssetNav($thisstaff);
 
-$nav->setTabActive('apps');
+$nav->setTabActive('apps', (INVENTORY_WEB_ROOT.'settings/forms'));
 require(STAFFINC_DIR.'header.inc.php');
 require(INVENTORY_VIEWS_DIR.$page);
 include(STAFFINC_DIR.'footer.inc.php');
