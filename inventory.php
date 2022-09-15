@@ -244,7 +244,9 @@ class InventoryPlugin extends Plugin {
 
     function pre_uninstall(&$errors) {
         $installer = new \util\InventoryInstaller();
-        return $installer->remove();
+        try {
+            $installer->remove();
+        } catch(Exception) {}
     }
 }
 
