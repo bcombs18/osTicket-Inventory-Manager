@@ -1,4 +1,4 @@
-UPDATE `%TABLE_PREFIX%plugin` SET version = '1.1.3' WHERE `name`='Inventory Manager'$
+UPDATE `%TABLE_PREFIX%plugin` SET version = '1.1.4' WHERE `name`='Inventory Manager'$
 
 ALTER `%TABLE_PREFIX%inventory_asset` MODIFY COLUMN `assignee` varchar(255)$
 
