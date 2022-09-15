@@ -248,8 +248,6 @@ class InventoryPlugin extends Plugin {
     }
 }
 
-\AssetMysqlSearchBackend::register();
-
 // Recreate the dynamic view after new or removed fields to the inventory form
 \Signal::connect('model.created',
     array('\model\AssetForm', 'updateDynamicFormField'),
