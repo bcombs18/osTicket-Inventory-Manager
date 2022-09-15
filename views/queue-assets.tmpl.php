@@ -2,6 +2,7 @@
 // Calling convention (assumed global scope):
 // $tickets - <QuerySet> with all columns and annotations necessary to
 //      render the full page
+const SEARCH_BACKEND = 'assetmysql';
 
 // Make sure the cdata materialized view is available;
 \model\AssetForm::ensureDynamicDataView();
@@ -100,7 +101,7 @@ $pageNav->setURL('handle', $args);
 
 <!-- SEARCH FORM START -->
 <div id='basic_search'>
-    <form action="asset/handle" method="get" onsubmit="javascript:
+    <form action="handle" method="get" onsubmit="javascript:
   $.pjax({
     url:$(this).attr('action') + '?' + $(this).serialize(),
     container:'#pjax-container',
