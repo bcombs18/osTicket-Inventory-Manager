@@ -86,11 +86,9 @@ class AssetSavedQueue extends \SavedQueue {
 
     function getRoot() {
         switch ($this->root) {
-            case 'U':
-                return 'model\Asset';
-            case 'T':
+            case 'I':
             default:
-                return 'Ticket';
+                return 'model\Asset';
         }
     }
 
@@ -382,7 +380,7 @@ class AssetAdhocSearch extends AssetSavedSearch {
 
         $queue = new AssetAdhocSearch(array(
             'id' => "adhoc,$key",
-            'root' => 'U',
+            'root' => 'I',
             'staff_id' => $thisstaff->getId(),
             'title' => __('Advanced Search'),
         ));
@@ -437,10 +435,27 @@ class AssigneeLinkFilter
 }
 \QueueColumnFilter::register('\AssigneeLinkFilter', __('Link'));
 
-class AssetMysqlSearchBackend extends \MysqlSearchBackend {
+require_once(INCLUDE_DIR.'class.config.php');
+class AssetMySqlSearchConfig extends \Config {
+    var $table = CONFIG_TABLE;
+
+    function __construct() {
+        parent::__construct("assetmysqlsearch");
+    }
+}
+
+class AssetMysqlSearchBackend extends \MySqlSearchBackend {
+
+    static $id = 'assetmysql';
 
     function bootstrap() {
         \Signal::connect('cron', array($this, 'IndexOldStuff'));
+    }
+
+    function getConfig() {
+        if (!isset($this->config))
+            $this->config = new AssetMysqlSearchBackend();
+        return $this->config;
     }
 
     function find($query, \QuerySet $criteria, $addRelevance=true) {
@@ -551,4 +566,33 @@ class AssetMysqlSearchBackend extends \MysqlSearchBackend {
                 return;
         }
     }
+
+    function update($model, $id, $content, $new=false, $attrs=array()) {
+        if (!($type=\ObjectModel::getType($model)))
+            return;
+
+        if ($model instanceof \model\Asset)
+            $attrs['host_name'] = $attrs['host_name'].' '.$attrs['assignee'];
+        elseif ($model instanceof \User)
+            $content .=' '.implode("\n", $attrs['emails']);
+
+        $title = $attrs['host_name'] ?: '';
+
+        if (!$content && !$title)
+            return;
+        if (!$id)
+            return;
+
+        $sql = 'REPLACE INTO '.$this->SEARCH_TABLE
+            . ' SET object_type='.db_input($type)
+            . ', object_id='.db_input($id)
+            . ', content='.db_input($content)
+            . ', title='.db_input($title);
+        return db_query($sql, false);
+    }
 }
+
+Signal::connect('system.install',
+    array('AssetMysqlSearchBackend', '__init'));
+
+AssetMysqlSearchBackend::register();

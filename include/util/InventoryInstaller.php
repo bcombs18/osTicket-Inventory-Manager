@@ -21,7 +21,7 @@ class InventoryInstaller extends \SetupWizard {
         return $this->runJob ( $schemaFile, false );
     }
 
-    private function runJob($schemaFile, $show_sql_errors = true) {
+    private function runJob($schemaFile, $show_sql_errors = false) {
         if(! file_exists($schemaFile)) {
             echo '<br/>';
             var_dump($schemaFile);
