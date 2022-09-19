@@ -454,7 +454,7 @@ class AssetMysqlSearchBackend extends \MySqlSearchBackend {
 
     function getConfig() {
         if (!isset($this->config))
-            $this->config = new AssetMysqlSearchBackend();
+            $this->config = new AssetMySqlSearchConfig();
         return $this->config;
     }
 
