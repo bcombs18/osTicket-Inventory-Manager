@@ -505,6 +505,51 @@ class AssetMysqlSearchBackend extends \MySqlSearchBackend {
 
         switch ($criteria->model) {
             case false:
+            case 'Ticket':
+                if ($addRelevance) {
+                    $criteria = $criteria->extra(array(
+                        'select' => array(
+                            '__relevance__' => 'Z1.`relevance`',
+                        ),
+                    ));
+                }
+                $criteria->extra(array(
+                    'tables' => array(
+                        str_replace(array(':', '{}'), array(TABLE_PREFIX, $search),
+                            "(SELECT COALESCE(Z3.`object_id`, Z5.`ticket_id`, Z8.`ticket_id`) as `ticket_id`, Z1.relevance FROM (SELECT Z1.`object_id`, Z1.`object_type`, {} AS `relevance` FROM `:_search` Z1 WHERE {} ORDER BY relevance DESC) Z1 LEFT JOIN `:thread_entry` Z2 ON (Z1.`object_type` = 'H' AND Z1.`object_id` = Z2.`id`) LEFT JOIN `:thread` Z3 ON (Z2.`thread_id` = Z3.`id` AND (Z3.`object_type` = 'T' OR Z3.`object_type` = 'C')) LEFT JOIN `:ticket` Z5 ON (Z1.`object_type` = 'T' AND Z1.`object_id` = Z5.`ticket_id`) LEFT JOIN `:user` Z6 ON (Z6.`id` = Z1.`object_id` and Z1.`object_type` = 'U') LEFT JOIN `:organization` Z7 ON (Z7.`id` = Z1.`object_id` AND Z7.`id` = Z6.`org_id` AND Z1.`object_type` = 'O') LEFT JOIN `:ticket` Z8 ON (Z8.`user_id` = Z6.`id`)) Z1"),
+                    ),
+                ));
+                $criteria->extra(array('order_by' => array(array(new SqlCode('Z1.relevance', 'DESC')))));
+
+                $criteria->filter(array('ticket_id'=>new SqlCode('Z1.`ticket_id`')));
+                break;
+
+            case 'User':
+                $criteria->extra(array(
+                    'select' => array(
+                        '__relevance__' => 'Z1.`relevance`',
+                    ),
+                    'tables' => array(
+                        str_replace(array(':', '{}'), array(TABLE_PREFIX, $search),
+                            "(SELECT Z6.`id` as `user_id`, {} AS `relevance` FROM `:_search` Z1 LEFT JOIN `:user` Z6 ON (Z6.`id` = Z1.`object_id` and Z1.`object_type` = 'U') LEFT JOIN `:organization` Z7 ON (Z7.`id` = Z1.`object_id` AND Z7.`id` = Z6.`org_id` AND Z1.`object_type` = 'O') WHERE {}) Z1"),
+                    )
+                ));
+                $criteria->filter(array('id'=>new SqlCode('Z1.`user_id`')));
+                break;
+
+            case 'Organization':
+                $criteria->extra(array(
+                    'select' => array(
+                        '__relevance__' => 'Z1.`relevance`',
+                    ),
+                    'tables' => array(
+                        str_replace(array(':', '{}'), array(TABLE_PREFIX, $search),
+                            "(SELECT Z2.`id` as `org_id`, {} AS `relevance` FROM `:_search` Z1 LEFT JOIN `:organization` Z2 ON (Z2.`id` = Z1.`object_id` AND Z1.`object_type` = 'O') WHERE {}) Z1"),
+                    )
+                ));
+                $criteria->filter(array('id'=>new SqlCode('Z1.`org_id`')));
+                break;
+
             case 'model\Asset':
                 $criteria->extra(array(
                     'select' => array(
@@ -540,6 +585,120 @@ class AssetMysqlSearchBackend extends \MySqlSearchBackend {
 
         };
 
+        // THREADS ----------------------------------
+        $sql = "SELECT A1.`id`, A1.`title`, A1.`body`, A1.`format` FROM `".THREAD_ENTRY_TABLE."` A1
+            LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`id` = A2.`object_id` AND A2.`object_type`='H')
+            WHERE A2.`object_id` IS NULL AND (A1.poster <> 'SYSTEM')
+            AND (IFNULL(LENGTH(A1.`title`), 0) + IFNULL(LENGTH(A1.`body`), 0) > 0)
+            ORDER BY A1.`id` DESC LIMIT 500";
+        if (!($res = db_query_unbuffered($sql, $auto_create)))
+            return false;
+
+        while ($row = db_fetch_row($res)) {
+            $body = ThreadEntryBody::fromFormattedText($row[2], $row[3]);
+            $body = $body->getSearchable();
+            $title = Format::searchable($row[1]);
+            if (!$body && !$title)
+                continue;
+            $record = array('H', $row[0], $title, $body);
+            if (!$this->__index($record))
+                return;
+        }
+
+        // TICKETS ----------------------------------
+
+        $sql = "SELECT A1.`ticket_id` FROM `".TICKET_TABLE."` A1
+            LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`ticket_id` = A2.`object_id` AND A2.`object_type`='T')
+            WHERE A2.`object_id` IS NULL
+            ORDER BY A1.`ticket_id` DESC LIMIT 300";
+        if (!($res = db_query_unbuffered($sql, $auto_create)))
+            return false;
+
+        while ($row = db_fetch_row($res)) {
+            if (!($ticket = Ticket::lookup($row[0])))
+                continue;
+            $cdata = $ticket->loadDynamicData();
+            $content = array();
+            foreach ($cdata as $k=>$a)
+                if ($k != 'subject' && ($v = $a->getSearchable()))
+                    $content[] = $v;
+            $record = array('T', $ticket->getId(),
+                Format::searchable($ticket->getNumber().' '.$ticket->getSubject()),
+                implode("\n", $content));
+            if (!$this->__index($record))
+                return;
+        }
+
+        // USERS ------------------------------------
+
+        $sql = "SELECT A1.`id` FROM `".USER_TABLE."` A1
+            LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`id` = A2.`object_id` AND A2.`object_type`='U')
+            WHERE A2.`object_id` IS NULL";
+        if (!($res = db_query_unbuffered($sql, $auto_create)))
+            return false;
+
+        while ($row = db_fetch_row($res)) {
+            $user = User::lookup($row[0]);
+            $cdata = $user->getDynamicData();
+            $content = array();
+            foreach ($user->emails as $e)
+                $content[] = $e->address;
+            foreach ($cdata as $e)
+                foreach ($e->getAnswers() as $a)
+                    if ($c = $a->getSearchable())
+                        $content[] = $c;
+            $record = array('U', $user->getId(),
+                Format::searchable($user->getFullName()),
+                trim(implode("\n", $content)));
+            if (!$this->__index($record))
+                return;
+        }
+
+        // ORGANIZATIONS ----------------------------
+
+        $sql = "SELECT A1.`id` FROM `".ORGANIZATION_TABLE."` A1
+            LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`id` = A2.`object_id` AND A2.`object_type`='O')
+            WHERE A2.`object_id` IS NULL";
+        if (!($res = db_query_unbuffered($sql, $auto_create)))
+            return false;
+
+        while ($row = db_fetch_row($res)) {
+            $org = Organization::lookup($row[0]);
+            $cdata = $org->getDynamicData();
+            $content = array();
+            foreach ($cdata as $e)
+                foreach ($e->getAnswers() as $a)
+                    if ($c = $a->getSearchable())
+                        $content[] = $c;
+            $record = array('O', $org->getId(),
+                Format::searchable($org->getName()),
+                trim(implode("\n", $content)));
+            if (!$this->__index($record))
+                return null;
+        }
+
+        // KNOWLEDGEBASE ----------------------------
+
+        require_once INCLUDE_DIR . 'class.faq.php';
+        $sql = "SELECT A1.`faq_id` FROM `".FAQ_TABLE."` A1
+            LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`faq_id` = A2.`object_id` AND A2.`object_type`='K')
+            WHERE A2.`object_id` IS NULL";
+        if (!($res = db_query_unbuffered($sql, $auto_create)))
+            return false;
+
+        while ($row = db_fetch_row($res)) {
+            if (!($faq = FAQ::lookup($row[0])))
+                continue;
+            $q = $faq->getQuestion();
+            if ($k = $faq->getKeywords())
+                $q = $k.' '.$q;
+            $record = array('K', $faq->getId(),
+                Format::searchable($q),
+                $faq->getSearchableAnswer());
+            if (!$this->__index($record))
+                return;
+        }
+
         // ASSETS ------------------------------------
 
         $sql = "SELECT A1.`asset_id` FROM `".INVENTORY_TABLE."` A1
@@ -565,13 +724,25 @@ class AssetMysqlSearchBackend extends \MySqlSearchBackend {
             if (!$this->__index($record))
                 return;
         }
+
+        // FILES ------------------------------------
+
+        // Flush non-full batch of records
+        $this->__index(null, true);
+
+        if (!$this->_reindexed) {
+            // Stop rebuilding the index
+            $this->getConfig()->set('reindex', 0);
+        }
     }
 
     function update($model, $id, $content, $new=false, $attrs=array()) {
         if (!($type=\ObjectModel::getType($model)))
             return;
 
-        if ($model instanceof \model\Asset)
+        if ($model instanceof Ticket)
+            $attrs['title'] = $attrs['number'].' '.$attrs['title'];
+        elseif ($model instanceof \model\Asset)
             $attrs['host_name'] = $attrs['host_name'].' '.$attrs['assignee'];
         elseif ($model instanceof \User)
             $content .=' '.implode("\n", $attrs['emails']);
@@ -592,7 +763,7 @@ class AssetMysqlSearchBackend extends \MySqlSearchBackend {
     }
 }
 
+AssetMysqlSearchBackend::register();
+
 Signal::connect('system.install',
     array('AssetMysqlSearchBackend', '__init'));
-
-AssetMysqlSearchBackend::register();
