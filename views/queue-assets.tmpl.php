@@ -2,7 +2,6 @@
 // Calling convention (assumed global scope):
 // $tickets - <QuerySet> with all columns and annotations necessary to
 //      render the full page
-const SEARCH_BACKEND = 'assetmysql';
 
 // Make sure the cdata materialized view is available;
 \model\AssetForm::ensureDynamicDataView();
