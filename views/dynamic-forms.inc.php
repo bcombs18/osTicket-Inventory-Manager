@@ -11,7 +11,7 @@
 
     <?php
     $other_forms = DynamicForm::objects()
-        ->filter(array('type'=>'I'))
+        ->filter(array('type'=>'G'))
         ->exclude(array('flags__hasbit' => DynamicForm::FLAG_DELETED));
 
     $page = ($_GET['p'] && is_numeric($_GET['p'])) ? $_GET['p'] : 1;
@@ -25,31 +25,29 @@
     <input type="hidden" name="do" value="mass_process" >
     <input type="hidden" id="action" name="a" value="" >
     <table class="list" border="0" cellspacing="1" cellpadding="0" width="940">
-        <tbody>
         <thead>
         <tr>
             <th width="4%">&nbsp;</th>
-            <th><?php echo __('Custom Forms'); ?></th>
+            <th width="50%"><?php echo __('Built-in Forms'); ?></th>
             <th><?php echo __('Last Updated'); ?></th>
         </tr>
         </thead>
         <tbody>
-        <?php foreach ($other_forms->order_by('title')
-                           ->limit($pageNav->getLimit())
-                           ->offset($pageNav->getStart()) as $form) {
-            $sel=false;
-            if($ids && in_array($form->get('id'),$ids))
-                $sel=true; ?>
+        <?php
+        $forms = array(
+            'I' => 'icon-laptop',
+            'IP' => 'icon-phone',
+        );
+        foreach (DynamicForm::objects()
+                     ->filter(array('type__in'=>array_keys($forms)))
+                     ->order_by('type', 'title') as $form) { ?>
             <tr>
-                <td align="center"><?php if ($form->isDeletable()) { ?>
-                        <input type="checkbox" class="ckb" name="ids[]" value="<?php echo $form->get('id'); ?>"
-                            <?php echo $sel?'checked="checked"':''; ?>>
-                    <?php } ?></td>
-                <td><a href="?id=<?php echo $form->get('id'); ?>"><?php echo $form->get('title'); ?></a></td>
+                <td align="center"><i class="<?php echo $forms[$form->get('type')]; ?>" class = "icon"></i></td>
+                <td><a href="?id=<?php echo $form->get('id'); ?>">
+                        <?php echo $form->get('title'); ?></a>
                 <td><?php echo $form->get('updated'); ?></td>
             </tr>
-        <?php }
-        ?>
+        <?php } ?>
         </tbody>
         <tfoot>
         <tr>
