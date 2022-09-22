@@ -2,6 +2,7 @@
 global $ost;
 global $cfg;
 require('staff.inc.php');
+require(INVENTORY_MODEL_DIR.'AssetNav.php');
 
 if (!$thisstaff->hasPerm(User::PERM_DIRECTORY))
     Http::redirect('index.php');
@@ -192,7 +193,7 @@ if ($_POST) {
 if (isset($_GET['clear_filter']))
     unset($_SESSION['advsearch']);
 
-$nav->setTabActive('apps');
+$nav->setTabActive('apps', (INVENTORY_WEB_ROOT.'asset/handle'));
 $nav->addSubNavInfo('jb-overflowmenu', 'customQ_nav');
 
 // Start with all the top-level (container) queues
@@ -226,10 +227,7 @@ $nav->addSubMenu(function() use ($queue) {
 
 if($asset) {
     $page = INVENTORY_VIEWS_DIR.'asset-view.inc.php';
-} else if($_REQUEST['r'] == 'true') {
-    $page = INVENTORY_VIEWS_DIR.'dashboard-retired.inc.php';
 } else {
-    $page = INVENTORY_VIEWS_DIR.'dashboard.inc.php';
     if ($queue) {
         // XXX: Check staff access?
         $page = INVENTORY_VIEWS_DIR.'queue-assets.tmpl.php';
