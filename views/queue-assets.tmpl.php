@@ -4,7 +4,7 @@
 //      render the full page
 
 // Make sure the cdata materialized view is available;
-\model\AssetForm::ensureDynamicDataView();
+\model\AssetForm::ensureDynamicDataView(true);
 
 // Identify columns of output
 $columns = $queue->getColumns();
@@ -95,7 +95,7 @@ if (($Q->extra && isset($Q->extra['tables'])) || !$Q->constraints || $empty) {
 }
 
 $pageNav->setTotal($total, true);
-$pageNav->setURL('handle', $args);
+$pageNav->setURL('handleAsset', $args);
 ?>
 
 <!-- SEARCH FORM START -->
@@ -181,7 +181,7 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
                       <?php echo __('New Asset'); ?>
                   </a>
                   <a class="action-button popup-dialog"
-                     href="#import/bulk/">
+                     href="#import/bulkAssets/">
                       <i class="icon-upload"></i>
                       <?php echo __('Import'); ?>
                   </a>
@@ -423,7 +423,6 @@ $(function() {
                 $('div#popup-loading', $popup).show()
                     .find('h1').css({'margin-top':function() { return $popup.height()/3-$(this).height()/3}});
 
-                console.log('URL BEING USED: ' + root_url + 'scp/dispatcher.php/inventory/'+$form.attr('action').substr(1));
                 $.ajax({
                     type:  $form.attr('method'),
                     url: root_url + 'scp/dispatcher.php/inventory/'+$form.attr('action').substr(1),
