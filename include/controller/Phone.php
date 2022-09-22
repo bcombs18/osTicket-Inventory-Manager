@@ -5,12 +5,9 @@ namespace controller;
 require_once(INCLUDE_DIR . 'class.staff.php');
 require_once(INCLUDE_DIR . 'class.orm.php');
 require_once(INCLUDE_DIR . 'class.ajax.php');
-require_once(INVENTORY_MODEL_DIR . 'AssetSearch.php');
+require_once(INVENTORY_MODEL_DIR . 'PhoneSearch.php');
 
 use Format;
-use \AssetAdhocSearch;
-use model\AssetForm;
-use \AssetSavedSearch;
 use User;
 
 class Phone extends \AjaxController {
