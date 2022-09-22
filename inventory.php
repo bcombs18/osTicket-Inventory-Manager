@@ -9,6 +9,7 @@ require_once(INCLUDE_DIR.'class.import.php');
 require_once('config.php');
 
 const INVENTORY_TABLE = TABLE_PREFIX . 'inventory_asset';
+const INVENTORY_PHONE_TABLE = TABLE_PREFIX . 'inventory_phone';
 
 define ( 'OST_WEB_ROOT', osTicket::get_root_path ( __DIR__ ) );
 
@@ -140,14 +141,22 @@ class InventoryPlugin extends Plugin {
                     url_delete('^(?P<id>\d+)$', 'deleteNote'),
                     url_post('^attach/(?P<ext_id>\w\d+)$', 'createNote')
                 )),
+                url('^/phone', patterns('controller\Phone',
+                    url('^/add', 'addPhone'),
+                    url_get('^/lookup', 'lookup'),
+                    url_get('^/lookup/form$', 'lookup'),
+                    url_post('^/lookup/form$', 'addPhone'),
+                )),
                 url('/add', 'addAsset'),
-                url('/handle', 'handle')
+                url('/handleAsset', 'handleAsset'),
+                url('/handlePhone', 'handlePhone')
             )
         );
 
         $import_url = url('^/inventory.*import',
             patterns('controller\Import',
-                url('/bulk', 'importAssets'),
+                url('/bulkAssets', 'importAssets'),
+                url('/bulkPhones', 'importPhones'),
                 url('/handle', 'handle')
             )
         );
@@ -188,7 +197,7 @@ class InventoryPlugin extends Plugin {
 
     function createStaffMenu() {
         $app = new Application();
-        $app->registerStaffApp('Inventory Manager', INVENTORY_WEB_ROOT.'asset/handle');
+        $app->registerStaffApp('Inventory Manager', INVENTORY_WEB_ROOT.'asset/handleAsset');
     }
 
     function firstRun() {
