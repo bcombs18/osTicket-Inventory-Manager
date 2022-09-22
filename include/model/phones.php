@@ -7,7 +7,7 @@ if (!$thisstaff->hasPerm(\User::PERM_DIRECTORY))
     \Http::redirect('index.php');
 
 require_once INCLUDE_DIR.'class.note.php';
-require_once INVENTORY_INCLUDE_DIR.'model/AssetSearch.php';
+require_once INVENTORY_INCLUDE_DIR.'model/PhoneSearch.php';
 
 $phone = null;
 if ($_REQUEST['id'] && !($phone=\model\Phone::lookup($_REQUEST['id'])))
@@ -226,15 +226,12 @@ $nav->addSubMenu(function() use ($queue) {
 
 if($phone) {
     $page = INVENTORY_VIEWS_DIR.'phone-view.inc.php';
-} else if($_REQUEST['r'] == 'true') {
-    $page = INVENTORY_VIEWS_DIR.'dashboard-retired.inc.php';
 } else {
-    $page = INVENTORY_VIEWS_DIR.'dashboard.inc.php';
     if ($queue) {
         // XXX: Check staff access?
-        $page = INVENTORY_VIEWS_DIR.'queue-assets.tmpl.php';
+        $page = INVENTORY_VIEWS_DIR.'queue-phones.tmpl.php';
         $quick_filter = @$_REQUEST['filter'];
-        $assets = $queue->getQuery(false, $quick_filter);
+        $phones = $queue->getQuery(false, $quick_filter);
     }
 }
 
