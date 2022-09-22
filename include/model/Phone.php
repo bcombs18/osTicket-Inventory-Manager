@@ -64,7 +64,7 @@ class Phone extends PhoneModel
             $user = null;
         }
         if (!$phone && $create) {
-            $phone = new Asset(array(
+            $phone = new Phone(array(
                 'phone_number' => \Format::htmldecode(\Format::sanitize($vars['phone_number'])),
                 'phone_model' => \Format::htmldecode(\Format::sanitize($vars['phone_model'])),
                 'sim' => \Format::htmldecode(\Format::sanitize($vars['sim'])),
@@ -421,7 +421,7 @@ class Phone extends PhoneModel
 
         switch (true) {
             case ($thisstaff instanceof \Staff):
-                return sprintf(INVENTORY_WEB_ROOT.'phone/handle?id=%s', $id);
+                return sprintf(INVENTORY_WEB_ROOT.'phone/handlePhone?id=%s', $id);
         }
     }
 }
