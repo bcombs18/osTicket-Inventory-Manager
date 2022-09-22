@@ -224,8 +224,12 @@ class Asset extends \AjaxController {
         return $resp;
     }
 
-    function handle() {
+    function handleAsset() {
         require_once INVENTORY_INCLUDE_DIR.'model/assets.php';
+    }
+
+    function handlePhone() {
+        require_once INVENTORY_INCLUDE_DIR.'model/phones.php';
     }
 
     function viewUser($asset_id) {
