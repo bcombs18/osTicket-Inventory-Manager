@@ -141,17 +141,71 @@ class InventoryPlugin extends Plugin {
                     url_delete('^(?P<id>\d+)$', 'deleteNote'),
                     url_post('^attach/(?P<ext_id>\w\d+)$', 'createNote')
                 )),
-                url('^/phone', patterns('controller\Phone',
-                    url('^/add', 'addPhone'),
-                    url_get('^/lookup', 'lookup'),
-                    url_get('^/lookup/form$', 'lookup'),
-                    url_post('^/lookup/form$', 'addPhone'),
-                )),
                 url('/add', 'addAsset'),
                 url('/handleAsset', 'handleAsset'),
                 url('/handlePhone', 'handlePhone')
             )
         );
+
+        $phone_url = url ( '^/inventory.*phone',
+            patterns('controller\Phone',
+                url_get('^/(?P<id>\d+)$', 'getPhone'),
+                url_post('^/(?P<id>\d+)$', 'updatePhone'),
+                url_get('^/(?P<id>\d+)/edit$', 'editPhone'),
+                url_get('^/(?P<id>\d+)/delete$', 'delete'),
+                url_post('^/(?P<id>\d+)/delete$', 'delete'),
+                url_get('^/(?P<id>\d+)/preview$', 'preview'),
+                url_get('^/(?P<id>\d+)/user$', 'viewUser'),
+                url_get('^/(?P<id>\d+)/change-user$', 'changeUserForm'),
+                url_post('^/users/lookup$', 'getUser'),
+                url_get('^/users/lookup/form$', 'lookupUser'),
+                url_post('^/users/lookup/form$', 'addUser'),
+                url_get('^/users/select$', 'selectUser'),
+                url_get('^/users/select/(?P<id>\d+)$', 'selectUser'),
+                url_post('^/(?P<id>\d+)/note$', 'createNote'),
+                url_get('^/(?P<id>\d+)/retire$', 'retire'),
+                url_post('^/(?P<id>\d+)/retire$', 'retire'),
+                url_get('^/(?P<id>\d+)/activate$', 'activate'),
+                url_post('^/(?P<id>\d+)/activate$', 'activate'),
+                url_get('^/lookup', 'lookup'),
+                url_get('^/lookup/form$', 'lookup'),
+                url_post('^/lookup/form$', 'addPhone'),
+                url('^/search',
+                    patterns('controller\Search',
+                        url_get('^$', 'getAdvancedSearchDialog'),
+                        url_post('^$', 'doSearch'),
+                        url_get('^/(?P<id>\d+)$', 'editSearch'),
+                        url_get('^/adhoc,(?P<key>[\w=/+]+)$', 'getAdvancedSearchDialog'),
+                        url_get('^/create$', 'createSearch'),
+                        url_post('^/(?P<id>\d+)/save$', 'saveSearch'),
+                        url_post('^/save$', 'saveSearch'),
+                        url_delete('^/(?P<id>\d+)$', 'deleteSearch'),
+                        url_get('^/field/(?P<id>[\w_!:]+)$', 'addField'),
+                        url('^/column/edit/(?P<id>\d+)$', 'editColumn'),
+                        url('^/sort/edit/(?P<id>\d+)$', 'editSort'),
+                        url_post('^(?P<id>\d+)/delete$', 'deleteQueues'),
+                        url_post('^(?P<id>\d+)/disable$', 'disableQueues'),
+                        url_post('^(?P<id>\d+)/enable$', 'undisableQueues')
+                    )),
+                url('^/queue', patterns('controller\Search',
+                    url('^(?P<id>\d+/)?preview$', 'previewQueue'),
+                    url_get('^(?P<id>\d+)$', 'getQueue'),
+                    url_get('^addColumn$', 'addColumn'),
+                    url_get('^condition/add$', 'addCondition'),
+                    url_get('^condition/addProperty$', 'addConditionProperty'),
+                    url_get('^counts$', 'collectQueueCounts'),
+                    url('^/(?P<id>\d+)/delete$', 'deleteQueue')
+                )),
+                url('^/note/', patterns('controller\Note',
+                    url_get('^(?P<id>\d+)$', 'getNote'),
+                    url_post('^(?P<id>\d+)$', 'updateNote'),
+                    url_delete('^(?P<id>\d+)$', 'deleteNote'),
+                    url_post('^attach/(?P<ext_id>\w\d+)$', 'createNote')
+                )),
+                url('/add', 'addPhone'),
+                url('/handleAsset', 'handleAsset'),
+                url('/handlePhone', 'handlePhone')
+        ));
 
         $import_url = url('^/inventory.*import',
             patterns('controller\Import',
@@ -189,6 +243,7 @@ class InventoryPlugin extends Plugin {
 
         $object->append ( $media_url );
         $object->append ( $import_url );
+        $object->append ( $phone_url );
         $object->append ( $asset_url );
         $object->append ( $queue_url );
         $object->append ( $admin_url );
