@@ -86,7 +86,7 @@ class PhoneSavedQueue extends \SavedQueue {
 
     function getRoot() {
         switch ($this->root) {
-            case 'IP':
+            case 'P':
             default:
                 return 'model\Phone';
         }
@@ -178,7 +178,7 @@ class PhoneSavedQueue extends \SavedQueue {
         }
 
         // Use the columns of the "Open" queue as a default template
-        if ($use_template && ($template = \CustomQueue::lookup(101)))
+        if ($use_template && ($template = \CustomQueue::lookup(105)))
             return $template->getColumns();
 
         // Last resort — use standard columns
@@ -373,7 +373,7 @@ class PhoneAdhocSearch extends PhoneSavedSearch {
 
         $queue = new AssetAdhocSearch(array(
             'id' => "adhoc,$key",
-            'root' => 'IP',
+            'root' => 'P',
             'staff_id' => $thisstaff->getId(),
             'title' => __('Advanced Search'),
         ));

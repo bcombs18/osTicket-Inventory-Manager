@@ -36,7 +36,7 @@
         <?php
         $forms = array(
             'I' => 'icon-laptop',
-            'IP' => 'icon-phone',
+            'P' => 'icon-phone',
         );
         foreach (DynamicForm::objects()
                      ->filter(array('type__in'=>array_keys($forms)))

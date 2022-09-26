@@ -217,15 +217,15 @@ class Asset extends AssetModel
     }
 
     function getDynamicData($create=true) {
-        if (!isset($this->_entries)) {
-            $this->_entries = \DynamicFormEntry::forObject($this->asset_id, 'I')->all();
-            if (!$this->_entries && $create) {
-                $g = \model\AssetForm::getNewInstance();
-                $g->setClientId($this->asset_id);
-                $g->save();
-                $this->_entries[] = $g;
-            }
+
+        $this->_entries = \DynamicFormEntry::forObject($this->asset_id, 'I')->all();
+        if (!$this->_entries && $create) {
+            $g = \model\AssetForm::getNewInstance();
+            $g->setClientId($this->asset_id);
+            $g->save();
+            $this->_entries[] = $g;
         }
+
 
         return $this->_entries ?: array();
     }
@@ -434,7 +434,7 @@ class Asset extends AssetModel
 
         switch (true) {
             case ($thisstaff instanceof \Staff):
-                return sprintf(INVENTORY_WEB_ROOT.'asset/handle?id=%s', $id);
+                return sprintf(INVENTORY_WEB_ROOT.'asset/handleAsset?id=%s', $id);
         }
     }
 }

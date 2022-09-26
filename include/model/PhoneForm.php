@@ -15,12 +15,12 @@ class PhoneForm extends \DynamicForm {
     static $cdata = array(
         'table' => TABLE_PREFIX.'inventory_phone__cdata',
         'object_id' => 'phone_id',
-        'object_type' => 'IP',
+        'object_type' => 'P',
     );
 
     static function objects() {
         $os = parent::objects();
-        return $os->filter(array('type'=>'IP'));
+        return $os->filter(array('type'=>'P'));
     }
 
     static function getPhoneForm() {
@@ -55,7 +55,20 @@ class PhoneForm extends \DynamicForm {
             || !$e->form)
             return;
 
-        return self::updateDynamicDataView($answer, $data);
+        switch ($e->form->get('type')) {
+            case 'T':
+                return TicketForm::updateDynamicDataView($answer, $data);
+            case 'A':
+                return TaskForm::updateDynamicDataView($answer, $data);
+            case 'U':
+                return UserForm::updateDynamicDataView($answer, $data);
+            case 'O':
+                return OrganizationForm::updateDynamicDataView($answer, $data);
+            case 'I':
+                return AssetForm::updateDynamicDataView($answer, $data);
+            case 'P':
+                return PhoneForm::updateDynamicDataView($answer, $data);
+        }
     }
 
     static function updateDynamicFormField($field, $data) {

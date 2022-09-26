@@ -43,7 +43,7 @@ if (!$phone) {
         }
     }
 
-    $queue_key = sprintf('::Q:%s', 'IP');
+    $queue_key = sprintf('::Q:%s', 'P');
     $queue_id = $queue_id ?: @$_GET['queue'] ?: $_SESSION[$queue_key]
         ?? 105 ?: 105;
 

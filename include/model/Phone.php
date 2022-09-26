@@ -16,7 +16,7 @@ class PhoneModel extends \VerySimpleModel {
             ),
             'entries' => array(
                 'constraint' => array(
-                    "'IP'" => 'DynamicFormEntry.object_type',
+                    "'P'" => 'DynamicFormEntry.object_type',
                     'phone_id' => 'DynamicFormEntry.object_id',
                 ),
                 'list' => true,
@@ -65,7 +65,7 @@ class Phone extends PhoneModel
         }
         if (!$phone && $create) {
             $phone = new Phone(array(
-                'phone_number' => \Format::htmldecode(\Format::sanitize($vars['phone_number'])),
+                'phone_number' => \Format::htmldecode(\Format::sanitize(Phone::formatPhoneNumber($vars['phone_number']))),
                 'phone_model' => \Format::htmldecode(\Format::sanitize($vars['phone_model'])),
                 'sim' => \Format::htmldecode(\Format::sanitize($vars['sim'])),
                 'imei' => \Format::htmldecode(\Format::sanitize($vars['imei'])),
@@ -167,9 +167,20 @@ class Phone extends PhoneModel
         return true;
     }
 
+    static function formatPhoneNumber($number) {
+        if(str_contains($number, '-'))
+            return $number;
+
+        $string = "(" . substr($number, 0, 3) . ")-" . substr($number, 3, 3) . "-" . substr($number, 6);
+        if(strlen($number) == 11) {
+            return "+1 " . $string;
+        }
+        return $string;
+    }
+
     function addForm($form, $sort=1, $data=null) {
         $entry = $form->instanciate($sort, $data);
-        $entry->set('object_type', 'IP');
+        $entry->set('object_type', 'P');
         $entry->set('object_id', $this->getId());
         $entry->save();
         return $entry;
@@ -214,7 +225,7 @@ class Phone extends PhoneModel
 
     function getDynamicData($create=true) {
         if (!isset($this->_entries)) {
-            $this->_entries = \DynamicFormEntry::forObject($this->phone_id, 'IP')->all();
+            $this->_entries = \DynamicFormEntry::forObject($this->phone_id, 'P')->all();
             if (!$this->_entries && $create) {
                 $g = \model\PhoneForm::getNewInstance();
                 $g->setClientId($this->phone_id);
@@ -304,7 +315,7 @@ class Phone extends PhoneModel
                 }
             }
 
-            if ($entry->getDynamicForm()->get('type') == 'IP') {
+            if ($entry->getDynamicForm()->get('type') == 'P') {
                 //  Name field
                 if (($model = $entry->getField('phone_model')) && $isEditable($model) ) {
                     $model = $model->getClean();

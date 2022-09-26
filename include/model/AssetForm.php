@@ -55,7 +55,20 @@ class AssetForm extends \DynamicForm {
             || !$e->form)
             return;
 
-        return self::updateDynamicDataView($answer, $data);
+        switch ($e->form->get('type')) {
+            case 'T':
+                return TicketForm::updateDynamicDataView($answer, $data);
+            case 'A':
+                return TaskForm::updateDynamicDataView($answer, $data);
+            case 'U':
+                return UserForm::updateDynamicDataView($answer, $data);
+            case 'O':
+                return OrganizationForm::updateDynamicDataView($answer, $data);
+            case 'I':
+                return AssetForm::updateDynamicDataView($answer, $data);
+            case 'IP':
+                return PhoneForm::updateDynamicDataView($answer, $data);
+        }
     }
 
     static function updateDynamicFormField($field, $data) {
