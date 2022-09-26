@@ -20,15 +20,15 @@ if ($info['error']) {
 <div id="asset-info" style="margin:5px;">
     <div class="clear"></div>
     <form method="post" class="asset"
-          action="#asset/<?php echo $asset->getId(); ?>/activate">
-        <input type="hidden" name="id" value="<?php echo $asset->getId(); ?>" />
+          action=<?php echo $info['action']; ?>>
+        <input type="hidden" name="id" value="<?php echo $info['action']; ?>" />
         <p class="full-width">
         <span class="buttons pull-left">
             <input type="button" name="cancel" class="close"
                    value="<?php echo __('No, Cancel'); ?>">
         </span>
             <span class="buttons pull-right">
-            <input type="submit" value="<?php echo __('Yes, Activate Asset'); ?>">
+            <input type="submit" value="<?php echo $info['submit_message']; ?>">
         </span>
         </p>
     </form>

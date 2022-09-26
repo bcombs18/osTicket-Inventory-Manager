@@ -120,7 +120,13 @@ class Asset extends \AjaxController {
         elseif (!($asset = \model\Asset::lookup($id)))
             \Http::response(404, 'Unknown user');
 
-        $info = array();
+        $info = array(
+            'title' => sprintf('%s: %s', __('Delete Asset'), $asset->getHostname()),
+            'warn' => 'Deleted assets CANNOT be recovered',
+            'action' => '#asset/'.$asset->getId().'/delete',
+            'id' => $asset->getId(),
+            'delete_message' => 'Yes, Delete Phone'
+        );
         if ($_POST) {
             if (!$info['error'] && $asset->delete())
                 \Http::response(204, 'Asset deleted successfully');
@@ -141,7 +147,13 @@ class Asset extends \AjaxController {
         elseif (!($asset = \model\Asset::lookup($id)))
             \Http::response(404, 'Unknown user');
 
-        $info = array();
+        $info = array(
+            'title' => sprintf('%s: %s', __('Retire Asset'), $asset->getHostname()),
+            'warn' => 'Retired assets will be hidden. You can reactivate the assets at any time.',
+            'action' => '#asset/'.$asset->getId().'/retire',
+            'id' => $asset->getId(),
+            'submit_message' => 'Yes, Retire Asset'
+        );
         if ($_POST) {
             if (!$info['error'] && $asset->retire())
                 \Http::response(204, 'Asset retired successfully');
@@ -162,7 +174,12 @@ class Asset extends \AjaxController {
         elseif (!($asset = \model\Asset::lookup($id)))
             \Http::response(404, 'Unknown user');
 
-        $info = array();
+        $info = array(
+            'title' => sprintf('%s: %s', __('Activate Asset'), $asset->getHostname()),
+            'action' => '#asset/'.$asset->getId().'/activate',
+            'id' => $asset->getId(),
+            'submit_message' => 'Yes, Activate Asset'
+        );
         if ($_POST) {
             if (!$info['error'] && $asset->activate())
                 \Http::response(204, 'Asset activated successfully');
@@ -192,8 +209,11 @@ class Asset extends \AjaxController {
             \Http::response(404, 'Unknown asset');
 
         $info = array(
-            'title' => '',
-            'assetedit' => sprintf('#asset/%d/edit', $asset->getId()),
+            'title' => $asset->getHostname(),
+            'edit_url' => sprintf('#asset/%d/edit', $asset->getId()),
+            'post_url' => '#asset/'. $asset->getId(),
+            'object' => $asset,
+            'object_type' => 'Asset'
         );
         ob_start();
         echo sprintf('<div style="width:650px; padding: 2px 2px 0 5px;"
