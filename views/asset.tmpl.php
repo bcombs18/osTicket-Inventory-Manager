@@ -1,39 +1,28 @@
 <?php
-if (!isset($info['title']))
-    $info['title'] = Format::htmlchars($asset->getHostname());
 
-if ($info['title']) { ?>
-    <h3 class="drag-handle"><?php echo $info['title']; ?></h3>
-    <b><a class="close" href="#"><i class="icon-remove-circle"></i></a></b>
-    <hr>
-    <?php
-} else {
-    echo '<div class="clear"></div>';
-}
+echo '<div class="clear"></div>';
+
 if ($info['error']) {
     echo sprintf('<p id="msg_error">%s</p>', $info['error']);
 } elseif ($info['msg']) {
     echo sprintf('<p id="msg_notice">%s</p>', $info['msg']);
 } ?>
 <div id="user-profile" style="display:<?php echo $forms ? 'none' : 'block'; ?>;margin:5px;">
-    <div><b><?php
-            echo Format::htmlchars($asset->getHostname()); ?></b></div>
-
     <div class="clear"></div>
     <ul class="tabs" id="user_tabs" style="margin-top:5px">
         <li class="active"><a href="#info-tab"
-            ><i class="icon-info-sign"></i>&nbsp;<?php echo __('Asset'); ?></a></li>
+            ><i class="icon-info-sign"></i>&nbsp;<?php echo $info['object_type']; ?></a></li>
     </ul>
 
     <div id="user_tabs_container">
         <div class="tab_content" id="info-tab">
             <div class="floating-options">
                 <?php if ($thisstaff->hasPerm(User::PERM_EDIT)) { ?>
-                    <a href="<?php echo $info['useredit'] ?: '#'; ?>" id="edituser" class="action" title="<?php echo __('Edit'); ?>"><i class="icon-edit"></i></a>
+                    <a href="<?php echo $info['edit_url'] ?: '#'; ?>" id="edituser" class="action" title="<?php echo __('Edit'); ?>"><i class="icon-edit"></i></a>
                 <?php } ?>
             </div>
             <table class="custom-info" width="100%">
-                <?php foreach ($asset->getDynamicData() as $entry) {
+                <?php foreach ($info['object']->getDynamicData() as $entry) {
                     ?>
                     <tr><th colspan="2"><strong><?php
                                 echo $entry->getTitle(); ?></strong></td></tr>
@@ -54,11 +43,11 @@ if ($info['error']) {
     <div><p id="msg_info"><i class="icon-info-sign"></i>&nbsp; <?php echo __(
                 'Please note that updates will be reflected system-wide.'
             ); ?></p></div>
-    <form method="post" class="user" action="#asset/<?php echo $asset->getId();?>">
-        <input type="hidden" name="uid" value="<?php echo $asset->getId(); ?>" />
+    <form method="post" class="user" action=<?php echo $info['post_url']; ?>>
+        <input type="hidden" name="uid" value="<?php echo $info['object']->getId(); ?>" />
         <table width="100%">
             <?php
-            if (!$forms) $forms = $asset->getForms();
+            if (!$forms) $forms = $info['object']->getForms();
             foreach ($forms as $form)
                 $form->render();
             ?>
@@ -68,10 +57,10 @@ if ($info['error']) {
         <span class="buttons pull-left">
             <input type="reset" value="<?php echo __('Reset'); ?>">
             <input type="button" name="cancel" class="<?php
-            echo ($asset) ? 'cancel' : 'close' ?>"  value="<?php echo __('Cancel'); ?>">
+            echo ($info['object']) ? 'cancel' : 'close' ?>"  value="<?php echo __('Cancel'); ?>">
         </span>
             <span class="buttons pull-right">
-            <input type="submit" value="<?php echo __('Update Asset'); ?>">
+            <input type="submit" value="<?php echo __('Update '. $info['object_type']); ?>">
         </span>
         </p>
     </form>
