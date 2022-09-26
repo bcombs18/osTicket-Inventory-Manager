@@ -117,7 +117,13 @@ class Phone extends \AjaxController {
         elseif (!($phone = \model\Phone::lookup($id)))
             \Http::response(404, 'Unknown phone');
 
-        $info = array();
+        $info = array(
+            'title' => sprintf('%s: %s', __('Delete Phone'), $phone->getModel()),
+            'warn' => 'Deleted assets CANNOT be recovered',
+            'action' => '#phone/'.$phone->getId().'/delete',
+            'id' => $phone->getId(),
+            'delete_message' => 'Yes, Delete Phone'
+        );
         if ($_POST) {
             if (!$info['error'] && $phone->delete())
                 \Http::response(204, 'Phone deleted successfully');
@@ -125,7 +131,7 @@ class Phone extends \AjaxController {
                 $info['error'] = sprintf('%s - %s', __('Unable to delete phone'), __('Please try again!'));
         }
 
-        include(INVENTORY_VIEWS_DIR . 'deletePhone.tmpl.php');
+        include(INVENTORY_VIEWS_DIR . 'deleteAsset.tmpl.php');
     }
 
     function retire($id) {
@@ -138,7 +144,13 @@ class Phone extends \AjaxController {
         elseif (!($phone = \model\Phone::lookup($id)))
             \Http::response(404, 'Unknown phone');
 
-        $info = array();
+        $info = array(
+            'title' => sprintf('%s: %s', __('Retire Phone'), $phone->getModel()),
+            'warn' => 'Retired phones will be hidden. You can reactivate the phones at any time.',
+            'action' => '#phone/'.$phone->getId().'/retire',
+            'id' => $phone->getId(),
+            'submit_message' => 'Yes, Retire Phone'
+        );
         if ($_POST) {
             if (!$info['error'] && $phone->retire())
                 \Http::response(204, 'Phone retired successfully');
@@ -146,7 +158,7 @@ class Phone extends \AjaxController {
                 $info['error'] = sprintf('%s - %s', __('Unable to retire phone'), __('Please try again!'));
         }
 
-        include(INVENTORY_VIEWS_DIR . 'retirePhone.tmpl.php');
+        include(INVENTORY_VIEWS_DIR . 'retireAsset.tmpl.php');
     }
 
     function activate($id) {
@@ -159,7 +171,12 @@ class Phone extends \AjaxController {
         elseif (!($phone = \model\Phone::lookup($id)))
             \Http::response(404, 'Unknown phone');
 
-        $info = array();
+        $info = array(
+            'title' => sprintf('%s: %s', __('Activate Asset'), $phone->getModel()),
+            'action' => '#phone/'.$phone->getId().'/activate',
+            'id' => $phone->getId(),
+            'submit_message' => 'Yes, Activate Asset'
+        );
         if ($_POST) {
             if (!$info['error'] && $phone->activate())
                 \Http::response(204, 'Phone activated successfully');
@@ -167,7 +184,7 @@ class Phone extends \AjaxController {
                 $info['error'] = sprintf('%s - %s', __('Unable to activate phone'), __('Please try again!'));
         }
 
-        include(INVENTORY_VIEWS_DIR . 'activatePhone.tmpl.php');
+        include(INVENTORY_VIEWS_DIR . 'activateAsset.tmpl.php');
     }
 
     function getPhone($id=false) {
@@ -189,13 +206,16 @@ class Phone extends \AjaxController {
             \Http::response(404, 'Unknown phone');
 
         $info = array(
-            'title' => '',
-            'phoneedit' => sprintf('#phone/%d/edit', $phone->getId()),
+            'title' => $phone->getModel(),
+            'edit_url' => sprintf('#phone/%d/edit', $phone->getId()),
+            'post_url' => '#phone/'. $phone->getId(),
+            'object' => $phone,
+            'object_type' => 'Phone'
         );
         ob_start();
         echo sprintf('<div style="width:650px; padding: 2px 2px 0 5px;"
                 id="u%d">', $phone->getId());
-        include(INVENTORY_VIEWS_DIR . 'phone.tmpl.php');
+        include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
         echo '</div>';
         $resp = ob_get_contents();
         ob_end_clean();
@@ -221,7 +241,11 @@ class Phone extends \AjaxController {
         return $resp;
     }
 
-    function handle() {
+    function handleAsset() {
+        require_once INVENTORY_INCLUDE_DIR.'model/assets.php';
+    }
+
+    function handlePhone() {
         require_once INVENTORY_INCLUDE_DIR.'model/phones.php';
     }
 
@@ -267,7 +291,8 @@ class Phone extends \AjaxController {
         $user = \User::lookup($phone->getAssigneeID());
 
         $info = array(
-            'title' => sprintf(__('Change user for asset %s'), $phone->getModel())
+            'title' => sprintf(__('Change user for asset %s'), $phone->getModel()),
+            'lookup_url' => 'phone/users/lookup'
         );
 
         return self::_userlookup($user, null, $info);
