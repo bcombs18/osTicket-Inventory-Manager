@@ -122,7 +122,7 @@ class Phone extends \AjaxController {
             'warn' => 'Deleted assets CANNOT be recovered',
             'action' => '#phone/'.$phone->getId().'/delete',
             'id' => $phone->getId(),
-            'delete_message' => 'Yes, Delete Phone'
+            'submit_message' => 'Yes, Delete Phone'
         );
         if ($_POST) {
             if (!$info['error'] && $phone->delete())
