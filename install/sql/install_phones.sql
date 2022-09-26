@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%inventory_phone` (
 
 DELETE FROM `%TABLE_PREFIX%form` WHERE `title`='Inventory Phone'$
 INSERT INTO `%TABLE_PREFIX%form` (`type`, `title`, `instructions`, `created`, `updated`)
-    VALUES ('IP', 'Inventory Phone', 'Dynamic Asset Form: Add form fields to this form to add custom phone data. This form is used for data entry/access and is used by the CSV importer. If the CSV you are using to import data does not contain headers, the columns of the CSV must match the ordering of this form.', NOW(), NOW())$
+    VALUES ('P', 'Inventory Phone', 'Dynamic Asset Form: Add form fields to this form to add custom phone data. This form is used for data entry/access and is used by the CSV importer. If the CSV you are using to import data does not contain headers, the columns of the CSV must match the ordering of this form.', NOW(), NOW())$
 
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryPhoneFormFields`$
 
@@ -166,7 +166,7 @@ VALUES
      'Phones',
      '[]',
      NULL,
-     'IP',
+     'P',
      '/',
      NOW(),
      NOW());
@@ -333,7 +333,7 @@ VALUES
      'Active Phones',
      '{"criteria": [["retired", "equal", "false"]], "conditions":[]}',
      NULL,
-     'IP',
+     'P',
      '/',
      NOW(),
      NOW());
@@ -371,7 +371,7 @@ VALUES
      'Retired Phones',
      '{"criteria": [["retired", "equal", "true"]], "conditions":[]}',
      NULL,
-     'IP',
+     'P',
      '/',
      NOW(),
      NOW());
@@ -409,7 +409,7 @@ VALUES
      'Unassigned Phones',
      '{"criteria": [["assignee", "equal", null]], "conditions":[]}',
      NULL,
-     'IP',
+     'P',
      '/',
      NOW(),
      NOW());

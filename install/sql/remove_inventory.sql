@@ -39,9 +39,9 @@ DROP TABLE IF EXISTS `%TABLE_PREFIX%inventory_phone__cdata`$
 
 DROP PROCEDURE IF EXISTS `%TABLE_PREFIX%CreateInventoryPhoneFormFields`$
 
-DELETE FROM `%TABLE_PREFIX%_search` WHERE `object_type`='IP'$
+DELETE FROM `%TABLE_PREFIX%_search` WHERE `object_type`='P'$
 
-SET @form_id = (SELECT `id` FROM `%TABLE_PREFIX%form` WHERE `type`='IP')$
+SET @form_id = (SELECT `id` FROM `%TABLE_PREFIX%form` WHERE `type`='P')$
 DELETE FROM `%TABLE_PREFIX%form_entry_values` WHERE `entry_id` IN (SELECT `id` FROM `%TABLE_PREFIX%form_entry` WHERE `form_id`=@form_id)$
 DELETE FROM `%TABLE_PREFIX%form_entry` WHERE `form_id`=@form_id$
 DELETE FROM `%TABLE_PREFIX%form_field` WHERE `form_id`=@form_id$
