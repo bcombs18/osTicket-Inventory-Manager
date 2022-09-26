@@ -9,9 +9,9 @@ $selected = $_REQUEST['queue'] == $q->getId();
 $parent = $queue->get('parent_id');
 $link = "";
 if($queue->getId() == 101 || $parent == 101) {
-    $link = "handleAsset?queue=".$queue->getId();
+    $link = INVENTORY_WEB_ROOT."asset/handleAsset?queue=".$queue->getId();
 } elseif ($queue->getId() == 105 || $parent == 105) {
-    $link = "handlePhone?queue=".$queue->getId();
+    $link = INVENTORY_WEB_ROOT."phone/handlePhone?queue=".$queue->getId();
 }
 global $thisstaff;
 ?>

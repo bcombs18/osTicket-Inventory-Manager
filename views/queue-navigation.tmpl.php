@@ -10,9 +10,9 @@ $this_queue = $q;
 $selected = (!isset($_REQUEST['a'])  && $_REQUEST['queue'] == $this_queue->getId());
 $link = "";
 if($this_queue->getId() == 101) {
-    $link = "handleAsset?queue=".$this_queue->getId();
+    $link = INVENTORY_WEB_ROOT."asset/handleAsset?queue=".$this_queue->getId();
 } elseif ($this_queue->getId() == 105) {
-    $link = "handlePhone?queue=".$this_queue->getId();
+    $link = INVENTORY_WEB_ROOT."phone/handlePhone?queue=".$this_queue->getId();
 }
 ?>
 <li class="top-queue item <?php if ($child_selected) echo 'child active';
