@@ -80,11 +80,15 @@ class Phone extends \AjaxController {
             \Http::response(404, 'Unknown phone');
 
         $info = array(
-            'title' => sprintf(__('Update %s'), Format::htmlchars($phone->getModel()))
+            'title' => $phone->getModel(),
+            'edit_url' => sprintf('#phone/%d/edit', $phone->getId()),
+            'post_url' => '#phone/'. $phone->getId(),
+            'object' => $phone,
+            'object_type' => 'Phone'
         );
         $forms = $phone->getForms();
 
-        include(INVENTORY_VIEWS_DIR . 'phone.tmpl.php');
+        include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
     }
 
     function updatePhone($id) {
@@ -206,7 +210,6 @@ class Phone extends \AjaxController {
             \Http::response(404, 'Unknown phone');
 
         $info = array(
-            'title' => $phone->getModel(),
             'edit_url' => sprintf('#phone/%d/edit', $phone->getId()),
             'post_url' => '#phone/'. $phone->getId(),
             'object' => $phone,

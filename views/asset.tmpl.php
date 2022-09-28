@@ -1,6 +1,13 @@
 <?php
 
-echo '<div class="clear"></div>';
+if ($info['title']) { ?>
+    <h3 class="drag-handle"><?php echo $info['title']; ?></h3>
+    <b><a class="close" href="#"><i class="icon-remove-circle"></i></a></b>
+    <hr>
+    <?php
+} else {
+    echo '<div class="clear"></div>';
+}
 
 if ($info['error']) {
     echo sprintf('<p id="msg_error">%s</p>', $info['error']);

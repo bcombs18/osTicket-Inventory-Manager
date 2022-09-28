@@ -83,7 +83,11 @@ class Asset extends \AjaxController {
             Http::response(404, 'Unknown user');
 
         $info = array(
-            'title' => sprintf(__('Update %s'), Format::htmlchars($asset->getHostname()))
+            'title' => $asset->getHostname(),
+            'edit_url' => sprintf('#asset/%d/edit', $asset->getId()),
+            'post_url' => '#asset/'. $asset->getId(),
+            'object' => $asset,
+            'object_type' => 'Asset'
         );
         $forms = $asset->getForms();
 
@@ -209,7 +213,6 @@ class Asset extends \AjaxController {
             \Http::response(404, 'Unknown asset');
 
         $info = array(
-            'title' => $asset->getHostname(),
             'edit_url' => sprintf('#asset/%d/edit', $asset->getId()),
             'post_url' => '#asset/'. $asset->getId(),
             'object' => $asset,
