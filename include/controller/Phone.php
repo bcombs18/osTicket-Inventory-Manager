@@ -401,6 +401,6 @@ class Phone extends \AjaxController {
         require_once INCLUDE_DIR . 'class.ajax.php';
         require_once INCLUDE_DIR . 'ajax.note.php';
         $ajax = new \NoteAjaxAPI();
-        return $ajax->createNote('IP'.$id);
+        return $ajax->createNote('P'.$id);
     }
 }
