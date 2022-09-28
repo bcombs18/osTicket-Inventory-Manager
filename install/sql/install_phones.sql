@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%inventory_phone` (
                                                                `sim` varchar(255) NOT NULL,
                                                                `imei` varchar (255) NOT NULL,
                                                                `color` varchar(255) DEFAULT NULL,
-                                                               `assignee` varchar(255) DEFAULT NULL,
+                                                               `phone_assignee` varchar(255) DEFAULT NULL,
                                                                `retired` varchar(5),
                                                                `created` date NOT NULL,
                                                                `updated` date NOT NULL,
@@ -127,8 +127,8 @@ BEGIN
         (@form_id,
          0,
          'text',
-         'Assignee',
-         'assignee',
+         'Phone Assignee',
+         'phone_assignee',
          6,
          NOW(),
          NOW());
@@ -230,8 +230,8 @@ INSERT INTO `%TABLE_PREFIX%queue_column`
  `extra`)
 VALUES
     (0,
-     'Assignee',
-     'assignee',
+     'Phone Assignee',
+     'phone_assignee',
      NULL,
      'link:assignee',
      '',
@@ -249,7 +249,7 @@ BEGIN
     SET @queue_id = (SELECT `id` FROM `%TABLE_PREFIX%queue` WHERE `title`='Phones');
     SET @model_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Phone Model');
     SET @imei_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='IMEI');
-    SET @assignee_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Assignee');
+    SET @assignee_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Phone Assignee');
 
 INSERT INTO `%TABLE_PREFIX%queue_columns`
 (`queue_id`,
@@ -297,7 +297,7 @@ VALUES
      0,
      1,
      3,
-     'Assignee',
+     'Phone Assignee',
      230);
 END$
 

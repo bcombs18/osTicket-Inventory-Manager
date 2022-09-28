@@ -65,10 +65,10 @@ DELETE FROM `%TABLE_PREFIX%queue` WHERE `parent_id`=@queue_id$
 
 DELETE FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Phone Model'$
 DELETE FROM `%TABLE_PREFIX%queue_column` WHERE `name`='IMEI'$
-DELETE FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Assignee'$
+DELETE FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Phone Assignee'$
 
 DELETE FROM `%TABLE_PREFIX%queue_columns` WHERE `heading`='Phone Model'$
 DELETE FROM `%TABLE_PREFIX%queue_columns` WHERE `heading`='IMEI'$
-DELETE FROM `%TABLE_PREFIX%queue_columns` WHERE `heading`='Assignee'$
+DELETE FROM `%TABLE_PREFIX%queue_columns` WHERE `heading`='Phone Assignee'$
 
 ALTER TABLE `%TABLE_PREFIX%api_key` DROP COLUMN `can_create_assets`$

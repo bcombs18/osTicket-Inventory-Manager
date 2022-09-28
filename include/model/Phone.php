@@ -57,7 +57,7 @@ class Phone extends PhoneModel
     static function fromVars($vars, $create=true, $update=false) {
         // Try and lookup by Serial Number
         $phone = static::lookupByIMEI($vars['imei']);
-        $user = \User::lookupByEmail($vars['assignee']);
+        $user = \User::lookupByEmail($vars['phone_assignee']);
         if($user) {
             $user = json_encode(array('name' => $user->getFullName(), 'id' => $user->getId()));
         } else {
@@ -70,7 +70,7 @@ class Phone extends PhoneModel
                 'sim' => \Format::htmldecode(\Format::sanitize($vars['sim'])),
                 'imei' => \Format::htmldecode(\Format::sanitize($vars['imei'])),
                 'color' => \Format::htmldecode(\Format::sanitize($vars['location'])),
-                'assignee' => $user,
+                'phone_assignee' => $user,
                 'retired' => 'false',
                 'created' => new \SqlFunction('NOW'),
                 'updated' => new \SqlFunction('NOW')
@@ -133,12 +133,12 @@ class Phone extends PhoneModel
     }
 
     function getAssignee() {
-        $assignee = json_decode($this->assignee, true);
+        $assignee = json_decode($this->phone_assignee, true);
         return $assignee['name'];
     }
 
     function getAssigneeID() {
-        $assignee = json_decode($this->assignee, true);
+        $assignee = json_decode($this->phone_assignee, true);
         return $assignee['id'];
     }
 
@@ -194,7 +194,7 @@ class Phone extends PhoneModel
             'sim' => $this->getSIM(),
             'imei' => $this->getIMEI(),
             'color' => $this->getColor(),
-            'assignee' => \User::lookup($this->getAssigneeID())
+            'phone_assignee' => \User::lookup($this->getAssigneeID())
         );
 
         return \Format::json_encode($info);
@@ -364,7 +364,7 @@ class Phone extends PhoneModel
             return false;
         }
         $errors = array();
-        $this->assignee = json_encode(array('name' => $user->getFullname(), 'id' => $user->getId()));
+        $this->phone_assignee = json_encode(array('name' => $user->getFullname(), 'id' => $user->getId()));
         if (!$this->save())
             return false;
         unset($this->user);
@@ -384,8 +384,8 @@ class Phone extends PhoneModel
             'sim' => new \TextboxField(array(
                 'label' => __('SIM')
             )),
-            'assignee' => new \TextboxField(array(
-                'label' => __('Assignee')
+            'phone_assignee' => new \TextboxField(array(
+                'label' => __('Phone Assignee')
             )),
             'color' => new \TextboxField(array(
                 'label' => __('Color')
