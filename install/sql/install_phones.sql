@@ -230,8 +230,8 @@ INSERT INTO `%TABLE_PREFIX%queue_column`
  `extra`)
 VALUES
     (0,
-     'Phone Assignee',
-     'phone_assignee',
+     'Assignee',
+     'assignee',
      NULL,
      'link:assignee',
      '',
@@ -249,7 +249,7 @@ BEGIN
     SET @queue_id = (SELECT `id` FROM `%TABLE_PREFIX%queue` WHERE `title`='Phones');
     SET @model_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Phone Model');
     SET @imei_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='IMEI');
-    SET @assignee_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Phone Assignee');
+    SET @assignee_id = (SELECT `id` FROM `%TABLE_PREFIX%queue_column` WHERE `name`='Assignee');
 
 INSERT INTO `%TABLE_PREFIX%queue_columns`
 (`queue_id`,
