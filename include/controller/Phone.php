@@ -265,12 +265,16 @@ class Phone extends \AjaxController {
             $file = 'user.tmpl.php';
             $info = array(
                 'title' => sprintf(__('%s: %s'), $phone->getModel(),
-                    Format::htmlchars($user->getName()))
+                    Format::htmlchars($user->getName())),
+                'submit_url' => '#phone/users/lookup',
+                'object' => $phone,
+                'change_url' => '#phone/'.$phone->getId().'/change-user'
             );
         } else {
             $file = 'user-lookup.tmpl.php';
             $info = array(
-                'title' => sprintf(__('%s: Unassigned'), $phone->getModel())
+                'title' => sprintf(__('%s: Unassigned'), $phone->getModel()),
+                'onselect' => INVENTORY_WEB_ROOT.'phone/users/select/',
             );
         }
 
@@ -295,7 +299,9 @@ class Phone extends \AjaxController {
 
         $info = array(
             'title' => sprintf(__('Change user for asset %s'), $phone->getModel()),
-            'lookup_url' => 'phone/users/lookup'
+            'lookup_url' => 'phone/users/lookup',
+            'onselect' => INVENTORY_WEB_ROOT.'phone/users/select/',
+            'add_url' => '#phone/users/lookup/form',
         );
 
         return self::_userlookup($user, null, $info);
@@ -328,7 +334,11 @@ class Phone extends \AjaxController {
         if ($id)
             $user = \User::lookup($id);
 
-        $info = array('title' => __('Select User'));
+        $info = array(
+            'title' => __('Select User'),
+            'submit_url' => '#phone/users/lookup',
+            'add_url' => '#asset/users/lookup/form',
+        );
 
         ob_start();
         include(INVENTORY_VIEWS_DIR . 'user-lookup.tmpl.php');

@@ -20,9 +20,9 @@ if ($info['error']) {
     <?php echo $user->getAvatar(); ?>
     </div>
     <?php
-    if ($asset) { ?>
+    if ($info['object']) { ?>
     <a class="action-button pull-right change-user" style="overflow:inherit"
-        href="#asset/<?php echo $asset->getId(); ?>/change-user" ><i class="icon-user"></i>
+        href="<?php echo $info['change_url']; ?>" ><i class="icon-user"></i>
         <?php echo __('Change User'); ?></a>
     <?php
     } ?>

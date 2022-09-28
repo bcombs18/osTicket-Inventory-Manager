@@ -25,7 +25,7 @@ if ($info['error']) {
     echo sprintf('<p id="msg_notice">%s</p>', $info['msg']);
 } ?>
 <div id="selected-user-info" style="display:<?php echo $user ? 'block' :'none'; ?>;margin:5px;">
-<form method="post" class="user" action="#asset/users/lookup">
+<form method="post" class="user" action="<?php echo $info['submit_url']; ?>">
     <input type="hidden" id="user-id" name="id" value="<?php echo $user ? $user->getId() : 0; ?>"/>
 <?php
 if ($user) { ?>
@@ -80,7 +80,7 @@ if ($user) { ?>
 </div>
 <div id="new-user-form" style="display:<?php echo $user ? 'none' :'block'; ?>;">
 <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
-<form method="post" class="user" action="#asset/users/lookup/form">
+<form method="post" class="user" action=<?php echo $info['add_url']; ?>>
     <table width="100%" class="fixed">
     <?php
         $form = $form ?: UserForm::getInstance();

@@ -268,12 +268,17 @@ class Asset extends \AjaxController {
             $file = 'user.tmpl.php';
             $info = array(
                 'title' => sprintf(__('%s: %s'), $asset->getHostname(),
-                    Format::htmlchars($user->getName()))
+                    Format::htmlchars($user->getName())),
+                'submit_url' => '#asset/users/lookup',
+                'object' => $asset,
+                'change_url' => '#asset/'.$asset->getId().'/change-user'
             );
         } else {
             $file = 'user-lookup.tmpl.php';
             $info = array(
-                'title' => sprintf(__('%s: Unassigned'), $asset->getHostname())
+                'title' => sprintf(__('%s: Unassigned'), $asset->getHostname()),
+                'onselect' => INVENTORY_WEB_ROOT.'asset/users/select/',
+                'add_url' => '#asset/users/lookup/form',
             );
         }
 
@@ -297,7 +302,10 @@ class Asset extends \AjaxController {
         $user = \User::lookup($asset->getAssigneeID());
 
         $info = array(
-            'title' => sprintf(__('Change user for asset %s'), $asset->getHostname())
+            'title' => sprintf(__('Change user for asset %s'), $asset->getHostname()),
+            'lookup_url' => 'asset/users/lookup',
+            'onselect' => INVENTORY_WEB_ROOT.'asset/users/select/',
+            'add_url' => '#phone/users/lookup/form',
         );
 
         return self::_userlookup($user, null, $info);
@@ -330,7 +338,11 @@ class Asset extends \AjaxController {
         if ($id)
             $user = \User::lookup($id);
 
-        $info = array('title' => __('Select User'));
+        $info = array(
+            'title' => __('Select User'),
+            'submit_url' => '#asset/users/lookup',
+            'add_url' => '#asset/users/lookup/form',
+        );
 
         ob_start();
         include(INVENTORY_VIEWS_DIR . 'user-lookup.tmpl.php');
