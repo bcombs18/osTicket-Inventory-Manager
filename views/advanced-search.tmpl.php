@@ -6,7 +6,7 @@ $parent_id = (isset($_REQUEST['parent_id']) && is_numeric($_REQUEST['parent_id']
         : $search->parent_id;
 if ($parent_id
     && is_numeric($parent_id)
-    && (!($parent = $searchInfo['model']::lookup($parent_id)))
+    && (!($parent = SavedQueue::lookup($parent_id)))
 ) {
     $parent_id = 0;
 }
