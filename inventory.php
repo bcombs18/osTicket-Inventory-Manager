@@ -110,7 +110,7 @@ class InventoryPlugin extends Plugin {
                 url_get('^/lookup/form$', 'lookup'),
                 url_post('^/lookup/form$', 'addAsset'),
                 url('^/search',
-                    patterns('controller\Search',
+                    patterns('controller\AssetSearchController',
                         url_get('^$', 'getAdvancedSearchDialog'),
                         url_post('^$', 'doSearch'),
                         url_get('^/(?P<id>\d+)$', 'editSearch'),
@@ -126,7 +126,7 @@ class InventoryPlugin extends Plugin {
                         url_post('^(?P<id>\d+)/disable$', 'disableQueues'),
                         url_post('^(?P<id>\d+)/enable$', 'undisableQueues')
                     )),
-                url('^/queue', patterns('controller\Search',
+                url('^/queue', patterns('controller\AssetSearch',
                     url('^(?P<id>\d+/)?preview$', 'previewQueue'),
                     url_get('^(?P<id>\d+)$', 'getQueue'),
                     url_get('^addColumn$', 'addColumn'),
@@ -171,7 +171,7 @@ class InventoryPlugin extends Plugin {
                 url_get('^/lookup/form$', 'lookup'),
                 url_post('^/lookup/form$', 'addPhone'),
                 url('^/search',
-                    patterns('controller\Search',
+                    patterns('controller\PhoneSearchController',
                         url_get('^$', 'getAdvancedSearchDialog'),
                         url_post('^$', 'doSearch'),
                         url_get('^/(?P<id>\d+)$', 'editSearch'),
@@ -187,7 +187,7 @@ class InventoryPlugin extends Plugin {
                         url_post('^(?P<id>\d+)/disable$', 'disableQueues'),
                         url_post('^(?P<id>\d+)/enable$', 'undisableQueues')
                     )),
-                url('^/queue', patterns('controller\Search',
+                url('^/queue', patterns('controller\AssetSearch',
                     url('^(?P<id>\d+/)?preview$', 'previewQueue'),
                     url_get('^(?P<id>\d+)$', 'getQueue'),
                     url_get('^addColumn$', 'addColumn'),
@@ -215,7 +215,7 @@ class InventoryPlugin extends Plugin {
             )
         );
 
-        $queue_url = url('^/inventory.*queue/', patterns('controller\Search',
+        $queue_url = url('^/inventory.*queue/', patterns('controller\AssetSearch',
             url('^(?P<id>\d+/)?preview$', 'previewQueue'),
             url_get('^(?P<id>\d+)$', 'getQueue'),
             url_get('^addColumn$', 'addColumn'),

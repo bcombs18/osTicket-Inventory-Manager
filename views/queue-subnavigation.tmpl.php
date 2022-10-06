@@ -6,13 +6,13 @@ $queue = $q;
 $hasChildren = $children && (count($children) > 0);
 $selected = $_REQUEST['queue'] == $q->getId();
 
-$parent = $queue->get('parent_id');
-$link = "";
-if($queue->getId() == 101 || $parent == 101) {
-    $link = INVENTORY_WEB_ROOT."asset/handleAsset?queue=".$queue->getId();
-} elseif ($queue->getId() == 105 || $parent == 105) {
-    $link = INVENTORY_WEB_ROOT."phone/handlePhone?queue=".$queue->getId();
+if($queue->get('root') == 'P') {
+    $model = "phone/handlePhone";
+} elseif ($queue->get('root') == 'U') {
+    $model = "asset/handleAsset";
 }
+$link = INVENTORY_WEB_ROOT.$model."?queue=".$queue->getId();
+
 global $thisstaff;
 ?>
 <!-- SubQ class: only if top level Q has subQ -->

@@ -8,12 +8,12 @@ global $cfg;
 $childs = $children;
 $this_queue = $q;
 $selected = (!isset($_REQUEST['a'])  && $_REQUEST['queue'] == $this_queue->getId());
-$link = "";
-if($this_queue->getId() == 101) {
-    $link = INVENTORY_WEB_ROOT."asset/handleAsset?queue=".$this_queue->getId();
-} elseif ($this_queue->getId() == 105) {
-    $link = INVENTORY_WEB_ROOT."phone/handlePhone?queue=".$this_queue->getId();
+if($this_queue->get('root') == 'P') {
+    $model = "phone/handlePhone";
+} elseif ($this_queue->get('root') == 'U') {
+    $model = "asset/handleAsset";
 }
+$link = INVENTORY_WEB_ROOT.$model."?queue=".$this_queue->getId();
 ?>
 <li class="top-queue item <?php if ($child_selected) echo 'child active';
     elseif ($selected) echo 'active'; ?>">

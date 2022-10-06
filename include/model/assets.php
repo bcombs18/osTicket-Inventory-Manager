@@ -208,6 +208,7 @@ foreach ($queues as $_) {
         $child_selected = $queue
             && ($queue->parent_id == $q->getId()
                 || false !== strpos($queue->getPath(), "/{$q->getId()}/"));
+        $url = 'asset/handleAsset?queue=';
         include INVENTORY_VIEWS_DIR . 'queue-navigation.tmpl.php';
 
         return ($child_selected || $_selected);
@@ -221,6 +222,7 @@ $nav->addSubMenu(function() use ($queue) {
     // A queue is selected if it is the one being displayed. It is
     // "child" selected if its ID is in the path of the one selected
     $child_selected = $queue instanceof SavedSearch;
+    $url = 'asset/handleAsset?queue=';
     include INVENTORY_VIEWS_DIR . 'queue-savedsearches-nav.tmpl.php';
     return ($child_selected || $selected);
 });

@@ -2,25 +2,25 @@
 
 namespace controller;
 
-use \AssetAdhocSearch;
-use \AssetSavedQueue;
-use \AssetSavedSearch;
-use \AssetSearch;
+use \PhoneAdhocSearch;
+use \PhoneSavedQueue;
+use \PhoneSavedSearch;
+use \PhoneSearch;
 use SavedSearch;
 
 require_once(INCLUDE_DIR.'class.ajax.php');
-require_once INVENTORY_INCLUDE_DIR.'model/AssetSearch.php';
+require_once INVENTORY_INCLUDE_DIR.'model/PhoneSearch.php';
 
-class Search extends \AjaxController {
+class PhoneSearchController extends \AjaxController {
 
     function getAdvancedSearchDialog($key=false, $context='advsearch') {
         global $thisstaff;
 
         if (!$thisstaff)
-            Http::response(403, 'Agent login required');
+            \Http::response(403, 'Agent login required');
 
-        $search = new AssetAdhocSearch(array(
-            'root' => 'U',
+        $search = new \PhoneAdhocSearch(array(
+            'root' => 'P',
             'staff_id' => $thisstaff->getId(),
             'parent_id' => @$_GET['parent_id'] ?: 0,
         ));
@@ -53,7 +53,7 @@ class Search extends \AjaxController {
             \Http::response(403, 'Agent login required');
 
         $search = new \SavedSearch(array(
-            'root'=>'U'
+            'root'=>'P'
         ));
         $searchable = $search->getSupportedMatches();
         if (!($F = $searchable[$name]))
@@ -81,8 +81,8 @@ class Search extends \AjaxController {
         if (!$thisstaff)
            \Http::response(403, 'Agent login is required');
 
-        $search = new AssetAdhocSearch(array(
-            'root' => 'U',
+        $search = new PhoneAdhocSearch(array(
+            'root' => 'P',
             'staff_id' => $thisstaff->getId()));
 
         $form = $search->getForm($_POST);
@@ -91,25 +91,25 @@ class Search extends \AjaxController {
         }
 
         \Http::response(200, $this->encode(array(
-            'redirect' => 'asset/handle?queue=adhoc',
+            'redirect' => 'phone/handlePhone?queue=adhoc',
         )));
     }
 
-    function _hasErrors(AssetSavedSearch $search, $form) {
+    function _hasErrors(PhoneSavedSearch $search, $form) {
         if (!$form->isValid()) {
             $this->_tryAgain($search, $form);
             return true;
         }
     }
 
-    function _setupSearch(AssetSavedSearch $search, $form, $key='advsearch') {
+    function _setupSearch(PhoneSavedSearch $search, $form, $key='advsearch') {
         if ($this->_hasErrors($search, $form))
             return false;
 
         if ($key) {
             $keep = array();
             // Add in new search to the list of recent searches
-            $criteria = $search->isolateCriteria($form->getClean(), '\model\Asset');
+            $criteria = $search->isolateCriteria($form->getClean(), '\model\Phone');
             $token = $this->_hashCriteria($criteria);
             $keep[$token] = $criteria;
             // Keep the last 5 recent searches looking from the beginning of
@@ -145,6 +145,17 @@ class Search extends \AjaxController {
     function _tryAgain($search, $form=null, $errors=array(), $info=array()) {
         if (!$form)
             $form = $search->getForm();
+
+        $model = new \PhoneAdhocSearch;
+        $searchInfo = array(
+            'model' => 'model\Phone',
+            'title' => 'Advanced Phone Search',
+            'action'=> '#phone/search',
+            'url' => 'phone/queue/',
+            'adhoc' => $model,
+            'type' => 'phonesearch',
+            'handle' => 'phone/handlePhone?queue='
+        );
         include INVENTORY_VIEWS_DIR . 'advanced-search.tmpl.php';
     }
 
@@ -155,9 +166,9 @@ class Search extends \AjaxController {
             \Http::response(403, 'Agent login is required');
 
 
-        $search = AssetSavedSearch::create(array(
+        $search = PhoneSavedSearch::create(array(
             'title' => __('Add Queue'),
-            'root' => 'U',
+            'root' => 'P',
             'staff_id' => $thisstaff->getId(),
             'parent_id' =>  $_GET['pid'],
         ));
@@ -171,12 +182,12 @@ class Search extends \AjaxController {
             \Http::response(403, 'Agent login is required');
 
         if ($id) { //  update
-            if (!($search = AssetSavedSearch::lookup($id))
+            if (!($search = PhoneSavedSearch::lookup($id))
                 || !$search->checkAccess($thisstaff))
-                Http::response(404, 'No such saved search');
+                \Http::response(404, 'No such saved search');
         } else { // new search
-            $search = AssetSavedSearch::create(array(
-                'root' => 'U',
+            $search = PhoneSavedSearch::create(array(
+                'root' => 'P',
                 'staff_id' => $thisstaff->getId()
             ));
         }
@@ -193,7 +204,7 @@ class Search extends \AjaxController {
         $this->_tryAgain($search, null, null, $info);
     }
 
-    function _saveSearch(AssetSavedSearch $search) {
+    function _saveSearch(PhoneSavedSearch $search) {
         $_POST['queue-name'] = \Format::htmlchars($_POST['queue-name']);
 
         // Validate the form.
@@ -232,13 +243,13 @@ class Search extends \AjaxController {
         if ($_POST) {
             $data_form = $column->getDataConfigForm($_POST);
             if ($data_form->isValid()) {
-                $column->update($_POST, 'Asset');
+                $column->update($_POST, 'Phone');
                 if ($column->save())
                     \Http::response(201, 'Successfully updated');
             }
         }
 
-        $root = '\model\Asset';
+        $root = '\model\Phone';
         include INVENTORY_VIEWS_DIR . 'queue-column-edit.tmpl.php';
     }
 
@@ -293,7 +304,7 @@ class Search extends \AjaxController {
         }
         if ($_POST) {
             if (!$queue->delete()) {
-                Http::response(500, 'Unable to delete queue');
+                \Http::response(500, 'Unable to delete queue');
             }
             \Http::response(201, 'Have a nice day');
             $_SESSION['::sysmsgs']['msg'] = sprintf(__( 'Successfully deleted%s.'),
@@ -301,7 +312,7 @@ class Search extends \AjaxController {
         }
 
         $info = array(
-            ':action' => sprintf('#asset/queue/%s/delete', $queue->getId()),
+            ':action' => sprintf('#phone/queue/%s/delete', $queue->getId()),
             ':title' => sprintf('%s %s', __('Please Confirm'), __('Queue Deletion')),
             'warn' => __('Deleted Queues cannot be recovered'),
             ':message' => sprintf('Are you sure you want to delete %s queue?', $queue->getName()),
@@ -315,10 +326,10 @@ class Search extends \AjaxController {
         global $thisstaff;
 
         if (!$thisstaff) {
-            Http::response(403, 'Agent login is required');
+            \Http::response(403, 'Agent login is required');
         }
         if ($id && (!($queue = CustomQueue::lookup($id)))) {
-            Http::response(404, 'No such queue');
+            \Http::response(404, 'No such queue');
         }
 
         if (!$queue) {
@@ -348,7 +359,7 @@ class Search extends \AjaxController {
         elseif (!is_numeric($_GET['object_id'])) {
             \Http::response(400, '`object_id` should be an integer');
         }
-        $fields = \SavedSearch::getSearchableFields('\model\Asset');
+        $fields = \SavedSearch::getSearchableFields('\model\Phone');
         if (!isset($fields[$_GET['field']])) {
             \Http::response(400, sprintf('%s: No such searchable field'),
                 \Format::htmlchars($_GET['field']));
