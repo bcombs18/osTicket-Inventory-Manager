@@ -176,7 +176,7 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
           <div class="pull-right flush-right">
               <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
                   <a class="green button action-button popup-dialog"
-                     href="#phone/add/">
+                     href="#add/">
                       <i class="icon-plus-sign"></i>
                       <?php echo __('New Phone'); ?>
                   </a>
@@ -309,7 +309,7 @@ $(function() {
     $('input#basic-phone-search').typeahead({
         source: function (typeahead, query) {
             $.ajax({
-                url: "<?php echo INVENTORY_WEB_ROOT.'asset/handlePhone?q=';?>"+query,
+                url: "<?php echo INVENTORY_WEB_ROOT.'phone/handlePhone?q=';?>"+query,
                 dataType: 'json',
                 success: function (data) {
                     typeahead.process(data);
@@ -317,7 +317,7 @@ $(function() {
             });
         },
         onselect: function (obj) {
-            window.location.href = '<?php echo INVENTORY_WEB_ROOT.'asset/handlePhone?id='?>'+obj.id;
+            window.location.href = '<?php echo INVENTORY_WEB_ROOT.'phone/handlePhone?id='?>'+obj.id;
         },
         property: "/bin/true"
     });

@@ -193,7 +193,7 @@ if ($_POST) {
 if (isset($_GET['clear_filter']))
     unset($_SESSION['advsearch']);
 
-$nav->setTabActive('apps', (INVENTORY_WEB_ROOT.'asset/handle'));
+$nav->setTabActive('apps', (INVENTORY_WEB_ROOT.'asset/handleAsset'));
 $nav->addSubNavInfo('jb-overflowmenu', 'customQ_nav');
 
 // Start with all the top-level (container) queues

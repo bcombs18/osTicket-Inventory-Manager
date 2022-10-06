@@ -11,7 +11,7 @@ class PhoneSavedQueue extends \SavedQueue {
                 'sim',
                 'imei',
                 'color',
-                'assignee',
+                'phone_assignee',
                 'created',
                 'lastupdate'
             )
@@ -200,8 +200,8 @@ class PhoneSavedQueue extends \SavedQueue {
                      )),
                      \QueueColumn::placeholder(array(
                          "id" => 3,
-                         "heading" => "Assignee",
-                         "primary" => 'assignee',
+                         "heading" => "Phone Assignee",
+                         "primary" => 'phone_assignee',
                          "width" => 230,
                          "bits" => \QueueColumn::FLAG_SORTABLE,
                          "filter" => 'link:assignee',
@@ -371,7 +371,7 @@ class PhoneAdhocSearch extends PhoneSavedSearch {
             || !($config=$_SESSION['advsearch'][$key]))
             return null;
 
-        $queue = new AssetAdhocSearch(array(
+        $queue = new PhoneAdhocSearch(array(
             'id' => "adhoc,$key",
             'root' => 'P',
             'staff_id' => $thisstaff->getId(),
