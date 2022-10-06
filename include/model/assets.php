@@ -208,7 +208,6 @@ foreach ($queues as $_) {
         $child_selected = $queue
             && ($queue->parent_id == $q->getId()
                 || false !== strpos($queue->getPath(), "/{$q->getId()}/"));
-        $url = 'asset/handleAsset?queue=';
         include INVENTORY_VIEWS_DIR . 'queue-navigation.tmpl.php';
 
         return ($child_selected || $_selected);
