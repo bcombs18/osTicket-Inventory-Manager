@@ -66,7 +66,7 @@ class AssetForm extends \DynamicForm {
                 return OrganizationForm::updateDynamicDataView($answer, $data);
             case 'I':
                 return AssetForm::updateDynamicDataView($answer, $data);
-            case 'IP':
+            case 'P':
                 return PhoneForm::updateDynamicDataView($answer, $data);
         }
     }
@@ -86,6 +86,20 @@ class AssetForm extends \DynamicForm {
 \Signal::connect('model.updated',
     array('\model\AssetForm', 'updateDynamicFormEntryAnswer'),
     'DynamicFormEntryAnswer');
+
+\Signal::connect('model.created',
+    array('\model\AssetForm', 'updateDynamicFormField'),
+    'DynamicFormField');
+\Signal::connect('model.deleted',
+    array('\model\AssetForm', 'updateDynamicFormField'),
+    'DynamicFormField');
+// If the `name` column is in the dirty list, we would be renaming as
+// column. Delete the view instead.
+\Signal::connect('model.updated',
+    array('\model\AssetForm', 'updateDynamicFormField'),
+    'DynamicFormField',
+    function($o, $d) { return isset($d['dirty'])
+        && (isset($d['dirty']['name']) || isset($d['dirty']['type'])); });
 
 \Filter::addSupportedMatches(/* @trans */ 'Asset Data', function() {
     $matches = array();

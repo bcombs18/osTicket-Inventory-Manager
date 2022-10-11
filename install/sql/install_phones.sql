@@ -4,9 +4,7 @@ CREATE TABLE IF NOT EXISTS `%TABLE_PREFIX%inventory_phone` (
                                                                `phone_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
                                                                `phone_number` varchar(255) DEFAULT NULL,
                                                                `phone_model` varchar(255) NOT NULL,
-                                                               `sim` varchar(255) NOT NULL,
                                                                `imei` varchar (255) NOT NULL,
-                                                               `color` varchar(255) DEFAULT NULL,
                                                                `phone_assignee` varchar(255) DEFAULT NULL,
                                                                `retired` varchar(5),
                                                                `created` date NOT NULL,
@@ -73,45 +71,9 @@ BEGIN
         (@form_id,
          20481,
          'text',
-         'SIM/ICCID',
-         'sim',
-         3,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         20481,
-         'text',
          'IMEI',
          'imei',
          4,
-         NOW(),
-         NOW());
-    INSERT INTO `%TABLE_PREFIX%form_field`
-    (`form_id`,
-     `flags`,
-     `type`,
-     `label`,
-     `name`,
-     `sort`,
-     `created`,
-     `updated`)
-    VALUES
-        (@form_id,
-         12289,
-         'text',
-         'Color',
-         'color',
-         5,
          NOW(),
          NOW());
     INSERT INTO `%TABLE_PREFIX%form_field`

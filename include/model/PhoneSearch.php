@@ -8,9 +8,7 @@ class PhoneSavedQueue extends \SavedQueue {
             'model\Phone' => array(
                 'phone_number',
                 'phone_model',
-                'sim',
                 'imei',
-                'color',
                 'phone_assignee',
                 'created',
                 'lastupdate'

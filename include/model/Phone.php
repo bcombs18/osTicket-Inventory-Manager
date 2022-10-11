@@ -67,9 +67,7 @@ class Phone extends PhoneModel
             $phone = new Phone(array(
                 'phone_number' => \Format::htmldecode(\Format::sanitize(Phone::formatPhoneNumber($vars['phone_number']))),
                 'phone_model' => \Format::htmldecode(\Format::sanitize($vars['phone_model'])),
-                'sim' => \Format::htmldecode(\Format::sanitize($vars['sim'])),
                 'imei' => \Format::htmldecode(\Format::sanitize($vars['imei'])),
-                'color' => \Format::htmldecode(\Format::sanitize($vars['location'])),
                 'phone_assignee' => $user,
                 'retired' => 'false',
                 'created' => new \SqlFunction('NOW'),
@@ -120,16 +118,8 @@ class Phone extends PhoneModel
         return $this->phone_model;
     }
 
-    function getSIM() {
-        return $this->sim;
-    }
-
     function getIMEI() {
         return $this->imei;
-    }
-
-    function getColor() {
-        return $this->color;
     }
 
     function getAssignee() {
@@ -191,9 +181,7 @@ class Phone extends PhoneModel
             'phone_id'  => $this->getId(),
             'phone_number' => $this->getPhoneNumber(),
             'phone_model' => $this->getModel(),
-            'sim' => $this->getSIM(),
             'imei' => $this->getIMEI(),
-            'color' => $this->getColor(),
             'phone_assignee' => \User::lookup($this->getAssigneeID())
         );
 
@@ -319,7 +307,7 @@ class Phone extends PhoneModel
                 //  Name field
                 if (($model = $entry->getField('phone_model')) && $isEditable($model) ) {
                     $model = $model->getClean();
-                    if ($this->model != $model) {
+                    if ($this->phone_model != $model) {
                         $type = array('type' => 'edited', 'key' => 'Phone Model');
                         \Signal::send('object.edited', $this, $type);
                     }
@@ -381,14 +369,8 @@ class Phone extends PhoneModel
             'phone_number' => new \TextboxField(array(
                 'label' => __('Phone Number')
             )),
-            'sim' => new \TextboxField(array(
-                'label' => __('SIM')
-            )),
             'phone_assignee' => new \TextboxField(array(
                 'label' => __('Phone Assignee')
-            )),
-            'color' => new \TextboxField(array(
-                'label' => __('Color')
             )),
             'imei' => new \TextboxField(array(
                 'label' => __('IMEI')

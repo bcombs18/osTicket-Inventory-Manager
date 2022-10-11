@@ -22,7 +22,7 @@ class Phone extends \AjaxController {
             return $this->json_encode($phones);
 
         $hits = \model\Phone::objects()
-            ->values('phone_model', 'phone_number', 'sim', 'imei', 'color')
+            ->values('phone_model', 'phone_number', 'imei')
             ->order_by(\SqlAggregate::SUM(new \SqlCode('Z1.relevance')), \QuerySet::DESC)
             ->distinct('phone_id')
             ->limit($limit);
@@ -98,11 +98,11 @@ class Phone extends \AjaxController {
             \Http::response(403, 'Login Required');
         elseif (!$thisstaff->hasPerm(User::PERM_EDIT))
             \Http::response(403, 'Permission Denied');
-        elseif(!($phone = \model\Asset::lookup($id)))
+        elseif(!($phone = \model\Phone::lookup($id)))
             \Http::response(404, 'Unknown phone');
 
         $errors = array();
-        $form = PhoneForm::getPhoneForm()->getForm($_POST);
+        $form = \model\PhoneForm::getPhoneForm()->getForm($_POST);
 
         if ($phone->updateInfo($_POST, $errors, true) && !$errors)
             \Http::response(201, $phone->to_json(),  'application/json');

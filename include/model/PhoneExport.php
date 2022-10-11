@@ -5,7 +5,7 @@ namespace model;
 class PhoneExport extends \Export {
     static function savePhones($sql, $filename, $how='csv') {
 
-        $exclude = array('phone_model', 'phone_number', 'sim', 'imei');
+        $exclude = array('phone_model', 'phone_number', 'imei');
         $form = \model\PhoneForm::getPhoneForm();
         $fields = $form->getExportableFields($exclude, 'cdata.');
 
@@ -19,10 +19,9 @@ class PhoneExport extends \Export {
         ob_start();
         echo self::dumpQuery($assets,
             array(
-                'phone_model'  =>          __('Hostname'),
-                'phone_number' =>   __('Manufacturer'),
-                'sim' =>          __('Model'),
-                'imei' => __('Serial Number'),
+                'phone_model'  =>          __('Model'),
+                'phone_number' =>   __('Phone Number'),
+                'imei' => __('IMEI'),
                 'phone_assignee' => __('Assignee Metadata')
             ) + $cdata,
             $how,

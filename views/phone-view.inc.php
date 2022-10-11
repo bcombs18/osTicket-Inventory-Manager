@@ -71,19 +71,11 @@ global $org;
                     <td><?php echo $phone->getPhoneNumber() ?></td>
                 </tr>
                 <tr>
-                    <th><?php echo __("SIM/ICCID"); ?></th>
-                    <td><?php echo $phone->getSIM(); ?></td>
-                </tr>
-                <tr>
                     <th><?php echo __("IMEI:"); ?></th>
                     <td><?php echo $phone->getIMEI(); ?></td>
                 </tr>
-                <tr>
-                    <th><?php echo __("Color:"); ?></th>
-                    <td><?php echo $phone->getColor(); ?></td>
-                </tr>
                 <?php foreach ($phone->getDynamicData() as $entry) {
-                    $presets = ['Phone Model', 'Phone Number', 'SIM/ICCID', 'IMEI', 'Phone Assignee', 'Color'];
+                    $presets = ['Phone Model', 'Phone Number', 'IMEI', 'Phone Assignee'];
                     foreach ($entry->getAnswers() as $a) {
                         if(!in_array($a->getField()->get('label'), $presets)) { ?>
                         <tr><td style="width:30%;"><strong><?php echo Format::htmlchars($a->getField()->get('label'));

@@ -40,7 +40,7 @@
                         <?php
                         $fields = array();
                         $data = array(
-                            array('phone_model' => __('iPhone 12 Pro'), 'phone_number' => __('123-456-7899'), 'sim' => __('123456789'), 'imei' => __('123456789'), 'color' => __('Black'), 'assignee' => __('john.doe@example.com'))
+                            array('phone_model' => __('iPhone 12 Pro'), 'phone_number' => __('123-456-7899'), 'imei' => __('123456789'), 'phone_assignee' => __('john.doe@example.com'))
                         );
                         foreach (\model\PhoneForm::getPhoneForm()->getFields() as $f)
                             if ($f->get('name'))
