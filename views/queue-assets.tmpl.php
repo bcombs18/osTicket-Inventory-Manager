@@ -100,7 +100,7 @@ $pageNav->setURL('handleAsset', $args);
 
 <!-- SEARCH FORM START -->
 <div id='basic_search'>
-    <form action="handle" method="get" onsubmit="javascript:
+    <form action="handleAsset" method="get" onsubmit="javascript:
   $.pjax({
     url:$(this).attr('action') + '?' + $(this).serialize(),
     container:'#pjax-container',
@@ -309,7 +309,7 @@ $(function() {
     $('input#basic-asset-search').typeahead({
         source: function (typeahead, query) {
             $.ajax({
-                url: "<?php echo INVENTORY_WEB_ROOT.'asset/handle?q=';?>"+query,
+                url: "<?php echo INVENTORY_WEB_ROOT.'asset/handleAsset?q=';?>"+query,
                 dataType: 'json',
                 success: function (data) {
                     typeahead.process(data);
@@ -317,7 +317,7 @@ $(function() {
             });
         },
         onselect: function (obj) {
-            window.location.href = '<?php echo INVENTORY_WEB_ROOT.'asset/handle?id='?>'+obj.id;
+            window.location.href = '<?php echo INVENTORY_WEB_ROOT.'asset/handleAsset?id='?>'+obj.id;
         },
         property: "/bin/true"
     });

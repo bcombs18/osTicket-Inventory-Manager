@@ -91,7 +91,7 @@ class AssetSearchController extends \AjaxController {
         }
 
         \Http::response(200, $this->encode(array(
-            'redirect' => 'asset/handle?queue=adhoc',
+            'redirect' => 'asset/handleAsset?queue=adhoc',
         )));
     }
 
