@@ -14,6 +14,7 @@
 
 ## Requirements
 - PHP version 8.0 (PHP v8.1 is not supported)
+- Apache or IIS (NGINX is not supported)
 - MySQL database 5.5
 - osTicket v1.16.1
 
