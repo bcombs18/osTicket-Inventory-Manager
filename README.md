@@ -23,8 +23,7 @@
 3. From the Inventory Manager Plugin root, copy the dispatcher.php file to your osTicket/scp directory.
 4. Navigate to Admin Panel > Manage > Plugins. Choose "Add a New Plugin".
 5. Select the osTicket Inventory Plugin and click install.
-6. Enable the plugin and then click on the plugin to access the plugin settings.
-7. Check "Staff Backend Interface" and select "Inventory" from the Forms dropdown.
+6. Enable the plugin.
 8. You can now access the plugin interface from Agent Panel > Applications > Inventory.
 
 ## API Setup
