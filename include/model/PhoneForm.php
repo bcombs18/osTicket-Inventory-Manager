@@ -75,7 +75,20 @@ class PhoneForm extends \DynamicForm {
         if (!$field || !$field->form)
             return;
 
-        return self::dropDynamicDataView();
+        switch ($field->form->get('type')) {
+            case 'T':
+                return TicketForm::dropDynamicDataView();
+            case 'A':
+                return TaskForm::dropDynamicDataView();
+            case 'U':
+                return UserForm::dropDynamicDataView();
+            case 'O':
+                return OrganizationForm::dropDynamicDataView();
+            case 'I':
+                return AssetForm::dropDynamicDataView();
+            case 'P':
+                return PhoneForm::dropDynamicDataView();
+        }
     }
 }
 
