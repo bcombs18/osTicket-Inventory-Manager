@@ -6,7 +6,7 @@ $parent_id = (isset($_REQUEST['parent_id']) && is_numeric($_REQUEST['parent_id']
         : $search->parent_id;
 if ($parent_id
     && is_numeric($parent_id)
-    && (!($parent = \AssetSavedQueue::lookup($parent_id)))
+    && (!($parent = SavedQueue::lookup($parent_id)))
 ) {
     $parent_id = 0;
 }
@@ -18,7 +18,7 @@ foreach (CustomQueue::queues() as  $q)
 asort($queues);
 $queues = array(0 => ('—'.__("My Searches").'—')) + $queues;
 $queue = $search;
-$qname = $search->getName() ?:  __('Advanced Asset Search');
+$qname = $search->getName() ?:  __($info['title']);
 ?>
 <div id="advanced-search" class="advanced-search">
 <h3 class="drag-handle"><?php echo Format::htmlchars($qname); ?></h3>
@@ -35,14 +35,14 @@ if ($info['error']) {
 }
 
 // Form action
-$action = '#asset/search';
+$action = $searchInfo['action'];
 if ($search->isSaved() && $search->getId())
     $action .= sprintf('/%s/save', $search->getId());
-elseif (!$search instanceof \model\AssetAdhocSearch)
+elseif (!$search instanceof $searchInfo['adhoc'])
     $action .= '/save';
 ?>
 <form action="<?php echo $action; ?>" method="post" name="search" id="advsearch"
-    class="<?php echo ($search->isSaved() || $parent) ? 'savedsearch' : 'assetsearch'; ?>">
+    class="<?php echo ($search->isSaved() || $parent) ? 'savedsearch' : $searchInfo['type']; ?>">
   <input type="hidden" name="id" value="<?php echo $search->getId(); ?>">
 <?php
 if ($editable) {
@@ -128,7 +128,7 @@ if ($search->isSaved()) { ?>
         $_POST['queue-name']); ?>"
         placeholder="<?php echo __('Search Title'); ?>">
         <?php
-        if ($search instanceof \model\AssetAdhocSearch && !$search->isSaved()) { ?>
+        if ($search instanceof $searchInfo['adhoc'] && !$search->isSaved()) { ?>
         <span class="buttons">
              <button class="save button" type="button"  name="save-search"
              value="save"><i class="icon-save"></i>  <?php echo $search->id
@@ -157,7 +157,7 @@ if ($search->isSaved()) { ?>
     </span>
     <span class="buttons pull-right">
       <?php
-      if (!$search instanceof \model\AssetAdhocSearch) { ?>
+      if (!$search instanceof $searchInfo['adhoc']) { ?>
       <button class="save button" type="submit" name="save" value="save"
         id="do_save"><i class="icon-save"></i>
         <?php echo __('Save'); ?></button>
@@ -214,7 +214,7 @@ if ($search->isSaved()) { ?>
         if (qid > 0) {
             $.ajax({
                 type: "GET",
-                url: 'asset/queue/'+qid,
+                url: <?php echo $searchInfo['url'];?>+qid,
                 dataType: 'json',
                 success: function(queue) {
                     $('#parent-name', form).html(queue.name);
@@ -259,7 +259,7 @@ if ($search->isSaved()) { ?>
         var id = parseInt($('input[name=id]', $form).val(), 10) || 0;
         var name = $('input[name=queue-name]', $form).val();
         if (name.length) {
-            var action = '#asset/search';
+            var action = '<?php echo $searchInfo['action'];?>';
             if (id > 0)
                 action = action + '/'+id;
             $form.prop('action', action+'/save');
@@ -278,7 +278,7 @@ if ($search->isSaved()) { ?>
         if ($('button.save', $form).hasClass('pending'))
             alert('Unsaved Changes - save or cancel to discard!');
         else
-            window.location.href = 'asset/handle?queue='+id;
+            window.location.href = '<?php echo $searchInfo['handle'];?>' + id;
     });
 }();
 </script>

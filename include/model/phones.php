@@ -3,25 +3,24 @@ global $ost;
 global $cfg;
 global $inventory_cfg;
 require('staff.inc.php');
-require(INVENTORY_MODEL_DIR.'AssetNav.php');
 
-if (!$thisstaff->hasPerm(User::PERM_DIRECTORY))
-    Http::redirect('index.php');
+if (!$thisstaff->hasPerm(\User::PERM_DIRECTORY))
+    \Http::redirect('index.php');
 
 require_once INCLUDE_DIR.'class.note.php';
-require_once INVENTORY_INCLUDE_DIR.'model/AssetSearch.php';
+require_once INVENTORY_INCLUDE_DIR.'model/PhoneSearch.php';
 
-$asset = null;
-if ($_REQUEST['id'] && !($asset=\model\Asset::lookup($_REQUEST['id'])))
-    $errors['err'] = sprintf(__('%s: Unknown or invalid'), _N('asset', 'assets', 1));
+$phone = null;
+if ($_REQUEST['id'] && !($phone=\model\Phone::lookup($_REQUEST['id'])))
+    $errors['err'] = sprintf(__('%s: Unknown or invalid'), _N('phone', 'phones', 1));
 
 // Fetch ticket queues organized by root and sub-queues
-$queues = \AssetSavedQueue::getHierarchicalQueues($thisstaff);
+$queues = \PhoneSavedQueue::getHierarchicalQueues($thisstaff);
 
 $page='';
 $redirect = false;
 
-if (!$asset) {
+if (!$phone) {
     $queue_id = null;
 
     // Basic search (click on 🔍 )
@@ -33,7 +32,7 @@ if (!$asset) {
             $key = substr(md5($_GET['query']), -10);
             if ($_GET['search-type'] == 'typeahead') {
                 // Use a faster index
-                $criteria = ['host_name', 'equal', $_GET['query']];
+                $criteria = ['phone_model', 'equal', $_GET['query']];
             } else {
                 $criteria = [':keywords', null, $_GET['query']];
             }
@@ -45,9 +44,9 @@ if (!$asset) {
         }
     }
 
-    $queue_key = sprintf('::Q:%s', 'U');
+    $queue_key = sprintf('::Q:%s', 'P');
     $queue_id = $queue_id ?: @$_GET['queue'] ?: $_SESSION[$queue_key]
-        ?? 101 ?: 101;
+        ?? 105 ?: 105;
 
     // Recover advanced search, if requested
     if (isset($_SESSION['advsearch'])
@@ -60,14 +59,14 @@ if (!$asset) {
             $key = key($_SESSION['advsearch']);
         }
 
-        $queue = \AssetAdhocSearch::load($key);
+        $queue = \PhoneAdhocSearch::load($key);
     }
 
     if ((int) $queue_id && !isset($queue))
-        $queue = \AssetSavedQueue::lookup($queue_id);
+        $queue = \PhoneSavedQueue::lookup($queue_id);
 
     if (!$queue && ($qid=$cfg->getDefaultTicketQueueId()))
-        $queue = \AssetSavedQueue::lookup($qid);
+        $queue = \PhoneSavedQueue::lookup($qid);
 
     if (!$queue && $queues)
         list($queue,) = $queues[0];
@@ -83,69 +82,69 @@ if (!$asset) {
 if ($_POST) {
     switch(strtolower($_REQUEST['do'])) {
         case 'update':
-            if (!$asset) {
-                $errors['err']=sprintf(__('%s: Unknown or invalid'), _N('end user', 'end users', 1));
-            } elseif (!$thisstaff->hasPerm(User::PERM_EDIT)) {
+            if (!$phone) {
+                $errors['err']=sprintf(__('%s: Unknown or invalid'), _N('phone', 'phones', 1));
+            } elseif (!$thisstaff->hasPerm(\User::PERM_EDIT)) {
                 $errors['err'] = __('Action denied. Contact admin for access');
-            } elseif(($acct = $asset->getAccount())
+            } elseif(($acct = $phone->getAccount())
                 && !$acct->update($_POST, $errors)) {
-                $errors['err']=__('Unable to update user account information');
-            } elseif($asset->updateInfo($_POST, $errors)) {
-                $msg=sprintf(__('Successfully updated %s.'), __('this end user'));
+                $errors['err']=__('Unable to update phone information');
+            } elseif($phone->updateInfo($_POST, $errors)) {
+                $msg=sprintf(__('Successfully updated %s.'), __('this phone'));
                 $_REQUEST['a'] = null;
             } elseif(!$errors['err']) {
                 $errors['err']=sprintf('%s %s',
-                    sprintf(__('Unable to update %s.'), __('this end user')),
+                    sprintf(__('Unable to update %s.'), __('this phone')),
                     __('Correct any errors below and try again.'));
             }
             break;
         case 'create':
-            $form = \model\AssetForm::getUserForm()->getForm($_POST);
-            if (($asset = \model\Asset::fromForm($form))) {
-                $msg = Format::htmlchars(sprintf(__('Successfully added %s.'), $asset->getHostname()));
+            $form = \model\PhoneForm::getPhoneForm()->getForm($_POST);
+            if (($phone = \model\Phone::fromForm($form))) {
+                $msg = Format::htmlchars(sprintf(__('Successfully added %s.'), $phone->getModel()));
                 $_REQUEST['a'] = null;
             } elseif (!$errors['err']) {
                 $errors['err']=sprintf('%s %s',
-                    sprintf(__('Unable to add %s.'), __('this asset')),
+                    sprintf(__('Unable to add %s.'), __('this phone')),
                     __('Correct any errors below and try again.'));
             }
             break;
         case 'changeuser':
             if (!$_POST['user_id'] || !($user=User::lookup($_POST['user_id']))) {
                 $errors['err'] = __('Unknown user selected');
-            } elseif ($asset->changeAssignee($user)) {
-                $msg = sprintf(__('Asset assigned to %s'),
+            } elseif ($phone->changeAssignee($user)) {
+                $msg = sprintf(__('Phone assigned to %s'),
                     Format::htmlchars($user->getName()));
             } else {
-                $errors['err'] = sprintf('%s %s', __('Unable to assign asset.'), __('Please try again!'));
+                $errors['err'] = sprintf('%s %s', __('Unable to assign phone.'), __('Please try again!'));
             }
             break;
         case 'mass_process':
             if (!$_POST['ids'] || !is_array($_POST['ids']) || !count($_POST['ids'])) {
                 $errors['err'] = sprintf(__('You must select at least %s.'),
-                    __('one end user'));
+                    __('phone'));
             } else {
-                $assets = \model\Asset::objects()->filter(
-                    array('asset_id__in' => $_POST['ids'])
+                $phones = \model\Phone::objects()->filter(
+                    array('phone_id__in' => $_POST['ids'])
                 );
                 $count = 0;
                 switch (strtolower($_POST['a'])) {
                     case 'delete':
-                        foreach ($assets as $A) {
+                        foreach ($phones as $A) {
                             if ($A->delete())
                                 $count++;
                         }
                         break;
 
                     case 'retire':
-                        foreach ($assets as $A) {
+                        foreach ($phones as $A) {
                             if ($A->retire())
                                 $count++;
                         }
                         break;
 
                     case 'activate':
-                        foreach ($assets as $A) {
+                        foreach ($phones as $A) {
                             if ($A->activate())
                                 $count++;
                         }
@@ -155,24 +154,24 @@ if ($_POST) {
                         $errors['err']=sprintf('%s - %s', __('Unknown action'), __('Get technical help!'));
                 }
                 if (!$errors['err'] && !$count) {
-                    $errors['err'] = __('Unable to manage any of the selected end users');
+                    $errors['err'] = __('Unable to manage any of the selected phones');
                 }
                 elseif ($_POST['count'] && $count != $_POST['count']) {
                     $warn = __('Not all selected items were updated');
                 }
                 elseif ($count) {
-                    $msg = __('Successfully managed selected assets');
+                    $msg = __('Successfully managed selected phones');
                 }
 
 
             }
             break;
-        case 'import-assets':
-            $assetImport = new model\Asset();
-            $status = $assetImport->importFromPost($_FILES['import'] ?: $_POST['pasted']);
+        case 'import-phones':
+            $phoneImport = new model\Phone();
+            $status = $phoneImport->importFromPost($_FILES['import'] ?: $_POST['pasted']);
             if (is_numeric($status))
                 $msg = sprintf(__('Successfully imported %1$d %2$s'), $status,
-                    _N('asset', 'assets', $status));
+                    _N('phone', 'phones', $status));
             else
                 $errors['err'] = $status;
             break;
@@ -180,12 +179,12 @@ if ($_POST) {
             $errors['err'] = __('Unknown action');
             break;
     }
-} elseif(!$asset && $_REQUEST['a'] == 'export') {
+} elseif(!$phone && $_REQUEST['a'] == 'export') {
     require_once(INCLUDE_DIR.'class.export.php');
     $ts = strftime('%Y%m%d');
-    if (!($query=$_SESSION[':Q:assets']))
+    if (!($query=$_SESSION[':Q:phones']))
         $errors['err'] = __('Query token not found');
-    elseif (!\model\AssetExport::saveAssets($query, __("assets")."-$ts.csv", 'csv'))
+    elseif (!\model\PhoneExport::savePhones($query, __("phones")."-$ts.csv", 'csv'))
         $errors['err'] = __('Unable to dump query results.')
             .' '.__('Internal error occurred');
 }
@@ -194,13 +193,13 @@ if ($_POST) {
 if (isset($_GET['clear_filter']))
     unset($_SESSION['advsearch']);
 
-$nav->setTabActive('apps', (INVENTORY_WEB_ROOT.'asset/handleAsset'));
+$nav->setTabActive('apps');
 $nav->addSubNavInfo('jb-overflowmenu', 'customQ_nav');
 
 // Start with all the top-level (container) queues
 foreach ($queues as $_) {
     list($q, $children) = $_;
-    if ($q->getStatus() != 'Disabled' && $q->getName() != 'Assets') {
+    if ($q->getStatus() != 'Disabled' && $q->getName() != 'Phones') {
         continue;
     } else if($q->getName() == 'Phones' && !$inventory_cfg->get('inventory_phone_enabled')) {
         continue;
@@ -225,19 +224,19 @@ $nav->addSubMenu(function() use ($queue) {
     // A queue is selected if it is the one being displayed. It is
     // "child" selected if its ID is in the path of the one selected
     $child_selected = $queue instanceof SavedSearch;
-    $url = 'asset/handleAsset?queue=';
+    $url = 'phone/handlePhone?queue=';
     include INVENTORY_VIEWS_DIR . 'queue-savedsearches-nav.tmpl.php';
     return ($child_selected || $selected);
 });
 
-if($asset) {
-    $page = INVENTORY_VIEWS_DIR.'asset-view.inc.php';
+if($phone) {
+    $page = INVENTORY_VIEWS_DIR.'phone-view.inc.php';
 } else {
     if ($queue) {
         // XXX: Check staff access?
-        $page = INVENTORY_VIEWS_DIR.'queue-assets.tmpl.php';
+        $page = INVENTORY_VIEWS_DIR.'queue-phones.tmpl.php';
         $quick_filter = @$_REQUEST['filter'];
-        $assets = $queue->getQuery(false, $quick_filter);
+        $phones = $queue->getQuery(false, $quick_filter);
     }
 }
 

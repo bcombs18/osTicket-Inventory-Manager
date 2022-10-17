@@ -157,7 +157,7 @@ if($form || ($_REQUEST['a'] && !strcasecmp($_REQUEST['a'],'add')))
 $ost->addExtraHeader('<meta name="tip-namespace" content="forms" />',
     "$('#content').data('tipNamespace', 'forms');");
 
-$nav = new \AssetNav($thisstaff);
+$nav = new \AssetSettingsNav($thisstaff);
 
 $nav->setTabActive('apps', (INVENTORY_WEB_ROOT.'settings/forms'));
 require(STAFFINC_DIR.'header.inc.php');

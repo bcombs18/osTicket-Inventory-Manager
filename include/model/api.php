@@ -114,7 +114,7 @@ $page='apikeys.inc.php';
 if($api || ($_REQUEST['a'] && !strcasecmp($_REQUEST['a'],'add')))
     $page = 'apikey.inc.php';
 
-$nav = new \AssetNav($thisstaff);
+$nav = new \AssetSettingsNav($thisstaff);
 $nav->setTabActive('apps', (INVENTORY_WEB_ROOT.'settings/api'));
 
 require(STAFFINC_DIR.'header.inc.php');

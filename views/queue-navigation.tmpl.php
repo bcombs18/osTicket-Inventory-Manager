@@ -8,18 +8,17 @@ global $cfg;
 $childs = $children;
 $this_queue = $q;
 $selected = (!isset($_REQUEST['a'])  && $_REQUEST['queue'] == $this_queue->getId());
+if($this_queue->get('root') == 'P') {
+    $model = "phone/handlePhone";
+} elseif ($this_queue->get('root') == 'U') {
+    $model = "asset/handleAsset";
+}
+$link = INVENTORY_WEB_ROOT.$model."?queue=".$this_queue->getId();
 ?>
 <li class="top-queue item <?php if ($child_selected) echo 'child active';
     elseif ($selected) echo 'active'; ?>">
-  <a href="<?php echo "handle?queue=".$this_queue->getId(); ?>"
+  <a href="<?php echo $link ?>"
     class="Ticket"><i class="small icon-sort-down pull-right"></i><?php echo $this_queue->getName(); ?>
-<?php if ($cfg->showTopLevelTicketCounts()) { ?>
-    <span id="queue-count-bucket" class="hidden">
-      (<span class="queue-count"
-        data-queue-id="<?php echo $this_queue->id; ?>"><span class="faded-more"></span>
-      </span>)
-    </span>
-<?php } ?>
   </a>
   <div class="customQ-dropdown">
     <ul class="scroll-height">
@@ -28,11 +27,11 @@ $selected = (!isset($_REQUEST['a'])  && $_REQUEST['queue'] == $this_queue->getId
       <?php
       if (!$children) { ?>
       <li class="top-level">
-        <span class="pull-right newItemQ queue-count"
+        <span class="pull-right newItemQ"
           data-queue-id="<?php echo $q->id; ?>"><span class="faded-more">-</span>
         </span>
 
-        <a class="truncate <?php if ($selected) echo ' active'; ?>" href="<?php echo "handle?queue=".$q->getId();
+        <a class="truncate <?php if ($selected) echo ' active'; ?>" href="<?php echo $link;
           ?>" title="<?php echo Format::htmlchars($q->getName()); ?>">
         <?php
           echo Format::htmlchars($q->getName()); ?>

@@ -7,8 +7,9 @@ require_once INVENTORY_MODEL_DIR.'AssetForm.php';
 
 class InventoryInstaller extends \SetupWizard {
     function install() {
-        $schemaFile = INVENTORY_PLUGIN_ROOT . 'install/sql/install_inventory.sql';
-        if(!$this->runJob($schemaFile)) {
+        $assetSchema = INVENTORY_PLUGIN_ROOT . 'install/sql/install_inventory.sql';
+        $phoneSchema = INVENTORY_PLUGIN_ROOT . 'install/sql/install_phones.sql';
+        if(!$this->runJob($assetSchema) || !$this->runJob($phoneSchema)) {
             return false;
         } elseif (\model\AssetForm::ensureDynamicDataViews()) {
             return false;
@@ -18,7 +19,11 @@ class InventoryInstaller extends \SetupWizard {
 
     function upgrade() {
         $schemaFile = INVENTORY_PLUGIN_ROOT . 'install/sql/upgrade_inventory.sql'; // DB dump.
-        return $this->runJob ( $schemaFile, false );
+        $phoneSchema = INVENTORY_PLUGIN_ROOT . 'install/sql/install_phones.sql';
+        if(!$this->runJob ( $schemaFile, false ) || !$this->runJob($phoneSchema, false)) {
+            return false;
+        }
+        return true;
     }
 
     private function runJob($schemaFile, $show_sql_errors = false) {
@@ -26,7 +31,7 @@ class InventoryInstaller extends \SetupWizard {
             echo '<br/>';
             var_dump($schemaFile);
             echo '<br/>';
-            echo 'File Access Error - please make sure your douwnload is the latest (#1)';
+            echo 'File Access Error - please make sure your download is the latest (#1)';
             echo '<br/>';
             $this->error = 'File Access Error!';
             return false;

@@ -1,5 +1,5 @@
 <?php
-if(!defined('OSTSCPINC') || !$thisstaff || !is_object($asset)) die('Invalid path');
+if(!defined('OSTSCPINC') || !$thisstaff || !is_object($phone)) die('Invalid path');
 
 global $cfg;
 global $ost;
@@ -11,10 +11,10 @@ global $org;
 <table width="940" cellpadding="2" cellspacing="0" border="0">
     <tr>
         <td width="50%" class="has_bottom_border">
-            <h2><a href=<?php echo INVENTORY_WEB_ROOT."asset/handleAsset?id=".$asset->getId(); ?>
-                   title="Reload"><i class="icon-refresh"></i> <?php echo Format::htmlchars($asset->getHostname()); ?></a>
+            <h2><a href=<?php echo INVENTORY_WEB_ROOT."phone/handlePhone?id=".$phone->getId(); ?>
+                   title="Reload"><i class="icon-refresh"></i> <?php echo Format::htmlchars($phone->getModel()); ?></a>
                 <?php
-                    if($asset->isRetired()) {
+                    if($phone->isRetired()) {
                         echo '<span style="color:red;">(Retired)</span>';
                     } else {
                         echo '<span style="color:limegreen;">(Active)</span>';
@@ -26,21 +26,21 @@ global $org;
             <?php
             if ($thisstaff->hasPerm(User::PERM_DELETE)) { ?>
                 <a id="user-delete" class="red button action-button pull-right user-action"
-                   href="#asset/<?php echo $asset->getId(); ?>/delete"><i class="icon-trash"></i>
-                    <?php echo __('Delete Asset'); ?></a>
+                   href="#phone/<?php echo $phone->getId(); ?>/delete"><i class="icon-trash"></i>
+                    <?php echo __('Delete Phone'); ?></a>
             <?php } ?>
             <?php
-            if($asset->isRetired()) { ?>
+            if($phone->isRetired()) { ?>
                 <a id="user-delete" class="red button action-button pull-right user-action"
-                   href="#asset/<?php echo $asset->getId(); ?>/activate">
+                   href="#phone/<?php echo $phone->getId(); ?>/activate">
                     <i class="icon-archive"></i>
-                    <?php echo __('Activate Asset'); ?>
+                    <?php echo __('Activate Phone'); ?>
                 </a>
             <?php } else { ?>
                 <a id="user-delete" class="action-button pull-right user-action"
-                   href="#asset/<?php echo $asset->getId(); ?>/retire">
+                   href="#phone/<?php echo $phone->getId(); ?>/retire">
                     <i class="icon-archive"></i>
-                    <?php echo __('Retire Asset'); ?>
+                    <?php echo __('Retire Phone'); ?>
                 </a>
             <?php } ?>
         </td>
@@ -50,36 +50,32 @@ global $org;
     <tr>
         <td width="50%">
             <table border="0" cellspacing="" cellpadding="4" width="100%">
-                <h2 style="text-align: center">Asset Information</h2>
+                <h2 style="text-align: center">Phone Information</h2>
                 <tr>
-                    <th width="150"><?php echo __('Hostname'); ?>:</th>
+                    <th width="150"><?php echo __('Phone Model'); ?>:</th>
                     <td>
                         <?php
                         if ($thisstaff->hasPerm(User::PERM_EDIT)) { ?>
-                        <b><a href="#asset/<?php echo $asset->getId();
+                        <b><a href="#phone/<?php echo $phone->getId();
                             ?>/edit" class="user-action"><i
                                     class="icon-edit"></i>
                                 <?php }
-                                echo Format::htmlchars($asset->getHostname());
+                                echo Format::htmlchars($phone->getModel());
                                 if ($thisstaff->hasPerm(User::PERM_EDIT)) { ?>
                             </a></b>
                     <?php } ?>
                     </td>
                 </tr>
                 <tr>
-                    <th><?php echo __("Manufacturer:"); ?></th>
-                    <td><?php echo $asset->getManufacturer() ?></td>
+                    <th><?php echo __("Phone Number:"); ?></th>
+                    <td><?php echo $phone->getPhoneNumber() ?></td>
                 </tr>
                 <tr>
-                    <th><?php echo __("Model:"); ?></th>
-                    <td><?php echo $asset->getModel(); ?></td>
+                    <th><?php echo __("IMEI:"); ?></th>
+                    <td><?php echo $phone->getIMEI(); ?></td>
                 </tr>
-                <tr>
-                    <th><?php echo __("Serial Number:"); ?></th>
-                    <td><?php echo $asset->getSerialNumber(); ?></td>
-                </tr>
-                <?php foreach ($asset->getDynamicData() as $entry) {
-                    $presets = ['Hostname', 'Manufacturer', 'Model', 'Serial', 'Assignee', 'Location'];
+                <?php foreach ($phone->getDynamicData() as $entry) {
+                    $presets = ['Phone Model', 'Phone Number', 'IMEI', 'Phone Assignee'];
                     foreach ($entry->getAnswers() as $a) {
                         if(!in_array($a->getField()->get('label'), $presets)) { ?>
                         <tr><td style="width:30%;"><strong><?php echo Format::htmlchars($a->getField()->get('label'));
@@ -96,10 +92,10 @@ global $org;
             <table border="0" cellspacing="" cellpadding="4" width="100%">
                 <h2 style="text-align: center">Entry Information</h2>
                 <tr><th><?php echo __('User'); ?>:</th>
-                    <?php if($asset->getAssignee()) { ?>
-                    <td><a href="#asset/<?php echo $asset->getId(); ?>/user"
+                    <?php if($phone->getAssignee()) { ?>
+                    <td><a href="#phone/<?php echo $phone->getId(); ?>/user"
                            onclick="javascript:
-                                   $.userLookup('asset/<?php echo $asset->getId(); ?>/user',
+                                   $.userLookup('phone/<?php echo $phone->getId(); ?>/user',
                                    function (user) {
                                    $('#user-'+user.id+'-name').text(user.name);
                                    $('#user-'+user.id+'-email').text(user.email);
@@ -107,12 +103,12 @@ global $org;
                                    $('select#emailreply option[value=1]').text(user.name+' <'+user.email+'>');
                                    });
                                    return false;
-                                   "><i class="icon-user"></i> <span id="user-<?php echo $asset->getAssigneeID(); ?>-name"
-                            ><?php echo Format::htmlchars($asset->getAssignee());
+                                   "><i class="icon-user"></i> <span id="user-<?php echo $phone->getAssigneeID(); ?>-name"
+                            ><?php echo Format::htmlchars($phone->getAssignee());
                                 ?></span></a>
                     </td>
                     <?php } else { ?>
-                    <td><a class="change-user" href="#asset/<?php echo $asset->getId(); ?>/user"
+                    <td><a class="change-user" href="#phone/<?php echo $phone->getId(); ?>/user"
                            onclick="javascript:
                                    var aid = 0;
                                    var cid = 0;
@@ -130,22 +126,18 @@ global $org;
                                            .parent('div').show().trigger('click');
                                        }
                                    });
-                                   "><i class="icon-user"></i> <span id="user-<?php echo $asset->getAssigneeID(); ?>-name"
+                                   "><i class="icon-user"></i> <span id="user-<?php echo $phone->getAssigneeID(); ?>-name"
                             ><?php echo __("Unassigned"); ?></span></a>
                     </td>
                     <?php } ?>
                 </tr>
                 <tr>
-                    <th><?php echo __("Assigned Location:"); ?></th>
-                    <td><?php echo $asset->getLocation(); ?></td>
-                </tr>
-                <tr>
                     <th><?php echo __("Created:"); ?></th>
-                    <td><?php echo $asset->getCreateDate(); ?></td>
+                    <td><?php echo $phone->getCreateDate(); ?></td>
                 </tr>
                 <tr>
                     <th><?php echo __("Updated:"); ?></th>
-                    <td><?php echo $asset->getUpdateDate(); ?></td>
+                    <td><?php echo $phone->getUpdateDate(); ?></td>
                 </tr>
             </table>
         </td>
@@ -160,8 +152,8 @@ global $org;
 <div id="user-view-tabs_container">
     <div class="tab_content" id="notes">
         <?php
-        $notes = \model\AssetNote::forAsset($asset);
-        $create_note_url = $asset->getId().'/note';
+        $notes = \model\AssetNote::forPhone($phone);
+        $create_note_url = $phone->getId().'/note';
         include INVENTORY_VIEWS_DIR . 'notes.tmpl.php';
         ?>
     </div>
@@ -175,9 +167,9 @@ global $org;
             '<b><span id="newuser">this guy</span></b>'); ?>
     </p>
     <div><?php echo __('Please confirm to continue.');?></div>
-    <form action="<?php echo INVENTORY_WEB_ROOT;?>inventory/asset/handleAsset?id=<?php echo $asset->getId(); ?>" method="post" id="confirm-form" name="confirm-form">
+    <form action="<?php echo INVENTORY_WEB_ROOT;?>inventory/phone/handlePhone?id=<?php echo $phone->getId(); ?>" method="post" id="confirm-form" name="confirm-form">
         <?php csrf_token(); ?>
-        <input type="hidden" name="id" value="<?php echo $asset->getId(); ?>">
+        <input type="hidden" name="id" value="<?php echo $phone->getId(); ?>">
         <input type="hidden" name="a" value="process">
         <input type="hidden" name="do" id="action" value="">
         <hr style="margin-top:1em"/>
@@ -198,10 +190,10 @@ global $org;
         $(document).on('click', 'a.change-user', function(e) {
             e.preventDefault();
 
-            <?php if(!$asset->getAssigneeID()) {
+            <?php if(!$phone->getAssigneeID()) {
                 $assigneeID = 0;
             } else {
-                $assigneeID = $asset->getAssigneeID();
+                $assigneeID = $phone->getAssigneeID();
             } ?>
 
             var aid = <?php echo $assigneeID; ?>;
@@ -227,7 +219,7 @@ global $org;
             var url = $(this).attr('href').substr(1);
             $.dialog(url, [201, 204], function (xhr) {
                 if (xhr.status == 204)
-                    window.location.href = 'handleAsset';
+                    window.location.href = 'handlePhone';
                 else
                     window.location.href = window.location.href;
                 return false;

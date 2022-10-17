@@ -5,12 +5,20 @@
 $queue = $q;
 $hasChildren = $children && (count($children) > 0);
 $selected = $_REQUEST['queue'] == $q->getId();
+
+if($queue->get('root') == 'P') {
+    $model = "phone/handlePhone";
+} elseif ($queue->get('root') == 'U') {
+    $model = "asset/handleAsset";
+}
+$link = INVENTORY_WEB_ROOT.$model."?queue=".$queue->getId();
+
 global $thisstaff;
 ?>
 <!-- SubQ class: only if top level Q has subQ -->
 <li <?php if ($hasChildren)  echo 'class="subQ"'; ?>>
 
-  <a class="truncate <?php if ($selected) echo ' active'; ?>" href="<?php echo "handle?queue=".$queue->getId();
+  <a class="truncate <?php if ($selected) echo ' active'; ?>" href="<?php echo $link;
     ?>" title="<?php echo Format::htmlchars($q->getName()); ?>">
       <?php
         echo Format::htmlchars($q->getName()); ?>

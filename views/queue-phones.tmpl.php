@@ -4,7 +4,7 @@
 //      render the full page
 
 // Make sure the cdata materialized view is available;
-\model\AssetForm::ensureDynamicDataView(true);
+\model\PhoneForm::ensureDynamicDataView(true);
 
 // Identify columns of output
 $columns = $queue->getColumns();
@@ -56,7 +56,7 @@ $sorted = false;
 foreach ($columns as $C) {
     // Sort by this column ?
     if (isset($sort['col']) && $sort['col'] == $C->id) {
-        $assets = $C->applySort($assets, $sort['dir']);
+        $phones = $C->applySort($phones, $sort['dir']);
         $sorted = true;
     }
 }
@@ -65,18 +65,18 @@ foreach ($columns as $C) {
 if (!$sorted) {
     // Apply queue sort-dropdown selected preference
     if (isset($sort['queuesort']))
-        $sort['queuesort']->applySort($assets, $sort['dir']);
+        $sort['queuesort']->applySort($phones, $sort['dir']);
     else // otherwise sort by created DESC
-        $assets->order_by('host_name');
+        $phones->order_by('phone_model');
 }
 
-$_SESSION[':Q:assets'] = $assets;
+$_SESSION[':Q:phones'] = $phones;
 
 // Apply pagination
-$total = $assets->count();
+$total = $phones->count();
 $page = (isset($_GET['p']) && is_numeric($_GET['p']))?$_GET['p']:1;
 $pageNav = new Pagenate($total, $page, PAGE_LIMIT);
-$assets = $pageNav->paginateSimple($assets);
+$phones = $pageNav->paginateSimple($phones);
 
 $Q = $queue->getBasicQuery();
 
@@ -95,12 +95,12 @@ if (($Q->extra && isset($Q->extra['tables'])) || !$Q->constraints || $empty) {
 }
 
 $pageNav->setTotal($total, true);
-$pageNav->setURL('handleAsset', $args);
+$pageNav->setURL('handlePhone', $args);
 ?>
 
 <!-- SEARCH FORM START -->
 <div id='basic_search'>
-    <form action="handleAsset" method="get" onsubmit="javascript:
+    <form action="handlePhone" method="get" onsubmit="javascript:
   $.pjax({
     url:$(this).attr('action') + '?' + $(this).serialize(),
     container:'#pjax-container',
@@ -110,7 +110,7 @@ return false;">
     <input type="hidden" name="a" value="search">
     <input type="hidden" name="search-type" value=""/>
     <div class="attached input">
-      <input type="text" id="basic-asset-search" class="basic-search" data-url="lookup" name="query"
+      <input type="text" id="basic-phone-search" class="basic-search" data-url="lookup" name="query"
         autofocus size="30" value="<?php echo Format::htmlchars($_REQUEST['query'] ?? null, true); ?>"
         autocomplete="off" autocorrect="off" autocapitalize="off">
       <button type="submit" class="attached button"><i class="icon-search"></i>
@@ -176,12 +176,12 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
           <div class="pull-right flush-right">
               <?php if ($thisstaff->hasPerm(User::PERM_CREATE)) { ?>
                   <a class="green button action-button popup-dialog"
-                     href="#asset/add/">
+                     href="#add/">
                       <i class="icon-plus-sign"></i>
-                      <?php echo __('New Asset'); ?>
+                      <?php echo __('New Phone'); ?>
                   </a>
                   <a class="action-button popup-dialog"
-                     href="#import/bulkAssets/">
+                     href="#import/bulkPhones/">
                       <i class="icon-upload"></i>
                       <?php echo __('Import'); ?>
                   </a>
@@ -219,10 +219,10 @@ if ($queue->id > 0 && $queue->isOwner($thisstaff)) { ?>
 <div class="clear"></div>
     <?php
     $showing = $search ? __('Search Results').': ' : '';
-    if($assets->exists(true))
+    if($phones->exists(true))
         $showing .= $pageNav->showing();
     else
-        $showing .= __('No assets found!');
+        $showing .= __('No phones found!');
     ?>
 <form action="?" method="POST" name='assets' id="assets-list">
 <?php csrf_token(); ?>
@@ -253,14 +253,14 @@ foreach ($columns as $C) {
   </thead>
   <tbody>
 <?php
-foreach ($assets as $A) {
+foreach ($phones as $P) {
     echo '<tr>';
     ?>
         <td><input type="checkbox" class="ckb mass nowarn" name="tids[]"
-            value="<?php echo $A['asset_id']; ?>" /></td>
+            value="<?php echo $P['phone_id']; ?>" /></td>
 <?php
     foreach ($columns as $C) {
-        list($contents, $styles) = $C->render($A);
+        list($contents, $styles) = $C->render($P);
         if ($style = $styles ? 'style="'.$styles.'"' : '') {
             echo "<td $style><div $style>$contents</div></td>";
         }
@@ -290,13 +290,13 @@ foreach ($assets as $A) {
   </tfoot>
 </table>
     <?php
-    if ($total > 0) { //if we actually had any tickets returned.
+    if ($total > 0) { //if we actually had any phones returned.
         ?>  <div>
             <span class="faded pull-right"><?php echo $pageNav->showing(); ?></span>
             <?php
             echo __('Page').':'.$pageNav->getPageLinks().'&nbsp;';
             ?>
-            <a href="<?php echo INVENTORY_WEB_ROOT; ?>asset/handle?a=export"
+            <a href="<?php echo INVENTORY_WEB_ROOT; ?>asset/handlePhone?a=export"
                id="" class="no-pjax"
             ><?php echo __('Export'); ?></a>
         </div>
@@ -306,10 +306,10 @@ foreach ($assets as $A) {
 
 <script type="text/javascript">
 $(function() {
-    $('input#basic-asset-search').typeahead({
+    $('input#basic-phone-search').typeahead({
         source: function (typeahead, query) {
             $.ajax({
-                url: "<?php echo INVENTORY_WEB_ROOT.'asset/handleAsset?q=';?>"+query,
+                url: "<?php echo INVENTORY_WEB_ROOT.'phone/handlePhone?q=';?>"+query,
                 dataType: 'json',
                 success: function (data) {
                     typeahead.process(data);
@@ -317,14 +317,14 @@ $(function() {
             });
         },
         onselect: function (obj) {
-            window.location.href = '<?php echo INVENTORY_WEB_ROOT.'asset/handleAsset?id='?>'+obj.id;
+            window.location.href = '<?php echo INVENTORY_WEB_ROOT.'phone/handlePhone?id='?>'+obj.id;
         },
         property: "/bin/true"
     });
 
     $(document).on('click', 'a.popup-dialog', function(e) {
         e.preventDefault();
-        $.assetLookup($(this).attr('href').substr(1));
+        $.phoneLookup($(this).attr('href').substr(1));
         return false;
     });
 
@@ -365,11 +365,11 @@ $(function() {
         return false;
     });
 
-    $.assetLookup = function (url, cb) {
-        $.dialog(url, 201, function (xhr, asset) {
-            if ($.type(asset) == 'string')
-                asset = $.parseJSON(asset);
-            if (cb) return cb(asset);
+    $.phoneLookup = function (url, cb) {
+        $.dialog(url, 201, function (xhr, phone) {
+            if ($.type(phone) == 'string')
+                phone = $.parseJSON(phone);
+            if (cb) return cb(phone);
         }, {
             onshow: function() { $('#user-search').focus(); }
         }, true);
@@ -467,7 +467,7 @@ $(function() {
         if (options.onload) { options.onload(); }
     };
 
-    $(document).on('click', 'a.asset-export', function(e) {
+    $(document).on('click', 'a.phone-export', function(e) {
         e.preventDefault();
         var url = '<?php echo INVENTORY_WEB_ROOT; ?>' + $(this).attr('href').substr(1)
         $.dialog(url, 201, function (xhr) {

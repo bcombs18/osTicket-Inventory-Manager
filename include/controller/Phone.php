@@ -5,29 +5,26 @@ namespace controller;
 require_once(INCLUDE_DIR . 'class.staff.php');
 require_once(INCLUDE_DIR . 'class.orm.php');
 require_once(INCLUDE_DIR . 'class.ajax.php');
-require_once(INVENTORY_MODEL_DIR . 'AssetSearch.php');
+require_once(INVENTORY_MODEL_DIR . 'PhoneSearch.php');
 
 use Format;
-use \AssetAdhocSearch;
-use model\AssetForm;
-use \AssetSavedSearch;
 use User;
 
-class Asset extends \AjaxController {
+class Phone extends \AjaxController {
 
     function lookup() {
         global $thisstaff;
 
         $limit = isset($_REQUEST['limit']) ? (int) $_REQUEST['limit']:25;
-        $assets=array();
+        $phones=array();
         // Bail out of query is empty
         if (!$_REQUEST['q'])
-            return $this->json_encode($assets);
+            return $this->json_encode($phones);
 
-        $hits = \model\Asset::objects()
-            ->values('host_name', 'model', 'manufacturer', 'location', 'serial_number')
+        $hits = \model\Phone::objects()
+            ->values('phone_model', 'phone_number', 'imei')
             ->order_by(\SqlAggregate::SUM(new \SqlCode('Z1.relevance')), \QuerySet::DESC)
-            ->distinct('asset_id')
+            ->distinct('phone_id')
             ->limit($limit);
 
         $q = $_REQUEST['q'];
@@ -44,12 +41,12 @@ class Asset extends \AjaxController {
             return $this->lookup();
         }
 
-        $assets = array_values($assets);
+        $phones = array_values($phones);
 
-        return $this->json_encode($assets);
+        return $this->json_encode($phones);
     }
 
-    function addAsset() {
+    function addPhone() {
         global $thisstaff;
 
         $info = array();
@@ -58,60 +55,60 @@ class Asset extends \AjaxController {
             $info['lookup'] = 'local';
 
         if ($_POST) {
-            if (!$thisstaff->hasPerm(User::PERM_CREATE))
+            if (!$thisstaff->hasPerm(\User::PERM_CREATE))
                 \Http::response(403, 'Permission Denied');
 
-            $info['title'] = __('Add New User');
-            $form = \model\AssetForm::getAssetForm()->getForm($_POST);
-            if (($asset = \model\Asset::fromForm($form)))
-                \Http::response(201, $asset->to_json(), 'application/json');
+            $info['title'] = __('Add New Phone');
+            $form = \model\PhoneForm::getPhoneForm()->getForm($_POST);
+            if (($phone = \model\Phone::fromForm($form)))
+                \Http::response(201, $phone->to_json(), 'application/json');
 
-            $info['error'] = sprintf('%s - %s', __('Error adding asset'), __('Please try again!'));
+            $info['error'] = sprintf('%s - %s', __('Error adding phone'), __('Please try again!'));
         }
 
         return self::_lookupform($form, $info);
     }
 
-    function editAsset($id) {
-        global $thisstaff;
-
-        if(!$thisstaff)
-            Http::response(403, 'Login Required');
-        elseif (!$thisstaff->hasPerm(User::PERM_EDIT))
-            Http::response(403, 'Permission Denied');
-        elseif(!($asset = \model\Asset::lookup($id)))
-            Http::response(404, 'Unknown user');
-
-        $info = array(
-            'title' => $asset->getHostname(),
-            'edit_url' => sprintf('#asset/%d/edit', $asset->getId()),
-            'post_url' => '#asset/'. $asset->getId(),
-            'object' => $asset,
-            'object_type' => 'Asset'
-        );
-        $forms = $asset->getForms();
-
-        include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
-    }
-
-    function updateAsset($id) {
+    function editPhone($id) {
         global $thisstaff;
 
         if(!$thisstaff)
             \Http::response(403, 'Login Required');
         elseif (!$thisstaff->hasPerm(User::PERM_EDIT))
             \Http::response(403, 'Permission Denied');
-        elseif(!($asset = \model\Asset::lookup($id)))
-            \Http::response(404, 'Unknown asset');
+        elseif(!($phone = \model\Phone::lookup($id)))
+            \Http::response(404, 'Unknown phone');
+
+        $info = array(
+            'title' => $phone->getModel(),
+            'edit_url' => sprintf('#phone/%d/edit', $phone->getId()),
+            'post_url' => '#phone/'. $phone->getId(),
+            'object' => $phone,
+            'object_type' => 'Phone'
+        );
+        $forms = $phone->getForms();
+
+        include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
+    }
+
+    function updatePhone($id) {
+        global $thisstaff;
+
+        if(!$thisstaff)
+            \Http::response(403, 'Login Required');
+        elseif (!$thisstaff->hasPerm(User::PERM_EDIT))
+            \Http::response(403, 'Permission Denied');
+        elseif(!($phone = \model\Phone::lookup($id)))
+            \Http::response(404, 'Unknown phone');
 
         $errors = array();
-        $form = AssetForm::getAssetForm()->getForm($_POST);
+        $form = \model\PhoneForm::getPhoneForm()->getForm($_POST);
 
-        if ($asset->updateInfo($_POST, $errors, true) && !$errors)
-            \Http::response(201, $asset->to_json(),  'application/json');
+        if ($phone->updateInfo($_POST, $errors, true) && !$errors)
+            \Http::response(201, $phone->to_json(),  'application/json');
 
-        $forms = $asset->getForms();
-        include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
+        $forms = $phone->getForms();
+        include(INVENTORY_VIEWS_DIR . 'phone.tmpl.php');
     }
 
     function delete($id) {
@@ -121,21 +118,21 @@ class Asset extends \AjaxController {
             \Http::response(403, 'Login Required');
         elseif (!$thisstaff->hasPerm(User::PERM_DELETE))
             \Http::response(403, 'Permission Denied');
-        elseif (!($asset = \model\Asset::lookup($id)))
-            \Http::response(404, 'Unknown user');
+        elseif (!($phone = \model\Phone::lookup($id)))
+            \Http::response(404, 'Unknown phone');
 
         $info = array(
-            'title' => sprintf('%s: %s', __('Delete Asset'), $asset->getHostname()),
+            'title' => sprintf('%s: %s', __('Delete Phone'), $phone->getModel()),
             'warn' => 'Deleted assets CANNOT be recovered',
-            'action' => '#asset/'.$asset->getId().'/delete',
-            'id' => $asset->getId(),
-            'delete_message' => 'Yes, Delete Phone'
+            'action' => '#phone/'.$phone->getId().'/delete',
+            'id' => $phone->getId(),
+            'submit_message' => 'Yes, Delete Phone'
         );
         if ($_POST) {
-            if (!$info['error'] && $asset->delete())
-                \Http::response(204, 'Asset deleted successfully');
+            if (!$info['error'] && $phone->delete())
+                \Http::response(204, 'Phone deleted successfully');
             elseif (!$info['error'])
-                $info['error'] = sprintf('%s - %s', __('Unable to delete asset'), __('Please try again!'));
+                $info['error'] = sprintf('%s - %s', __('Unable to delete phone'), __('Please try again!'));
         }
 
         include(INVENTORY_VIEWS_DIR . 'deleteAsset.tmpl.php');
@@ -148,21 +145,21 @@ class Asset extends \AjaxController {
             \Http::response(403, 'Login Required');
         elseif (!$thisstaff->hasPerm(User::PERM_DELETE))
             \Http::response(403, 'Permission Denied');
-        elseif (!($asset = \model\Asset::lookup($id)))
-            \Http::response(404, 'Unknown user');
+        elseif (!($phone = \model\Phone::lookup($id)))
+            \Http::response(404, 'Unknown phone');
 
         $info = array(
-            'title' => sprintf('%s: %s', __('Retire Asset'), $asset->getHostname()),
-            'warn' => 'Retired assets will be hidden. You can reactivate the assets at any time.',
-            'action' => '#asset/'.$asset->getId().'/retire',
-            'id' => $asset->getId(),
-            'submit_message' => 'Yes, Retire Asset'
+            'title' => sprintf('%s: %s', __('Retire Phone'), $phone->getModel()),
+            'warn' => 'Retired phones will be hidden. You can reactivate the phones at any time.',
+            'action' => '#phone/'.$phone->getId().'/retire',
+            'id' => $phone->getId(),
+            'submit_message' => 'Yes, Retire Phone'
         );
         if ($_POST) {
-            if (!$info['error'] && $asset->retire())
-                \Http::response(204, 'Asset retired successfully');
+            if (!$info['error'] && $phone->retire())
+                \Http::response(204, 'Phone retired successfully');
             elseif (!$info['error'])
-                $info['error'] = sprintf('%s - %s', __('Unable to retire asset'), __('Please try again!'));
+                $info['error'] = sprintf('%s - %s', __('Unable to retire phone'), __('Please try again!'));
         }
 
         include(INVENTORY_VIEWS_DIR . 'retireAsset.tmpl.php');
@@ -175,31 +172,31 @@ class Asset extends \AjaxController {
             \Http::response(403, 'Login Required');
         elseif (!$thisstaff->hasPerm(User::PERM_DELETE))
             \Http::response(403, 'Permission Denied');
-        elseif (!($asset = \model\Asset::lookup($id)))
-            \Http::response(404, 'Unknown user');
+        elseif (!($phone = \model\Phone::lookup($id)))
+            \Http::response(404, 'Unknown phone');
 
         $info = array(
-            'title' => sprintf('%s: %s', __('Activate Asset'), $asset->getHostname()),
-            'action' => '#asset/'.$asset->getId().'/activate',
-            'id' => $asset->getId(),
+            'title' => sprintf('%s: %s', __('Activate Asset'), $phone->getModel()),
+            'action' => '#phone/'.$phone->getId().'/activate',
+            'id' => $phone->getId(),
             'submit_message' => 'Yes, Activate Asset'
         );
         if ($_POST) {
-            if (!$info['error'] && $asset->activate())
-                \Http::response(204, 'Asset activated successfully');
+            if (!$info['error'] && $phone->activate())
+                \Http::response(204, 'Phone activated successfully');
             elseif (!$info['error'])
-                $info['error'] = sprintf('%s - %s', __('Unable to activate asset'), __('Please try again!'));
+                $info['error'] = sprintf('%s - %s', __('Unable to activate phone'), __('Please try again!'));
         }
 
         include(INVENTORY_VIEWS_DIR . 'activateAsset.tmpl.php');
     }
 
-    function getAsset($id=false) {
+    function getPhone($id=false) {
 
-        if(($asset=\model\Asset::lookup(($id) ? $id : $_REQUEST['id'])))
-            Http::response(201, $asset->to_json(), 'application/json');
+        if(($phone=\model\Phone::lookup(($id) ? $id : $_REQUEST['id'])))
+            \Http::response(201, $phone->to_json(), 'application/json');
 
-        $info = array('error' => sprintf(__('%s: Unknown or invalid ID.'), _N('asset', 'assets', 1)));
+        $info = array('error' => sprintf(__('%s: Unknown or invalid ID.'), _N('phone', 'phones', 1)));
 
         return self::_lookupform(null, $info);
     }
@@ -209,18 +206,18 @@ class Asset extends \AjaxController {
 
         if(!$thisstaff)
             \Http::response(403, 'Login Required');
-        elseif(!($asset = \model\Asset::lookup($id)))
-            \Http::response(404, 'Unknown asset');
+        elseif(!($phone = \model\Phone::lookup($id)))
+            \Http::response(404, 'Unknown phone');
 
         $info = array(
-            'edit_url' => sprintf('#asset/%d/edit', $asset->getId()),
-            'post_url' => '#asset/'. $asset->getId(),
-            'object' => $asset,
-            'object_type' => 'Asset'
+            'edit_url' => sprintf('#phone/%d/edit', $phone->getId()),
+            'post_url' => '#phone/'. $phone->getId(),
+            'object' => $phone,
+            'object_type' => 'Phone'
         );
         ob_start();
         echo sprintf('<div style="width:650px; padding: 2px 2px 0 5px;"
-                id="u%d">', $asset->getId());
+                id="u%d">', $phone->getId());
         include(INVENTORY_VIEWS_DIR . 'asset.tmpl.php');
         echo '</div>';
         $resp = ob_get_contents();
@@ -235,13 +232,13 @@ class Asset extends \AjaxController {
 
         if (!$info or !$info['title']) {
             if ($thisstaff->hasPerm(User::PERM_CREATE))
-                $info += array('title' => __('Lookup or create an asset'));
+                $info += array('title' => __('Lookup or create a phone'));
             else
-                $info += array('title' => __('Lookup an asset'));
+                $info += array('title' => __('Lookup a phone'));
         }
 
         ob_start();
-        include(INVENTORY_VIEWS_DIR . 'addAsset.php');
+        include(INVENTORY_VIEWS_DIR . 'addPhone.php');
         $resp = ob_get_contents();
         ob_end_clean();
         return $resp;
@@ -255,30 +252,29 @@ class Asset extends \AjaxController {
         require_once INVENTORY_INCLUDE_DIR.'model/phones.php';
     }
 
-    function viewUser($asset_id) {
+    function viewUser($phone_id) {
         global $thisstaff;
 
         if(!$thisstaff
-            || !$asset= \model\Asset::lookup($asset_id))
+            || !$phone= \model\Phone::lookup($phone_id))
             \Http::response(404, 'No such asset');
 
-        $user = \User::lookup($asset->getAssigneeID());
+        $user = \User::lookup($phone->getAssigneeID());
 
         if($user) {
             $file = 'user.tmpl.php';
             $info = array(
-                'title' => sprintf(__('%s: %s'), $asset->getHostname(),
+                'title' => sprintf(__('%s: %s'), $phone->getModel(),
                     Format::htmlchars($user->getName())),
-                'submit_url' => '#asset/users/lookup',
-                'object' => $asset,
-                'change_url' => '#asset/'.$asset->getId().'/change-user'
+                'submit_url' => '#phone/users/lookup',
+                'object' => $phone,
+                'change_url' => '#phone/'.$phone->getId().'/change-user'
             );
         } else {
             $file = 'user-lookup.tmpl.php';
             $info = array(
-                'title' => sprintf(__('%s: Unassigned'), $asset->getHostname()),
-                'onselect' => INVENTORY_WEB_ROOT.'asset/users/select/',
-                'add_url' => '#asset/users/lookup/form',
+                'title' => sprintf(__('%s: Unassigned'), $phone->getModel()),
+                'onselect' => INVENTORY_WEB_ROOT.'phone/users/select/',
             );
         }
 
@@ -291,20 +287,20 @@ class Asset extends \AjaxController {
 
     }
 
-    function changeUserForm($asset_id) {
+    function changeUserForm($phone_id) {
         global $thisstaff;
 
         if(!$thisstaff
-            || !($asset=\model\Asset::lookup($asset_id)))
-            \Http::response(404, 'No such asset');
+            || !($phone=\model\Phone::lookup($phone_id)))
+            \Http::response(404, 'No such phone');
 
 
-        $user = \User::lookup($asset->getAssigneeID());
+        $user = \User::lookup($phone->getAssigneeID());
 
         $info = array(
-            'title' => sprintf(__('Change user for asset %s'), $asset->getHostname()),
-            'lookup_url' => 'asset/users/lookup',
-            'onselect' => INVENTORY_WEB_ROOT.'asset/users/select/',
+            'title' => sprintf(__('Change user for asset %s'), $phone->getModel()),
+            'lookup_url' => 'phone/users/lookup',
+            'onselect' => INVENTORY_WEB_ROOT.'phone/users/select/',
             'add_url' => '#phone/users/lookup/form',
         );
 
@@ -340,7 +336,7 @@ class Asset extends \AjaxController {
 
         $info = array(
             'title' => __('Select User'),
-            'submit_url' => '#asset/users/lookup',
+            'submit_url' => '#phone/users/lookup',
             'add_url' => '#asset/users/lookup/form',
         );
 
@@ -399,12 +395,12 @@ class Asset extends \AjaxController {
     }
 
     function createNote($id) {
-        if (!($asset = \model\Asset::lookup($id)))
-            Http::response(404, 'Unknown asset');
+        if (!($phone = \model\Phone::lookup($id)))
+            \Http::response(404, 'Unknown phone');
 
         require_once INCLUDE_DIR . 'class.ajax.php';
         require_once INCLUDE_DIR . 'ajax.note.php';
         $ajax = new \NoteAjaxAPI();
-        return $ajax->createNote('I'.$id);
+        return $ajax->createNote('P'.$id);
     }
 }

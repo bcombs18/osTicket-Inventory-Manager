@@ -4,20 +4,20 @@ namespace model;
 
 use function MongoDB\BSON\toJSON;
 
-class AssetModel extends \VerySimpleModel {
+class PhoneModel extends \VerySimpleModel {
 
     static $meta = array(
-        'table' => TABLE_PREFIX.'inventory_asset',
-        'pk' => 'asset_id',
+        'table' => TABLE_PREFIX.'inventory_phone',
+        'pk' => 'phone_id',
         'joins' => array(
             'cdata' => array(
-                'constraint' => array('asset_id' => '\model\AssetCdata.asset_id'),
+                'constraint' => array('phone_id' => '\model\PhoneCdata.phone_id'),
                 'list' => true
             ),
             'entries' => array(
                 'constraint' => array(
-                    "'I'" => 'DynamicFormEntry.object_type',
-                    'asset_id' => 'DynamicFormEntry.object_id',
+                    "'P'" => 'DynamicFormEntry.object_type',
+                    'phone_id' => 'DynamicFormEntry.object_id',
                 ),
                 'list' => true,
             ),
@@ -25,7 +25,7 @@ class AssetModel extends \VerySimpleModel {
     );
 
     function getId() {
-        return $this->asset_id;
+        return $this->phone_id;
     }
 
     public function setFlag($flag, $val) {
@@ -36,19 +36,19 @@ class AssetModel extends \VerySimpleModel {
     }
 }
 
-class AssetCdata extends \VerySimpleModel {
+class PhoneCdata extends \VerySimpleModel {
     static $meta = array(
-        'table' => TABLE_PREFIX.'inventory__cdata',
-        'pk' => array('asset_id'),
+        'table' => TABLE_PREFIX.'inventory_phone__cdata',
+        'pk' => array('phone_id'),
         'joins' => array(
-            'asset' => array(
-                'constraint' => array('asset_id' => '\model\AssetModel.asset_id'),
+            'phone' => array(
+                'constraint' => array('phone_id' => '\model\PhoneModel.phone_id'),
             ),
         ),
     );
 }
 
-class Asset extends AssetModel
+class Phone extends PhoneModel
     implements \TemplateVariable, \Searchable {
 
     var $_entries;
@@ -56,43 +56,41 @@ class Asset extends AssetModel
 
     static function fromVars($vars, $create=true, $update=false) {
         // Try and lookup by Serial Number
-        $asset = static::lookupBySerial($vars['serial_number']);
-        $user = \User::lookupByEmail($vars['assignee']);
+        $phone = static::lookupByIMEI($vars['imei']);
+        $user = \User::lookupByEmail($vars['phone_assignee']);
         if($user) {
             $user = json_encode(array('name' => $user->getFullName(), 'id' => $user->getId()));
         } else {
             $user = null;
         }
-        if (!$asset && $create) {
-            $asset = new Asset(array(
-                'host_name' => \Format::htmldecode(\Format::sanitize($vars['host_name'])),
-                'manufacturer' => \Format::htmldecode(\Format::sanitize($vars['manufacturer'])),
-                'model' => \Format::htmldecode(\Format::sanitize($vars['model'])),
-                'serial_number' => \Format::htmldecode(\Format::sanitize($vars['serial_number'])),
-                'location' => $vars['location'],
-                'assignee' => $user,
+        if (!$phone && $create) {
+            $phone = new Phone(array(
+                'phone_number' => \Format::htmldecode(\Format::sanitize(Phone::formatPhoneNumber($vars['phone_number']))),
+                'phone_model' => \Format::htmldecode(\Format::sanitize($vars['phone_model'])),
+                'imei' => \Format::htmldecode(\Format::sanitize($vars['imei'])),
+                'phone_assignee' => $user,
                 'retired' => 'false',
                 'created' => new \SqlFunction('NOW'),
                 'updated' => new \SqlFunction('NOW')
             ));
 
             try {
-                $asset->save(true);
+                $phone->save(true);
                 // Attach initial custom fields
-                $asset->addDynamicData($vars);
+                $phone->addDynamicData($vars);
             }
             catch (OrmException $e) {
                 return null;
             }
             $type = array('type' => 'created');
-            \Signal::send('object.created', $asset, $type);
+            \Signal::send('object.created', $phone, $type);
         }
         elseif ($update) {
             $errors = array();
-            $asset->updateInfo($vars, $errors, true);
+            $phone->updateInfo($vars, $errors, true);
         }
 
-        return $asset;
+        return $phone;
     }
 
     static function fromForm($form, $create=true) {
@@ -112,38 +110,26 @@ class Asset extends AssetModel
         return $valid ? self::fromVars($form->getClean(), $create) : null;
     }
 
-    function getHostname() {
-        return $this->host_name;
+    function getPhoneNumber() {
+        return $this->phone_number;
     }
 
     function getModel() {
-        return $this->model;
+        return $this->phone_model;
     }
 
-    function getManufacturer() {
-        return $this->manufacturer;
-    }
-
-    function getSerialNumber() {
-        return $this->serial_number;
+    function getIMEI() {
+        return $this->imei;
     }
 
     function getAssignee() {
-        $assignee = json_decode($this->assignee, true);
+        $assignee = json_decode($this->phone_assignee, true);
         return $assignee['name'];
     }
 
     function getAssigneeID() {
-        $assignee = json_decode($this->assignee, true);
+        $assignee = json_decode($this->phone_assignee, true);
         return $assignee['id'];
-    }
-
-    function getLocation() {
-        if($this->location) {
-            return $this->location;
-        } else {
-            return "Location Not Assigned";
-        }
     }
 
     function getCreateDate() {
@@ -171,9 +157,20 @@ class Asset extends AssetModel
         return true;
     }
 
+    static function formatPhoneNumber($number) {
+        if(str_contains($number, '-'))
+            return $number;
+
+        $string = "(" . substr($number, 0, 3) . ")-" . substr($number, 3, 3) . "-" . substr($number, 6);
+        if(strlen($number) == 11) {
+            return "+1 " . $string;
+        }
+        return $string;
+    }
+
     function addForm($form, $sort=1, $data=null) {
         $entry = $form->instanciate($sort, $data);
-        $entry->set('object_type', 'I');
+        $entry->set('object_type', 'P');
         $entry->set('object_id', $this->getId());
         $entry->save();
         return $entry;
@@ -181,13 +178,11 @@ class Asset extends AssetModel
 
     function to_json() {
         $info = array(
-            'asset_id'  => $this->getId(),
-            'host_name' => $this->getHostname(),
-            'manufacturer' => $this->getManufacturer(),
-            'model' => $this->getModel(),
-            'serial_number' => $this->getSerialNumber(),
-            'location' => $this->getLocation(),
-            'assignee' => \User::lookup($this->getAssigneeID())
+            'phone_id'  => $this->getId(),
+            'phone_number' => $this->getPhoneNumber(),
+            'phone_model' => $this->getModel(),
+            'imei' => $this->getIMEI(),
+            'phone_assignee' => \User::lookup($this->getAssigneeID())
         );
 
         return \Format::json_encode($info);
@@ -198,7 +193,7 @@ class Asset extends AssetModel
     }
 
     function asVar() {
-        return (string) $this->getName();
+        return (string) $this->getModel();
     }
 
     function getVar($tag) {
@@ -213,19 +208,19 @@ class Asset extends AssetModel
     }
 
     function addDynamicData($data) {
-        return $this->addForm(AssetForm::objects()->one(), 1, $data);
+        return $this->addForm(PhoneForm::objects()->one(), 1, $data);
     }
 
     function getDynamicData($create=true) {
-
-        $this->_entries = \DynamicFormEntry::forObject($this->asset_id, 'I')->all();
-        if (!$this->_entries && $create) {
-            $g = \model\AssetForm::getNewInstance();
-            $g->setClientId($this->asset_id);
-            $g->save();
-            $this->_entries[] = $g;
+        if (!isset($this->_entries)) {
+            $this->_entries = \DynamicFormEntry::forObject($this->phone_id, 'P')->all();
+            if (!$this->_entries && $create) {
+                $g = \model\PhoneForm::getNewInstance();
+                $g->setClientId($this->phone_id);
+                $g->save();
+                $this->_entries[] = $g;
+            }
         }
-
 
         return $this->_entries ?: array();
     }
@@ -252,9 +247,9 @@ class Asset extends AssetModel
         $imported = 0;
         try {
             db_autocommit(false);
-            $records = $importer->importCsv(AssetForm::getAssetForm()->getFields(), $defaults);
+            $records = $importer->importCsv(PhoneForm::getPhoneForm()->getFields(), $defaults);
             foreach ($records as $data) {
-                if (!($asset = static::fromVars($data, true, true)))
+                if (!($phone = static::fromVars($data, true, true)))
                     throw new \ImportError(sprintf(__('Unable to import asset: %s'),
                         print_r(Format::htmlchars($data), true)));
                 $imported++;
@@ -272,7 +267,7 @@ class Asset extends AssetModel
         if (!is_array($stream))
             $stream = sprintf('name, email%s %s',PHP_EOL, $stream);
 
-        return Asset::importCsv($stream, $extra);
+        return Phone::importCsv($stream, $extra);
     }
 
     function updateInfo($vars, &$errors, $staff=false) {
@@ -308,24 +303,15 @@ class Asset extends AssetModel
                 }
             }
 
-            if ($entry->getDynamicForm()->get('type') == 'I') {
+            if ($entry->getDynamicForm()->get('type') == 'P') {
                 //  Name field
-                if (($hostname = $entry->getField('host_name')) && $isEditable($hostname) ) {
-                    $hostname = $hostname->getClean();
-                    if ($this->host_name != $hostname) {
-                        $type = array('type' => 'edited', 'key' => 'Hostname');
+                if (($model = $entry->getField('phone_model')) && $isEditable($model) ) {
+                    $model = $model->getClean();
+                    if ($this->phone_model != $model) {
+                        $type = array('type' => 'edited', 'key' => 'Phone Model');
                         \Signal::send('object.edited', $this, $type);
                     }
-                    $this->host_name = $hostname;
-                }
-
-                if (($location = $entry->getField('location')) && $isEditable($location) ) {
-                    $location = $location->getClean();
-                    if ($this->location != $location) {
-                        $type = array('type' => 'edited', 'key' => 'Location');
-                        \Signal::send('object.edited', $this, $type);
-                    }
-                    $this->location = $location;
+                    $this->phone_model = $model;
                 }
             }
 
@@ -351,12 +337,12 @@ class Asset extends AssetModel
         return parent::delete();
     }
 
-    static function lookupByID($asset_id) {
-        return static::lookup(array('asset_id'=>$asset_id));
+    static function lookupByID($phone_id) {
+        return static::lookup(array('phone_id'=>$phone_id));
     }
 
-    static function lookupBySerial($serial) {
-        return static::lookup(array('serial_number'=>$serial));
+    static function lookupByIMEI($imei) {
+        return static::lookup(array('imei'=>$imei));
     }
 
     function changeAssignee($user) {
@@ -366,7 +352,7 @@ class Asset extends AssetModel
             return false;
         }
         $errors = array();
-        $this->assignee = json_encode(array('name' => $user->getFullname(), 'id' => $user->getId()));
+        $this->phone_assignee = json_encode(array('name' => $user->getFullname(), 'id' => $user->getId()));
         if (!$this->save())
             return false;
         unset($this->user);
@@ -377,23 +363,17 @@ class Asset extends AssetModel
         global $thisstaff;
 
         $base = array(
-            'host_name' => new \TextboxField(array(
-                'label' => __('Hostname')
+            'phone_model' => new \TextboxField(array(
+                'label' => __('Phone Model')
             )),
-            'manufacturer' => new \TextboxField(array(
-                'label' => __('Manufacturer')
+            'phone_number' => new \TextboxField(array(
+                'label' => __('Phone Number')
             )),
-            'model' => new \TextboxField(array(
-                'label' => __('Model')
+            'phone_assignee' => new \TextboxField(array(
+                'label' => __('Phone Assignee')
             )),
-            'assignee' => new \TextboxField(array(
-                'label' => __('Assignee')
-            )),
-            'location' => new \TextboxField(array(
-                'label' => __('Location')
-            )),
-            'serial_number' => new \TextboxField(array(
-                'label' => __('Serial Number')
+            'imei' => new \TextboxField(array(
+                'label' => __('IMEI')
             )),
             'retired' => new \BooleanField(array(
                 'label' => __('Is Retired')
@@ -411,8 +391,8 @@ class Asset extends AssetModel
                     'format' => 'y-MM-dd HH:mm:ss'),
             )),
         );
-        $aform = AssetForm::getInstance();
-        foreach ($aform->getFields() as $F) {
+        $pform = PhoneForm::getInstance();
+        foreach ($pform->getFields() as $F) {
             $fname = $F->get('name') ?: ('field_'.$F->get('id'));
             if (!$F->hasData() || $F->isPresentationOnly() || !$F->isEnabled())
                 continue;
@@ -434,7 +414,7 @@ class Asset extends AssetModel
 
         switch (true) {
             case ($thisstaff instanceof \Staff):
-                return sprintf(INVENTORY_WEB_ROOT.'asset/handleAsset?id=%s', $id);
+                return sprintf(INVENTORY_WEB_ROOT.'phone/handlePhone?id=%s', $id);
         }
     }
 }

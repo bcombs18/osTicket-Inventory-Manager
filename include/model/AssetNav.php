@@ -1,6 +1,6 @@
 <?php
 
-class AssetNav extends \StaffNav {
+class AssetSettingsNav extends \StaffNav {
     function getSubMenus(){ //Private.
         global $cfg;
 
@@ -31,7 +31,7 @@ class AssetNav extends \StaffNav {
                     }
                     break;
                 case 'apps':
-                    $subnav[] = array('desc' => __('Inventory Manager'), 'href' => INVENTORY_WEB_ROOT.'asset/handle');
+                    $subnav[] = array('desc' => __('Inventory Manager'), 'href' => INVENTORY_WEB_ROOT.'asset/handleAsset');
                     $subnav[] = array('desc' => __('Forms'), 'href' => INVENTORY_WEB_ROOT.'settings/forms', 'iconclass'=>'forms');
                     $subnav[] = array('desc' => __('API'), 'href' => INVENTORY_WEB_ROOT.'settings/api', 'iconclass'=>'api');
                     break;

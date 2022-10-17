@@ -562,6 +562,19 @@ class AssetMysqlSearchBackend extends \MySqlSearchBackend {
                 ));
                 $criteria->filter(array('asset_id' => new \SqlCode('Z1.`asset_id`')));
                 break;
+
+            case 'model\Phone':
+                $criteria->extra(array(
+                    'select' => array(
+                        '__relevance__' => 'Z1.`relevance`',
+                    ),
+                    'tables' => array(
+                        str_replace(array(':', '{}'), array(TABLE_PREFIX, $search),
+                            "(SELECT Z6.`phone_id` as `phone_id`, {} AS `relevance` FROM `:_search` Z1 LEFT JOIN `:inventory_phone` Z6 ON (Z6.`phone_id` = Z1.`object_id` and Z1.`object_type` = 'P')  WHERE {}) Z1"),
+                    ),
+                ));
+                $criteria->filter(array('phone_id' => new \SqlCode('Z1.`phone_id`')));
+                break;
         }
 
         // TODO: Ensure search table exists;
@@ -720,6 +733,32 @@ class AssetMysqlSearchBackend extends \MySqlSearchBackend {
                         $content[] = $c;
             $record = array('I', $asset->getId(),
                 \Format::searchable($asset->getHostname()),
+                trim(implode("\n", $content)));
+            if (!$this->__index($record))
+                return;
+        }
+
+        // PHONES ------------------------------------
+
+        $sql = "SELECT A1.`phone_id` FROM `".INVENTORY_PHONE_TABLE."` A1
+            LEFT JOIN `".TABLE_PREFIX."_search` A2 ON (A1.`phone_id` = A2.`object_id` AND A2.`object_type`='P')
+            WHERE A2.`object_id` IS NULL
+            ORDER BY A1.`phone_id` DESC LIMIT 300";
+        if (!($res = db_query_unbuffered($sql, $auto_create)))
+            return false;
+
+        while ($row = db_fetch_row($res)) {
+            if(!($phone = \model\Phone::lookup($row[0])))
+                continue;
+            $cdata = $phone->getDynamicData();
+            $content = array();
+
+            foreach ($cdata as $e)
+                foreach ($e->getAnswers() as $a)
+                    if ($c = $a->getSearchable())
+                        $content[] = $c;
+            $record = array('P', $phone->getId(),
+                \Format::searchable($phone->getModel()),
                 trim(implode("\n", $content)));
             if (!$this->__index($record))
                 return;
