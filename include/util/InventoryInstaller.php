@@ -19,7 +19,11 @@ class InventoryInstaller extends \SetupWizard {
 
     function upgrade() {
         $schemaFile = INVENTORY_PLUGIN_ROOT . 'install/sql/upgrade_inventory.sql'; // DB dump.
-        return $this->runJob ( $schemaFile, false );
+        $phoneSchema = INVENTORY_PLUGIN_ROOT . 'install/sql/install_phones.sql';
+        if(!$this->runJob ( $schemaFile, false ) || !$this->runJob($phoneSchema, false)) {
+            return false;
+        }
+        return true;
     }
 
     private function runJob($schemaFile, $show_sql_errors = false) {
