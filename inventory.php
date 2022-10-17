@@ -29,6 +29,8 @@ const INVENTORY_PLUGIN_VERSION = '1.1.5';
 
 const SEARCH_BACKEND = 'assetmysql';
 
+global $inventory_cfg;
+
 require_once INVENTORY_MODEL_DIR.'AssetSearch.php';
 
 require_once INVENTORY_VENDOR_DIR.'autoload.php';
@@ -67,9 +69,10 @@ class InventoryPlugin extends Plugin {
             $this->configureUpgrade();
         }
 
-        $config = $this->getConfig();
+        global $inventory_cfg;
+        $inventory_cfg = $this->getConfig();
 
-        if($config->get('inventory_backend_enable')) {
+        if($inventory_cfg->get('inventory_backend_enable')) {
             $this->createStaffMenu();
         }
 

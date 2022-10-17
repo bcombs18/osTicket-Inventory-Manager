@@ -1,6 +1,7 @@
 <?php
 global $ost;
 global $cfg;
+global $inventory_cfg;
 require('staff.inc.php');
 
 if (!$thisstaff->hasPerm(\User::PERM_DIRECTORY))
@@ -198,8 +199,11 @@ $nav->addSubNavInfo('jb-overflowmenu', 'customQ_nav');
 // Start with all the top-level (container) queues
 foreach ($queues as $_) {
     list($q, $children) = $_;
-    if ($q->getStatus() != 'Disabled' && $q->getName() != 'Phones')
+    if ($q->getStatus() != 'Disabled' && $q->getName() != 'Phones') {
         continue;
+    } else if($q->getName() == 'Phones' && !$inventory_cfg->get('inventory_phone_enabled')) {
+        continue;
+    }
     $nav->addSubMenu(function() use ($q, $queue, $children) {
         // A queue is selected if it is the one being displayed. It is
         // "child" selected if its ID is in the path of the one selected

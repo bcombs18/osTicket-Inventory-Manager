@@ -14,6 +14,13 @@ class InventoryConfig extends PluginConfig {
                     'desc' => 'Staff backend interface'),
                 'default' => true
             )),
+            'inventory_phone_enabled' => new BooleanField(array(
+                'id' => 'inventory_phone_enabled',
+                'label' => 'Enable Mobile Device Tracking',
+                'configuration' => array(
+                    'desc' => 'Mobile device tracking'),
+                'default' => false
+            ))
         );
     }
 
