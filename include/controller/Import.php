@@ -6,6 +6,10 @@ use User;
 
 class Import {
 
+    function access() {
+        return true;
+    }
+
     function importAssets() {
         global $thisstaff;
 
