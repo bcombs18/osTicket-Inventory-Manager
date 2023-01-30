@@ -296,7 +296,7 @@ foreach ($assets as $A) {
             <?php
             echo __('Page').':'.$pageNav->getPageLinks().'&nbsp;';
             ?>
-            <a href="<?php echo INVENTORY_WEB_ROOT; ?>asset/handle?a=export"
+            <a href="<?php echo INVENTORY_WEB_ROOT; ?>asset/handleAsset?a=export"
                id="" class="no-pjax"
             ><?php echo __('Export'); ?></a>
         </div>
