@@ -82,6 +82,11 @@ class InventoryPlugin extends Plugin {
         ));
     }
 
+    function isMultiInstance()
+    {
+        return false;
+    }
+
     static public function callbackDispatch($object, $data) {
         $media_url = url ( '^/inventory.*assets/',
             patterns ( 'controller\MediaController',
@@ -311,11 +316,17 @@ class InventoryPlugin extends Plugin {
         }
     }
 
-    function pre_uninstall(&$errors) {
+    function enable() {
+        return parent::enable();
+    }
+
+    function uninstall(&$errors) {
         $installer = new \util\InventoryInstaller();
         try {
             $installer->remove();
         } catch(Exception) {}
+
+        return parent::uninstall($errors);
     }
 }
 
